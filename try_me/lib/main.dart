@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:country_code_picker/country_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:tryme/Globals.dart';
@@ -12,14 +14,36 @@ void main() {
     statusBarColor: Colors.transparent, // status bar color
   ));
   FluroRouter.setupRouter();
-  runApp(GraphQLProvider(
-    child: CacheProvider(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: 'home',
-        onGenerateRoute: FluroRouter.router.generator,
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    return GraphQLProvider(
+      child: CacheProvider(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: 'home',
+          //initialRoute: 'orderFinished',
+          onGenerateRoute: FluroRouter.router.generator,
+          supportedLocales: [
+            Locale('en'),
+            Locale('it'),
+            Locale('fr'),
+            Locale('es'),
+          ],
+          localizationsDelegates: [
+            CountryLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+        ),
       ),
-    ),
-    client: graphQLConfiguration.client,
-  ));
+      client: graphQLConfiguration.client,
+    );
+  }
 }

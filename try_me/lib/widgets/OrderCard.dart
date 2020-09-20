@@ -14,7 +14,7 @@ class OrderCard extends StatelessWidget {
     return Container(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: (Container(
+        child: Container(
           color: Colors.grey[100],
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -95,7 +95,7 @@ class OrderCard extends StatelessWidget {
               ],
             ),
           ),
-        )),
+        ),
       ),
     );
   }

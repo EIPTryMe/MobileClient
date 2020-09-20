@@ -4,6 +4,8 @@ import 'package:fluro/fluro.dart';
 
 import 'package:tryme/views/AuthentificationView.dart';
 import 'package:tryme/views/HomeView.dart';
+import 'package:tryme/views/OrderDeliveryOptionsView.dart';
+import 'package:tryme/views/OrderFinished.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/ProductEditView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
@@ -21,6 +23,12 @@ class FluroRouter {
   static Handler _homeHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           HomeView());
+  static Handler _orderDeliveryOptionsHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          OrderDeliveryOptionsView());
+  static Handler _orderFinishedHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          OrderFinishedView());
   static Handler _productHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
@@ -55,6 +63,16 @@ class FluroRouter {
     router.define(
       'home',
       handler: _homeHandler,
+      transitionType: TransitionType.cupertino,
+    );
+    router.define(
+      'orderDeliveryOptions',
+      handler: _orderDeliveryOptionsHandler,
+      transitionType: TransitionType.cupertino,
+    );
+    router.define(
+      'orderFinished',
+      handler: _orderFinishedHandler,
       transitionType: TransitionType.cupertino,
     );
     router.define(

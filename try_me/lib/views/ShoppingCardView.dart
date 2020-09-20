@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:tryme/Request.dart';
 
+import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/widgets/ProductShoppingCartCard.dart';
 import 'package:tryme/Globals.dart';
 
@@ -75,7 +76,9 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
   @override
   void initState() {
     super.initState();
-    computeTotal();
+    setState(() {
+      Request.getShoppingCard().whenComplete(() => computeTotal());
+    });
   }
 
   @override
@@ -122,9 +125,8 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                       flex: 3,
                       child: FlatButton(
                         color: Color(0xff58c24c),
-                        onPressed: () {
-                          checkout();
-                        },
+                        onPressed: () =>
+                            Navigator.pushNamed(context, "orderDeliveryOptions"),
                         child: Text('Commander',
                             style: TextStyle(
                                 fontSize: 18.0,
