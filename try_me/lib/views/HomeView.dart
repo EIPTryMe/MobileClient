@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:tryme/Request.dart';
-
-import 'package:tryme/widgets/AppBar.dart';
-import 'package:tryme/widgets/Drawer.dart';
-import 'package:tryme/widgets/Filter.dart';
-import 'package:tryme/widgets/ProductCard.dart';
 import 'package:tryme/Globals.dart';
+
+import 'package:tryme/widgets/ListProducts.dart';
+import 'package:tryme/widgets/UserInformations.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -14,71 +11,57 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<Product> products = List();
 
-  void callback(String option) {
-    getData(option);
-  }
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static List<Widget> _widgetOptions = <Widget>[
+    ListProducts(),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+  UserInformations(),
+  ];
 
-  void getData([String option]) async {
-    OrderBy orderBy;
-    bool asc;
-    if (option == 'Nom A-Z' || option == null) {
-      orderBy = OrderBy.NAME;
-      asc = true;
-    } else if (option == 'Nom Z-A') {
-      orderBy = OrderBy.NAME;
-      asc = false;
-    } else if (option == 'Prix croissant') {
-      orderBy = OrderBy.PRICE;
-      asc = true;
-    } else if (option == 'Prix décroissant') {
-      orderBy = OrderBy.PRICE;
-      asc = false;
-    } else if (option == 'Nouveautés') {
-      orderBy = OrderBy.NEW;
-      asc = false;
+  void _onItemTapped(int index) {
+    if (!isLoggedIn && (index == 1 || index == 2) ) {
+      Navigator.pushNamed(context, "authentification");
     }
-    Request.getProducts(orderBy, asc).then((products) {
-      if (this.mounted)
-        setState(() {
-          this.products = products;
-        });
-    });
-  }
+    else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    getData();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: MyAppBar(),
-      drawer: isLoggedIn ? DrawerIsConnected() : DrawerNotConnected(),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Filter(callback),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
           ),
-          Expanded(
-            flex: 15,
-            child: ListView(
-              children: products
-                  .map((product) => Padding(
-                        padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                        child: ProductCard(
-                          product: product,
-                        ),
-                      ))
-                  .toList(),
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            title: Text('Panier'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            title: Text('Mon Compte'),
           ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
       backgroundColor: Colors.white,
     );
