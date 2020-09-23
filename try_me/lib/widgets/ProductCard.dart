@@ -1,14 +1,35 @@
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:tryme/Globals.dart';
+import 'package:tryme/tools/DecodeLinkBytes.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   ProductCard({this.product});
 
   final Product product;
-  final double borderRadius = 12.0;
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  double borderRadius = 12.0;
+  Uint8List bytes;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.product.pictures != null &&
+        widget.product.pictures[0].isNotEmpty)
+      decodeLinkBytes(widget.product.pictures[0]).then((value) {
+        setState(() {
+          bytes = value;
+        });
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +37,11 @@ class ProductCard extends StatelessWidget {
     NumberFormat formatInteger = NumberFormat("###.#", "fr");
     String formattedPrice = '';
 
-    if (product.pricePerMonth.toInt() != product.pricePerMonth)
-      formattedPrice = formatDecimal.format(product.pricePerMonth);
+    if (widget.product.pricePerMonth.toInt() != widget.product.pricePerMonth)
+      formattedPrice = formatDecimal.format(widget.product.pricePerMonth);
     else
-      formattedPrice = formatInteger.format(product.pricePerMonth);
+      formattedPrice = formatInteger.format(widget.product.pricePerMonth);
+
     return Stack(
       children: <Widget>[
         Container(
@@ -36,12 +58,12 @@ class ProductCard extends StatelessWidget {
                       border: Border.all(width: 1.0, color: Colors.grey[500]),
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
-                    child: product.pictures == null
+                    child: bytes == null
                         ? null
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(borderRadius),
-                            child: Image.network(
-                              product.pictures[0],
+                            child: Image.memory(
+                              bytes,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -62,7 +84,9 @@ class ProductCard extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              product.name == null ? '' : product.name,
+                              widget.product.name == null
+                                  ? ''
+                                  : widget.product.name,
                               style: TextStyle(fontSize: 16.0),
                             ),
                           ),
@@ -73,7 +97,9 @@ class ProductCard extends StatelessWidget {
                         child: Container(
                           //color: Colors.yellow,
                           child: Text(
-                            product.brand == null ? '' : product.brand,
+                            widget.product.brand == null
+                                ? ''
+                                : widget.product.brand,
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
@@ -87,11 +113,12 @@ class ProductCard extends StatelessWidget {
                             child: Row(
                               children: [
                                 Text(
-                                  product.pricePerMonth == null
+                                  widget.product.pricePerMonth == null
                                       ? ''
                                       : '€ ' + formattedPrice,
                                   style: TextStyle(
-                                      fontSize: 18.0, fontWeight: FontWeight.bold),
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(' / mois'),
                               ],
@@ -114,13 +141,12 @@ class ProductCard extends StatelessWidget {
         ),
         Positioned.fill(
           child: ClipRRect(
-            //borderRadius: BorderRadius.circular(borderRadius),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 splashColor: Colors.white10,
-                onTap: () =>
-                    Navigator.pushNamed(context, 'product/${product.id}'),
+                onTap: () => Navigator.pushNamed(
+                    context, 'product/${widget.product.id}'),
               ),
             ),
           ),
