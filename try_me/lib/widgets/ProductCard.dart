@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/tools/DecodeLinkBytes.dart';
+import 'package:tryme/tools/NumberFormatTool.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard({this.product});
@@ -18,13 +18,19 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   double borderRadius = 12.0;
   Uint8List bytes;
+  String formattedPrice;
+  String formattedRating;
 
   @override
   void initState() {
     super.initState();
+    formattedPrice = NumberFormatTool.formatPrice(widget.product.pricePerMonth);
+    formattedRating =
+        NumberFormatTool.formatRating(widget.product.reviews.averageRating);
+
     if (widget.product.pictures != null &&
         widget.product.pictures[0].isNotEmpty)
-      decodeLinkBytes(widget.product.pictures[0]).then((value) {
+      DecodeLink.decodeLinkBytes(widget.product.pictures[0]).then((value) {
         setState(() {
           bytes = value;
         });
@@ -33,15 +39,6 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
-    NumberFormat formatDecimal = NumberFormat("###.00#", "fr");
-    NumberFormat formatInteger = NumberFormat("###.#", "fr");
-    String formattedPrice = '';
-
-    if (widget.product.pricePerMonth.toInt() != widget.product.pricePerMonth)
-      formattedPrice = formatDecimal.format(widget.product.pricePerMonth);
-    else
-      formattedPrice = formatInteger.format(widget.product.pricePerMonth);
-
     return Stack(
       children: <Widget>[
         Container(
@@ -108,29 +105,79 @@ class _ProductCardState extends State<ProductCard> {
                         flex: 5,
                         child: Container(
                           //: Colors.green,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
-                                Text(
-                                  widget.product.pricePerMonth == null
-                                      ? ''
-                                      : '€ ' + formattedPrice,
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(' / mois'),
-                              ],
-                            ),
+                          child: Row(
+                            children: [
+                              Text(
+                                formattedPrice == null
+                                    ? ''
+                                    : '€ ' + formattedPrice,
+                                style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(' / mois'),
+                            ],
                           ),
                         ),
                       ),
                       Expanded(
                         flex: 4,
                         child: Container(
-                            //color: Colors.red,
-                            ),
+                          //color: Colors.red,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Row(
+                                  children: [
+                                    formattedRating == null
+                                        ? Container()
+                                        : Align(
+                                            alignment: Alignment.bottomLeft,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.star,
+                                                  size: 15.0,
+                                                  color: Colors.red[400],
+                                                ),
+                                                Text(
+                                                  ' ' + formattedRating,
+                                                  style: TextStyle(
+                                                      color: Colors.grey[500]),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        widget.product.stock > 0 ? 'Disponible ' : 'Indisponible ',
+                                        style:
+                                            TextStyle(color: Colors.grey[500]),
+                                      ),
+                                      Icon(
+                                        Icons.brightness_1,
+                                        size: 15,
+                                        color: widget.product.stock > 0
+                                            ? Colors.green
+                                            : Colors.red,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),

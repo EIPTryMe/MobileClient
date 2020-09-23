@@ -40,6 +40,28 @@ class User {
   int companyId;
 }
 
+class Review {
+  Review({this.score, this.description});
+
+  double score;
+  String description;
+}
+
+class Reviews {
+  Reviews({this.reviews, this.averageRating});
+
+  void computeAverageRating() {
+    averageRating = 0.0;
+    reviews.forEach((element) {
+      averageRating += element.score;
+    });
+    averageRating /= reviews.length;
+  }
+
+  List<Review> reviews;
+  double averageRating;
+}
+
 class Product {
   Product(
       {this.id,
@@ -51,6 +73,7 @@ class Product {
       this.stock,
       this.description,
       this.specifications,
+      this.reviews,
       this.pictures});
 
   int id;
@@ -62,6 +85,7 @@ class Product {
   int stock;
   String description;
   List specifications;
+  Reviews reviews;
   List pictures;
 }
 

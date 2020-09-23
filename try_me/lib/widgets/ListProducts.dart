@@ -13,6 +13,7 @@ class ListProducts extends StatefulWidget {
 
 class _ListProductsState extends State<ListProducts> {
   List<Product> products = List();
+  double averageReviewRating;
 
   void callback(String option) {
     getData(option);

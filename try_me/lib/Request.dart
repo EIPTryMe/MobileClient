@@ -104,7 +104,7 @@ class Request {
     graphQLConfiguration = GraphQLConfiguration();
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
     (result.data['product'] as List).forEach((element) {
-      products.add(QueryParse.getProductHome(element));
+      products.add(QueryParse.getProduct(element, productInfo_e.CARD));
     });
     return (products);
   }

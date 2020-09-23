@@ -1,5 +1,7 @@
 import 'package:tryme/Globals.dart';
 
+enum productInfo_e { CARD }
+
 class QueryParse {
   static void getUser(Map result) {
     user.id = result['id'];
@@ -13,11 +15,12 @@ class QueryParse {
     user.pathToAvatar = auth0User.picture;
   }
 
-  static Product getProduct(Map result) {
+  static Product getProduct(Map result, [productInfo_e productInfo]) {
     Product product = Product();
     product.id = result['id'];
     product.name = result['name'];
     product.brand = result['brand'];
+    product.stock = result['stock'];
     product.pricePerDay = result['price_per_day'] != null
         ? result['price_per_day'].toDouble()
         : null;
@@ -28,30 +31,15 @@ class QueryParse {
         ? result['price_per_month'].toDouble()
         : null;
     product.stock = result['stock'];
-    product.description = result['description'];
-    product.specifications = result['product_specifications'];
-    if (result['picture'] != null) {
-      product.pictures = List();
-      product.pictures.add(result['picture']['url']);
+    if (productInfo != productInfo_e.CARD) {
+      product.description = result['description'];
+      product.specifications = result['product_specifications'];
     }
-    return (product);
-  }
-
-  static Product getProductHome(Map result) {
-    Product product = Product();
-    product.id = result['id'];
-    product.name = result['name'];
-    product.brand = result['brand'];
-    product.stock = result['stock'];
-    product.pricePerDay = result['price_per_day'] != null
-        ? result['price_per_day'].toDouble()
-        : null;
-    product.pricePerWeek = result['price_per_week'] != null
-        ? result['price_per_week'].toDouble()
-        : null;
-    product.pricePerMonth = result['price_per_month'] != null
-        ? result['price_per_month'].toDouble()
-        : null;
+    product.reviews = Reviews(reviews: List());
+    (result['reviews'] as List).forEach((element) {
+      product.reviews.reviews.add(Review(score: element['score'].toDouble()));
+    });
+    product.reviews.computeAverageRating();
     if (result['picture'] != null) {
       product.pictures = List();
       product.pictures.add(result['picture']['url']);
@@ -169,6 +157,10 @@ class Queries {
       picture {
         url
       }
+      reviews {
+        description
+        score
+      }
     }
   }
   ''';
@@ -185,6 +177,9 @@ class Queries {
       stock
       picture {
         url
+      }
+      reviews {
+        score
       }
     }
   }
