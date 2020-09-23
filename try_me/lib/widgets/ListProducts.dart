@@ -64,13 +64,19 @@ class _ListProductsState extends State<ListProducts> {
           flex: 15,
           child: ListView(
             children: products
-                .map((product) =>
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
-                  child: ProductCard(
-                    product: product,
-                  ),
-                ))
+                .map((product) => Column(
+                      children: [
+                        ProductCard(
+                          product: product,
+                        ),
+                        SizedBox(
+                          //height: 0.8,
+                          child: Container(
+                            //color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ))
                 .toList(),
           ),
         ),

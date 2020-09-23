@@ -33,6 +33,7 @@ dependencies:
   stripe_payment: ^1.0.7
   flutter_auth_buttons: ^0.8.0
   country_code_picker: ^1.4.0
+  intl: ^0.16.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

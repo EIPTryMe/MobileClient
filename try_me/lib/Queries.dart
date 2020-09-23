@@ -41,6 +41,8 @@ class QueryParse {
     Product product = Product();
     product.id = result['id'];
     product.name = result['name'];
+    product.brand = result['brand'];
+    product.stock = result['stock'];
     product.pricePerDay = result['price_per_day'] != null
         ? result['price_per_day'].toDouble()
         : null;
@@ -174,11 +176,13 @@ class Queries {
   static String products(String sort) => '''
   query {
     product($sort) {
-      name
       id
+      name
+      brand
       price_per_week
       price_per_month
       price_per_day
+      stock
       picture {
         url
       }
