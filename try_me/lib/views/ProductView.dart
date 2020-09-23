@@ -34,43 +34,17 @@ class _ProductViewState extends State<ProductView> {
     }
   }
 
-  void addProduct() async {
+  void addProduct(BuildContext context) async {
     if (auth0User.uid == null) return;
-    QueryResult result;
-    QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.addProduct(int.parse(widget.id))));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
-    addedToCardOverlay(context);
-    Request.getShoppingCard();
-  }
-
-  void addedToCardOverlay(BuildContext context) async {
-    OverlayState overlayState = Overlay.of(context);
-    OverlayEntry overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        width: 100,
-        height: 35,
-        top: MediaQuery.of(context).size.height - 100,
-        right: MediaQuery.of(context).size.width / 2 - 100 / 2,
-        child: Material(
-            color: Colors.transparent,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                border: Border.all(width: 0.8, color: Colors.grey[400]),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                child: Center(child: Text('Produit ajouté')),
-              ),
-            )),
-      ),
-    );
-    overlayState.insert(overlayEntry);
-    await Future.delayed(Duration(seconds: 2));
-    overlayEntry.remove();
+    Request.addProductShoppingCard(int.parse(widget.id)).whenComplete(() {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Produit ajouté',
+          textAlign: TextAlign.center,
+        ),
+      ));
+    });
+    //Request.getShoppingCard();
   }
 
   @override
@@ -213,17 +187,19 @@ class _ProductViewState extends State<ProductView> {
               if (product.stock > 0)
                 return Expanded(
                   flex: 1,
-                  child: FlatButton(
-                    color: Color(0xff58c24c),
-                    onPressed: () => addProduct(),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Ajouter au panier  ',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 18)),
-                        Icon(Icons.add_shopping_cart, color: Colors.white),
-                      ],
+                  child: Builder(
+                    builder: (context) => FlatButton(
+                      color: Color(0xff58c24c),
+                      onPressed: () => addProduct(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Ajouter au panier  ',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                          Icon(Icons.add_shopping_cart, color: Colors.white),
+                        ],
+                      ),
                     ),
                   ),
                 );

@@ -108,4 +108,13 @@ class Request {
     });
     return (products);
   }
+
+  static Future addProductShoppingCard(int id) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(Mutations.addProduct(id)));
+    result = await graphQLConfiguration
+        .getClientToQuery(auth0User.uid)
+        .query(queryOption);
+  }
 }

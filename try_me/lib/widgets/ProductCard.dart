@@ -31,9 +31,10 @@ class _ProductCardState extends State<ProductCard> {
     if (widget.product.pictures != null &&
         widget.product.pictures[0].isNotEmpty)
       DecodeLink.decodeLinkBytes(widget.product.pictures[0]).then((value) {
-        setState(() {
-          bytes = value;
-        });
+        if (this.mounted)
+          setState(() {
+            bytes = value;
+          });
       });
   }
 
@@ -160,7 +161,9 @@ class _ProductCardState extends State<ProductCard> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        widget.product.stock > 0 ? 'Disponible ' : 'Indisponible ',
+                                        widget.product.stock > 0
+                                            ? 'Disponible '
+                                            : 'Indisponible ',
                                         style:
                                             TextStyle(color: Colors.grey[500]),
                                       ),

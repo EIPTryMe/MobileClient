@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:tryme/Globals.dart';
 
+import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/widgets/ListProducts.dart';
-import 'package:tryme/widgets/UserInformations.dart';
+import 'package:tryme/widgets/UserInformation.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -11,34 +12,27 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     ListProducts(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-  UserInformations(),
+    ShoppingCardView(appBar: false),
+    UserInformation(),
   ];
 
   void _onItemTapped(int index) {
-    if (!isLoggedIn && (index == 1 || index == 2) ) {
+    if (!isLoggedIn && (index == 1 || index == 2)) {
       Navigator.pushNamed(context, "authentification");
-    }
-    else {
+    } else {
       setState(() {
         _selectedIndex = index;
       });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -60,7 +54,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(0xff1F2C47),
         onTap: _onItemTapped,
       ),
       backgroundColor: Colors.white,

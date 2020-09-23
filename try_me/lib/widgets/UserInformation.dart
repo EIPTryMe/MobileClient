@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 
-class UserInformationView extends StatefulWidget {
+class UserInformation extends StatefulWidget {
   @override
-  _UserInformationViewState createState() => _UserInformationViewState();
+  _UserInformationState createState() => _UserInformationState();
 }
 
-class _UserInformationViewState extends State<UserInformationView> {
+class _UserInformationState extends State<UserInformation> {
   var edit = new List(7);
   double _widthScreen;
   double _heightScreen;
@@ -829,50 +829,49 @@ class _UserInformationViewState extends State<UserInformationView> {
     _heightScreen = (_height > _width) ? _height : _width;
     _widthScreen = (_height > _width) ? _width : _height;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Informations personnelles'),
-        centerTitle: true,
-        backgroundColor: Color(0xff1F2C47),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: _heightScreen * 0.85,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _presentation(_widthScreen),
-              _myDivider(),
-              _personalFirstName(edit),
-              _myDivider(),
-              _personalLastName(edit),
-              _myDivider(),
-              _personalAddress(edit),
-              _myDivider(),
-              _personalPhoneNumber(edit),
-              _myDivider(),
-              _personalEmail(edit),
-              _myDivider(),
-              _personalBirthDate(edit),
-              RaisedButton(
-                onPressed: () {
-                  setState(() {
-                    if (!edit[0]) {
-                      Request.modifyUser().whenComplete(
-                          () => Navigator.pushNamed(context, "home"));
-                    }
-                  });
-                },
-                child: Text(
-                  buttonText,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+    return SingleChildScrollView(
+      child: Container(
+        height: _heightScreen * 0.85,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            _presentation(_widthScreen),
+            _myDivider(),
+            _personalFirstName(edit),
+            _myDivider(),
+            _personalLastName(edit),
+            _myDivider(),
+            _personalAddress(edit),
+            _myDivider(),
+            _personalPhoneNumber(edit),
+            _myDivider(),
+            _personalEmail(edit),
+            _myDivider(),
+            _personalBirthDate(edit),
+            RaisedButton(
+              onPressed: () {
+                setState(() {
+                  if (!edit[0]) {
+                    Request.modifyUser().whenComplete(() {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          'Informations sauvegardées',
+                          textAlign: TextAlign.center,
+                        ),
+                      ));
+                    });
+                  }
+                });
+              },
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                  color: Colors.white,
                 ),
-                color: Color(0xff58c24c),
               ),
-            ],
-          ),
+              color: Color(0xff58c24c),
+            ),
+          ],
         ),
       ),
     );
