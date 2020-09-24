@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -22,6 +24,7 @@ class _ProductViewState extends State<ProductView> {
   bool gotData = false;
   String formattedPrice;
   String formattedRating;
+  Uint8List pictureBytes;
 
   Future getData() async {
     QueryResult result;

@@ -17,25 +17,20 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   double borderRadius = 12.0;
-  Uint8List bytes;
-  String formattedPrice;
-  String formattedRating;
+  //Uint8List bytes;
 
   @override
   void initState() {
     super.initState();
-    formattedPrice = NumberFormatTool.formatPrice(widget.product.pricePerMonth);
-    formattedRating =
-        NumberFormatTool.formatRating(widget.product.reviews.averageRating);
 
-    if (widget.product.pictures != null &&
+    /*if (widget.product.pictures != null &&
         widget.product.pictures[0].isNotEmpty)
       DecodeLink.decodeLinkBytes(widget.product.pictures[0]).then((value) {
         if (this.mounted)
           setState(() {
             bytes = value;
           });
-      });
+      });*/
   }
 
   @override
@@ -56,12 +51,13 @@ class _ProductCardState extends State<ProductCard> {
                       border: Border.all(width: 1.0, color: Colors.grey[500]),
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
-                    child: bytes == null
+                    child: widget.product.pictures == null ||
+                        widget.product.pictures[0].isEmpty
                         ? null
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(borderRadius),
-                            child: Image.memory(
-                              bytes,
+                            child: Image.network(
+                              widget.product.pictures[0],
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -109,9 +105,9 @@ class _ProductCardState extends State<ProductCard> {
                           child: Row(
                             children: [
                               Text(
-                                formattedPrice == null
+                                widget.product.pricePerMonth == null
                                     ? ''
-                                    : '€ ' + formattedPrice,
+                                    : '€ ' + NumberFormatTool.formatPrice(widget.product.pricePerMonth),
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold),
@@ -131,7 +127,7 @@ class _ProductCardState extends State<ProductCard> {
                                 flex: 1,
                                 child: Row(
                                   children: [
-                                    formattedRating == null
+                                    NumberFormatTool.formatRating(widget.product.reviews.averageRating) == null
                                         ? Container()
                                         : Align(
                                             alignment: Alignment.bottomLeft,
@@ -143,7 +139,7 @@ class _ProductCardState extends State<ProductCard> {
                                                   color: Colors.red[400],
                                                 ),
                                                 Text(
-                                                  ' ' + formattedRating,
+                                                  ' ' + NumberFormatTool.formatRating(widget.product.reviews.averageRating),
                                                   style: TextStyle(
                                                       color: Colors.grey[500]),
                                                 ),
