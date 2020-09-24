@@ -7,6 +7,7 @@ import 'package:tryme/widgets/Filter.dart';
 import 'package:tryme/widgets/ProductCard.dart';
 
 class ListProducts extends StatefulWidget {
+
   @override
   _ListProductsState createState() => _ListProductsState();
 }
@@ -73,8 +74,8 @@ class _ListProductsState extends State<ListProducts> {
                         SizedBox(
                           //height: 0.8,
                           child: Container(
-                            //color: Colors.grey[500],
-                          ),
+                              //color: Colors.grey[500],
+                              ),
                         ),
                       ],
                     ))

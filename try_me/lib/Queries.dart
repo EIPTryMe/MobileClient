@@ -37,7 +37,11 @@ class QueryParse {
     }
     product.reviews = Reviews(reviews: List());
     (result['reviews'] as List).forEach((element) {
-      product.reviews.reviews.add(Review(score: element['score'].toDouble()));
+      product.reviews.reviews.add(productInfo != productInfo_e.CARD
+          ? Review(
+              score: element['score'].toDouble(),
+              description: element['description'])
+          : Review(score: element['score'].toDouble()));
     });
     product.reviews.computeAverageRating();
     if (result['picture'] != null) {
