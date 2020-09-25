@@ -35,18 +35,27 @@ class Request {
     QueryParse.getUser(result.data['user'][0]);
   }
 
-  static Future modifyUser() async {
+  static Future modifyUser(User userSave) async {
     QueryResult result;
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUser(
             auth0User.uid,
-            user.lastName != null ? user.lastName : "",
-            user.firstName != null ? user.firstName : "",
-            user.address != null ? user.address : "",
-            user.email != null ? user.email : "",
-            user.phoneNumber != null ? user.phoneNumber : "",
-            user.birthDate)));
+            userSave.lastName != null ? userSave.lastName : "",
+            userSave.firstName != null ? userSave.firstName : "",
+            userSave.address != null ? userSave.address : "",
+            userSave.email != null ? userSave.email : "",
+            userSave.phoneNumber != null ? userSave.phoneNumber : "",
+            userSave.birthDate)));
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    /*if (result.data != null)*/ {
+      user.firstName = userSave.firstName;
+      user.lastName = userSave.lastName;
+      user.address = userSave.address;
+      user.email = userSave.email;
+      user.phoneNumber = userSave.phoneNumber;
+      user.birthDate = userSave.birthDate;
+    }
+    return (result);
   }
 
   static Future modifyProduct(Product product) async {
@@ -111,8 +120,8 @@ class Request {
 
   static Future addProductShoppingCard(int id) async {
     QueryResult result;
-    QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.addProduct(id)));
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Mutations.addProduct(id)));
     result = await graphQLConfiguration
         .getClientToQuery(auth0User.uid)
         .query(queryOption);
@@ -122,7 +131,7 @@ class Request {
     List<Order> orders = List();
     QueryResult result;
     QueryOptions queryOption =
-    QueryOptions(documentNode: gql(Queries.orders(status)));
+        QueryOptions(documentNode: gql(Queries.orders(status)));
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
     (result.data['order'] as List).forEach((element) {
       orders.add(QueryParse.getOrder(element));

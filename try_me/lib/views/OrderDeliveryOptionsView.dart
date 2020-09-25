@@ -1,4 +1,3 @@
-import 'package:country_code_picker/country_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
