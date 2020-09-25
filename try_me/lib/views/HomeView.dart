@@ -4,6 +4,7 @@ import 'package:tryme/Globals.dart';
 
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/widgets/ListProducts.dart';
+import 'package:tryme/widgets/Order.dart';
 import 'package:tryme/widgets/UserInformation.dart';
 
 class HomeView extends StatefulWidget {
@@ -17,12 +18,13 @@ class _HomeViewState extends State<HomeView> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     ListProducts(),
-    ShoppingCardView(appBar: false),
     UserInformation(),
+    ShoppingCardView(appBar: false),
+    MyOrder(),
   ];
 
   void _onItemTapped(int index) {
-    if (!isLoggedIn && (index == 1 || index == 2)) {
+    if (!isLoggedIn && (index == 1 || index == 2 || index == 3)) {
       Navigator.pushNamed(context, "authentification");
     } else {
       setState(() {
@@ -42,15 +44,19 @@ class _HomeViewState extends State<HomeView> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text('Accueil'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            title: Text('Mon Compte'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
             title: Text('Panier'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            title: Text('Mon Compte'),
+            icon: Icon(Icons.assignment),
+            title: Text('Commandes'),
           ),
         ],
         currentIndex: _selectedIndex,
