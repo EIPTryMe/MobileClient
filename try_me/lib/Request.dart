@@ -117,4 +117,16 @@ class Request {
         .getClientToQuery(auth0User.uid)
         .query(queryOption);
   }
+
+  static Future<List<Order>> getOrders(String status) async {
+    List<Order> orders = List();
+    QueryResult result;
+    QueryOptions queryOption =
+    QueryOptions(documentNode: gql(Queries.orders(status)));
+    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    (result.data['order'] as List).forEach((element) {
+      orders.add(QueryParse.getOrder(element));
+    });
+    return (orders);
+  }
 }

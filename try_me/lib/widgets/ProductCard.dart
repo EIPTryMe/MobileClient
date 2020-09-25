@@ -17,6 +17,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   double borderRadius = 12.0;
+
   //Uint8List bytes;
 
   @override
@@ -52,7 +53,7 @@ class _ProductCardState extends State<ProductCard> {
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: widget.product.pictures == null ||
-                        widget.product.pictures[0].isEmpty
+                            widget.product.pictures[0].isEmpty
                         ? null
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(borderRadius),
@@ -107,7 +108,9 @@ class _ProductCardState extends State<ProductCard> {
                               Text(
                                 widget.product.pricePerMonth == null
                                     ? ''
-                                    : '€ ' + NumberFormatTool.formatPrice(widget.product.pricePerMonth),
+                                    : '€ ' +
+                                        NumberFormatTool.formatPrice(
+                                            widget.product.pricePerMonth),
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold),
@@ -127,7 +130,9 @@ class _ProductCardState extends State<ProductCard> {
                                 flex: 1,
                                 child: Row(
                                   children: [
-                                    NumberFormatTool.formatRating(widget.product.reviews.averageRating) == null
+                                    NumberFormatTool.formatRating(widget.product
+                                                .reviews.averageRating) ==
+                                            null
                                         ? Container()
                                         : Align(
                                             alignment: Alignment.bottomLeft,
@@ -139,7 +144,12 @@ class _ProductCardState extends State<ProductCard> {
                                                   color: Colors.red[400],
                                                 ),
                                                 Text(
-                                                  ' ' + NumberFormatTool.formatRating(widget.product.reviews.averageRating),
+                                                  ' ' +
+                                                      NumberFormatTool
+                                                          .formatRating(widget
+                                                              .product
+                                                              .reviews
+                                                              .averageRating),
                                                   style: TextStyle(
                                                       color: Colors.grey[500]),
                                                 ),

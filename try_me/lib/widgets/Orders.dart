@@ -2,29 +2,32 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tryme/widgets/OrderCard.dart';
 
-class MyOrder extends StatefulWidget {
+class Orders extends StatefulWidget {
   @override
-  _MyOrderState createState() => _MyOrderState();
+  _OrdersState createState() => _OrdersState();
 }
 
-class _MyOrderState extends State<MyOrder> {
+class _OrdersState extends State<Orders> {
   double borderRadius = 12.0;
 
   Widget _orderFilter() {
     return Container(
       color: Colors.white,
-      height: 150,
+      height: 160,
       child: Column(
         children: [
           Expanded(
             flex: 1,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Commandes",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Commandes",
+                      style:
+                      TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                ],
+              ),
             ),
           ),
           Divider(),
@@ -41,9 +44,10 @@ class _MyOrderState extends State<MyOrder> {
                         icon: Icon(Icons.assignment),
                         iconSize: 50.0,
                         color: Color(0xff1F2C47),
-                        onPressed: () => Navigator.pushNamed(context, 'userOrders/Mes Commandes'),
+                        onPressed: () => Navigator.pushNamed(
+                            context, 'orders/'),
                       ),
-                      Text("Mes commandes"),
+                      Text("Tout afficher"),
                     ],
                   ),
                 ),
@@ -52,24 +56,29 @@ class _MyOrderState extends State<MyOrder> {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.assignment, color: Color(0xff1F2C47)),
+                        icon: Icon(Icons.credit_card, color: Colors.red),
                         iconSize: 50.0,
-                        onPressed: () => Navigator.pushNamed(context, 'userOrders/Non payées'),
+                        onPressed: () => Navigator.pushNamed(
+                            context, 'orders/waiting for payment'),
                       ),
-                      Text("Non-payées"),
+                      Text("En attente"),
+                      Text('de paiement'),
                     ],
                   ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: Column(children: [
+                  child: Column(
+                    children: [
                       IconButton(
-                        icon: Icon(Icons.assignment),
+                        icon: Icon(Icons.credit_card, color: Colors.green),
                         iconSize: 50.0,
                         color: Color(0xff1F2C47),
-                        onPressed: () => Navigator.pushNamed(context, 'userOrders/Payées'),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, 'orders/paid'),
                       ),
-                      Text("Payées"),
+                      Text("En attente"),
+                      Text("d'expédition"),
                     ],
                   ),
                 ),

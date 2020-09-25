@@ -4,7 +4,7 @@ import 'package:tryme/Globals.dart';
 
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/widgets/ListProducts.dart';
-import 'package:tryme/widgets/Order.dart';
+import 'package:tryme/widgets/Orders.dart';
 import 'package:tryme/widgets/UserInformation.dart';
 
 class HomeView extends StatefulWidget {
@@ -20,7 +20,7 @@ class _HomeViewState extends State<HomeView> {
     ListProducts(),
     UserInformation(),
     ShoppingCardView(appBar: false),
-    MyOrder(),
+    Orders(),
   ];
 
   void _onItemTapped(int index) {

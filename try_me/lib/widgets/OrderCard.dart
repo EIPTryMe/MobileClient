@@ -54,10 +54,7 @@ class OrderCard extends StatelessWidget {
                 ),
                 Column(
                     children: order.products
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: ProductCard(product: e),
-                            ))
+                        .map((e) => ProductCard(product: e))
                         .toList()),
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0, left: 20.0),

@@ -74,6 +74,23 @@ class QueryParse {
       shoppingCard.add(cart);
     });
   }
+
+  static Order getOrder(Map result) {
+    Order order = Order();
+    List<Product> products = List();
+    double total = 0;
+
+    order.id = result['id'];
+    order.status = result['order_statuses'][0]['status'];
+
+    (result['order_items'] as List).forEach((element) {
+      products.add(getProduct(element['product']));
+      total += products.last.pricePerMonth;
+    });
+    order.products = products;
+    order.total = total;
+    return (order);
+  }
 }
 
 class Mutations {
@@ -210,41 +227,26 @@ class Queries {
 
   static String orders(String status) => '''
   {
-    order(where: {order_statuses: {status: {_eq: "$status"}}, user_uid: {_eq: "${auth0User.uid}"}}) {
+    order(where: {''' + (status.isEmpty ? "" : '''order_statuses: {status: {_eq: "$status"}}, ''') + '''user_uid: {_eq: "${auth0User.uid}"}}) {
       order_items {
          product {
           id
           name
+          brand
           price_per_month
+          stock
           picture {
             url
           }
+          reviews {
+            score
+          }
         }
-        price
       }
       id
-    }
-  }
-  ''';
-
-  static String ordersAll() => '''
-  {
-    order(where: {user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
-      order_items {
-         product {
-          id
-          name
-          price_per_month
-          picture {
-            url
-          }
-        }
-        price
-      }
       order_statuses {
         status
       }
-      id
     }
   }
   ''';

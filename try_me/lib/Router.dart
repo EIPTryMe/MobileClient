@@ -4,13 +4,13 @@ import 'package:fluro/fluro.dart';
 
 import 'package:tryme/views/AuthentificationView.dart';
 import 'package:tryme/views/HomeView.dart';
+import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
 import 'package:tryme/views/SignUpView.dart';
-import 'package:tryme/views/UserOrdersView.dart';
 
 class FluroRouter {
   static Router router = Router();
@@ -20,6 +20,9 @@ class FluroRouter {
   static Handler _homeHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           HomeView());
+  static Handler _ordersHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          OrdersView(status: params['status'][0]));
   static Handler _orderDeliveryOptionsHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderDeliveryOptionsView());
@@ -38,9 +41,6 @@ class FluroRouter {
   static Handler _signUpHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignUpView());
-  static Handler _userOrdersHandler = Handler(
-      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          UserOrdersView(orderStatus: params['orderStatus'][0]));
 
   static void setupRouter() {
     router.define(
@@ -52,6 +52,11 @@ class FluroRouter {
       'home',
       handler: _homeHandler,
       transitionType: TransitionType.cupertino,
+    );
+    router.define(
+      'orders/:status',
+      handler: _ordersHandler,
+      transitionType: TransitionType.cupertinoFullScreenDialog,
     );
     router.define(
       'orderDeliveryOptions',
@@ -81,11 +86,6 @@ class FluroRouter {
     router.define(
       'signUp',
       handler: _signUpHandler,
-      transitionType: TransitionType.cupertino,
-    );
-    router.define(
-      'userOrders/:orderStatus',
-      handler: _userOrdersHandler,
       transitionType: TransitionType.cupertino,
     );
   }
