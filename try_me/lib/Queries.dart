@@ -226,8 +226,8 @@ class Queries {
   ''';
 
   static String orders(String status) => '''
-  {
-    order(where: {''' + (status.isEmpty ? "" : '''order_statuses: {status: {_eq: "$status"}}, ''') + '''user_uid: {_eq: "${auth0User.uid}"}}) {
+  query {
+    order(where: {''' + (status.isEmpty ? "" : '''order_statuses: {status: {_eq: "$status"}}, ''') + '''user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
       order_items {
          product {
           id

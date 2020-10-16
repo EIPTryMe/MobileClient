@@ -6,6 +6,7 @@ import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 class SignInView extends StatefulWidget {
   @override
@@ -18,6 +19,23 @@ class _SignInViewState extends State<SignInView> {
   var _email;
   var _password;
   String error = '';
+
+  void connection() {
+    Loading.showLoadingDialog(context);
+    Request.getUser().whenComplete(() {
+      if (user.companyId == null) {
+        Request.getShoppingCard().whenComplete(() {
+          isLoggedIn = true;
+          Navigator.pushNamedAndRemoveUntil(
+              context, 'home', ModalRoute.withName('/'));
+        });
+      } else {
+        setState(() {
+          error = 'Connectez-vous en tant qu\'entreprise';
+        });
+      }
+    });
+  }
 
   Widget _entryFieldEmail(String title) {
     return Container(
@@ -109,19 +127,7 @@ class _SignInViewState extends State<SignInView> {
               _formKeyPassword.currentState.validate()) {
             Auth0API.login(_email, _password).then((isConnected) {
               if (isConnected) {
-                Request.getUser().whenComplete(() {
-                  if (user.companyId == null) {
-                    Request.getShoppingCard().whenComplete(() {
-                      isLoggedIn = true;
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, 'home', ModalRoute.withName('/'));
-                    });
-                  } else {
-                    setState(() {
-                      error = 'Connectez-vous en tant qu\'entreprise';
-                    });
-                  }
-                });
+                this.connection();
               } else {
                 setState(() {
                   error = 'Email ou mot de passe invalide';
@@ -162,13 +168,7 @@ class _SignInViewState extends State<SignInView> {
         onPressed: () {
           Auth0API.webAuth(SocialAuth_e.FACEBOOK).then((isConnected) {
             if (isConnected) {
-              Request.getUser().whenComplete(() {
-                Request.getShoppingCard().whenComplete(() {
-                  isLoggedIn = true;
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', ModalRoute.withName('/'));
-                });
-              });
+              connection();
             }
           });
         },
@@ -184,13 +184,7 @@ class _SignInViewState extends State<SignInView> {
         onPressed: () {
           Auth0API.webAuth(SocialAuth_e.GOOGLE).then((isConnected) {
             if (isConnected) {
-              Request.getUser().whenComplete(() {
-                Request.getShoppingCard().whenComplete(() {
-                  isLoggedIn = true;
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', ModalRoute.withName('/'));
-                });
-              });
+              connection();
             }
           });
         },

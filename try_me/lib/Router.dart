@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:fluro/fluro.dart';
+import 'package:fluro/fluro.dart' as fluro;
 
 import 'package:tryme/views/AuthentificationView.dart';
 import 'package:tryme/views/HomeView.dart';
+import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
@@ -13,32 +14,35 @@ import 'package:tryme/views/SignInView.dart';
 import 'package:tryme/views/SignUpView.dart';
 
 class FluroRouter {
-  static Router router = Router();
-  static Handler _authentificationHandler = Handler(
+  static fluro.Router router = fluro.Router();
+  static fluro.Handler _authentificationHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           AuthentificationView());
-  static Handler _homeHandler = Handler(
+  static fluro.Handler _homeHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           HomeView());
-  static Handler _ordersHandler = Handler(
+  static fluro.Handler _landingHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          LandingView());
+  static fluro.Handler _ordersHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrdersView(status: params['status'][0]));
-  static Handler _orderDeliveryOptionsHandler = Handler(
+  static fluro.Handler _orderDeliveryOptionsHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderDeliveryOptionsView());
-  static Handler _orderFinishedHandler = Handler(
+  static fluro.Handler _orderFinishedHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderFinishedView());
-  static Handler _productHandler = Handler(
+  static fluro.Handler _productHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
-  static Handler _shoppingCardHandler = Handler(
+  static fluro.Handler _shoppingCardHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ShoppingCardView());
-  static Handler _signInHandler = Handler(
+  static fluro.Handler _signInHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignInView());
-  static Handler _signUpHandler = Handler(
+  static fluro.Handler _signUpHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignUpView());
 
@@ -46,47 +50,52 @@ class FluroRouter {
     router.define(
       'authentification',
       handler: _authentificationHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'home',
       handler: _homeHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
+    );
+    router.define(
+      'landing',
+      handler: _landingHandler,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'orders/:status',
       handler: _ordersHandler,
-      transitionType: TransitionType.cupertinoFullScreenDialog,
+      transitionType: fluro.TransitionType.cupertinoFullScreenDialog,
     );
     router.define(
       'orderDeliveryOptions',
       handler: _orderDeliveryOptionsHandler,
-      transitionType: TransitionType.cupertinoFullScreenDialog,
+      transitionType: fluro.TransitionType.cupertinoFullScreenDialog,
     );
     router.define(
       'orderFinished',
       handler: _orderFinishedHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'product/:id',
       handler: _productHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'shoppingCard',
       handler: _shoppingCardHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'signIn',
       handler: _signInHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'signUp',
       handler: _signUpHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: fluro.TransitionType.cupertino,
     );
   }
 }

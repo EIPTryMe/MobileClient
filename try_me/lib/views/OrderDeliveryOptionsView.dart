@@ -6,6 +6,7 @@ import 'package:stripe_payment/stripe_payment.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 enum deliveryMethodOptions_e { FREE }
 
@@ -61,7 +62,7 @@ class _OrderDeliveryOptionsViewState extends State<OrderDeliveryOptionsView> {
         paymentMethodId: _paymentMethod.id,
       ),
     ).catchError(setError);
-    await Request.payOrder(result['order_id']);
+    /*await*/ Request.payOrder(result['order_id']);
     return (true);
   }
 
@@ -272,6 +273,7 @@ class _OrderDeliveryOptionsViewState extends State<OrderDeliveryOptionsView> {
                   ? null
                   : () {
                       if (_formKey.currentState.validate()) {
+                        Loading.showLoadingDialog(context);
                         checkout().then((succeed) {
                           if (succeed) {
                             shoppingCard.clear();

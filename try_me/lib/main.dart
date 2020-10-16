@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       child: CacheProvider(
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: 'home',
+          initialRoute: 'landing',
           //initialRoute: 'orderFinished',
           onGenerateRoute: FluroRouter.router.generator,
           supportedLocales: [

@@ -47,7 +47,8 @@ class Request {
             userSave.phoneNumber != null ? userSave.phoneNumber : "",
             userSave.birthDate)));
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
-    /*if (result.data != null)*/ {
+    /*if (result.data != null)*/
+    {
       user.firstName = userSave.firstName;
       user.lastName = userSave.lastName;
       user.address = userSave.address;
