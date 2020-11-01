@@ -11,7 +11,7 @@ class _LandingViewState extends State<LandingView> {
   int _seconds = 3;
 
   void viewTimeout() {
-    Navigator.pushNamed(context, 'home');
+    Navigator.popAndPushNamed(context, 'app');
   }
 
   @override

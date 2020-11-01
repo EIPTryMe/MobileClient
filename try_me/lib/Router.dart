@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart' as fluro;
 
 import 'package:tryme/views/AuthentificationView.dart';
-import 'package:tryme/views/HomeView.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
@@ -12,15 +11,16 @@ import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
 import 'package:tryme/views/SignUpView.dart';
+import 'package:tryme/widgets/App.dart';
 
 class FluroRouter {
   static fluro.Router router = fluro.Router();
+  static fluro.Handler _appHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          App());
   static fluro.Handler _authentificationHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           AuthentificationView());
-  static fluro.Handler _homeHandler = fluro.Handler(
-      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          HomeView());
   static fluro.Handler _landingHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           LandingView());
@@ -48,13 +48,13 @@ class FluroRouter {
 
   static void setupRouter() {
     router.define(
-      'authentification',
-      handler: _authentificationHandler,
+      'app',
+      handler: _appHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'home',
-      handler: _homeHandler,
+      'authentification',
+      handler: _authentificationHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(

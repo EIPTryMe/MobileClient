@@ -193,7 +193,7 @@ class _SignUpViewState extends State<SignUpView> {
                 Request.getShoppingCard();
                 isLoggedIn = true;
                 Navigator.pushNamedAndRemoveUntil(
-                    context, 'home', ModalRoute.withName('/'));
+                    context, 'app', ModalRoute.withName('/'));
               });
             }
           });
@@ -214,7 +214,7 @@ class _SignUpViewState extends State<SignUpView> {
                 Request.getShoppingCard();
                 isLoggedIn = true;
                 Navigator.pushNamedAndRemoveUntil(
-                    context, 'home', ModalRoute.withName('/'));
+                    context, 'app', ModalRoute.withName('/'));
               });
             }
           });
