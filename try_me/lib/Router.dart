@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:fluro/fluro.dart' as fluro;
 
+import 'package:tryme/App.dart';
 import 'package:tryme/views/AuthentificationView.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
@@ -11,7 +12,6 @@ import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
 import 'package:tryme/views/SignUpView.dart';
-import 'package:tryme/widgets/App.dart';
 
 class FluroRouter {
   static fluro.Router router = fluro.Router();

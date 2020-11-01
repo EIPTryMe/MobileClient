@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:tryme/Globals.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/views/HomeView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
@@ -70,7 +71,10 @@ class _AppState extends State<App> {
               ],
               onTap: (index) {
                 setState(() {
-                  _currentIndex = index;
+                  if (isLoggedIn == false && (index == 0 || index == 2))
+                    Navigator.pushNamed(context, 'authentification');
+                  else
+                    _currentIndex = index;
                 });
               },
             ),
