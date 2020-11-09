@@ -32,7 +32,7 @@ class _ProductViewState extends State<ProductView> {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.product(int.parse(widget.id))));
     graphQLConfiguration = GraphQLConfiguration();
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     if (this.mounted) {
       setState(() {
         product = QueryParse.getProduct(result.data['product'][0]);

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_auth0/flutter_auth0.dart';
 
 import 'package:tryme/Globals.dart' as global;
@@ -32,9 +30,6 @@ class Auth0API {
   }
 
   static Future<bool> login(String email, String password) async {
-    global.shoppingCard.clear();
-    global.auth0User = global.Auth0User();
-    global.user = global.User();
     try {
       var response = await auth0.auth.passwordRealm({
         'username': email,
@@ -61,7 +56,7 @@ class Auth0API {
       else if (socialAuth == SocialAuth_e.GOOGLE) connection = 'google-oauth2';
       var response = await auth0.webAuth.authorize({
         'connection': connection,
-        'scope': 'openid email offline_access',
+        'scope': 'openid profile email offline_access',
         'prompt': 'login',
       });
       DateTime now = DateTime.now();
@@ -84,15 +79,14 @@ class Auth0API {
           bearer: bearer);
       var info = await authClient.getUserInfo();
 
+      global.auth0User = global.Auth0User();
       global.auth0User.uid = info['sub'];
-      global.auth0User.username = info['nickname'];
       global.auth0User.picture = info['picture'];
-      global.auth0User.email = info['email'];
       global.auth0User.isEmailVerified = info['email_verified'];
 
-      String buffer = '';
-      await info.forEach((k, v) => buffer = '$buffer\n$k: $v');
-      print(buffer);
+      global.graphQLConfiguration.initClient(uid: global.auth0User.uid);
+
+      print(info);
 
       return (true);
     } catch (e) {

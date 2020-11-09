@@ -147,7 +147,7 @@ class _OrderDeliveryOptionsViewState extends State<OrderDeliveryOptionsView> {
             alignLeft: true,
           ),
           TextFormField(
-            initialValue: user.phoneNumber,
+            initialValue: user.phone,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(labelText: 'Numéro de téléphone'),
             inputFormatters: <TextInputFormatter>[

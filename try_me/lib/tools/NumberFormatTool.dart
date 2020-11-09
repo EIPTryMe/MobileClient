@@ -22,4 +22,16 @@ class NumberFormatTool {
           : formatIntegerRating.format(nb));
     return (null);
   }
+
+  static String formatDate({int day, int month}) {
+    NumberFormat formatDayMonth = NumberFormat("00");
+
+    if (day != null) {
+      return (formatDayMonth.format(day));
+    }
+    if (month != null) {
+      return (formatDayMonth.format(month));
+    }
+    return (null);
+  }
 }

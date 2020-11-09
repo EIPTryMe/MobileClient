@@ -12,9 +12,7 @@ class Request {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.shoppingCard(auth0User.uid)));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     QueryParse.getShoppingCard(result.data['user'][0]['cartsUid']);
   }
 
@@ -22,41 +20,69 @@ class Request {
     QueryResult result;
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.deleteShoppingCard(auth0User.uid, id)));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
   }
 
-  static Future getUser() async {
+  static Future<void> getUser() async {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     QueryParse.getUser(result.data['user'][0]);
   }
 
-  static Future modifyUser(User userSave) async {
+  static Future<bool> modifyUserFirstName(String firstName) async {
     QueryResult result;
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUser(
-            auth0User.uid,
-            userSave.lastName != null ? userSave.lastName : "",
-            userSave.firstName != null ? userSave.firstName : "",
-            userSave.address != null ? userSave.address : "",
-            userSave.email != null ? userSave.email : "",
-            userSave.phoneNumber != null ? userSave.phoneNumber : "",
-            userSave.birthDate)));
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
-    /*if (result.data != null)*/
-    {
-      user.firstName = userSave.firstName;
-      user.lastName = userSave.lastName;
-      user.address = userSave.address;
-      user.email = userSave.email;
-      user.phoneNumber = userSave.phoneNumber;
-      user.birthDate = userSave.birthDate;
-    }
-    return (result);
+        documentNode: gql(Mutations.modifyUserFirstName(
+            auth0User.uid, firstName != null ? firstName : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyUserName(String name) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(
+            Mutations.modifyUserName(auth0User.uid, name != null ? name : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyUserPhone(String phone) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(Mutations.modifyUserPhone(
+            auth0User.uid, phone != null ? phone : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyUserEmail(String email) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(Mutations.modifyUserEmail(
+            auth0User.uid, email != null ? email : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyUserBirthday(String birthday) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(Mutations.modifyUserBirthday(
+            auth0User.uid, birthday != null ? birthday : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyUserAddress(String address) async {
+    QueryResult result;
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(Mutations.modifyUserAddress(
+            auth0User.uid, address != null ? address : "")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    return (result.hasException);
   }
 
   static Future modifyProduct(Product product) async {
@@ -71,7 +97,7 @@ class Request {
             product.pricePerDay,
             product.stock,
             product.description.replaceAll('\n', '\\n'))));
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
   }
 
   static Future order(String currency, String city, String country,
@@ -80,9 +106,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.orderPayment(
             currency, city, country, address, postalCode)));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     return (result.data['orderPayment']);
   }
 
@@ -90,9 +114,7 @@ class Request {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Mutations.payOrder(orderId)));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
   }
 
   static Future getProducts(OrderBy orderBy, bool asc) async {
@@ -112,7 +134,7 @@ class Request {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.products(sort)));
     graphQLConfiguration = GraphQLConfiguration();
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     (result.data['product'] as List).forEach((element) {
       products.add(QueryParse.getProduct(element, productInfo_e.CARD));
     });
@@ -123,9 +145,7 @@ class Request {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Mutations.addProduct(id)));
-    result = await graphQLConfiguration
-        .getClientToQuery(auth0User.uid)
-        .query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
   }
 
   static Future<List<Order>> getOrders(String status) async {
@@ -133,10 +153,21 @@ class Request {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.orders(status)));
-    result = await graphQLConfiguration.clientToQuery.query(queryOption);
+    result = await graphQLConfiguration.client.value.query(queryOption);
     (result.data['order'] as List).forEach((element) {
       orders.add(QueryParse.getOrder(element));
     });
     return (orders);
+  }
+
+  static Future<int> getOrdersNumber() async {
+    int ordersNumber = 0;
+    QueryResult result;
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Queries.ordersNumber("")));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    if (!result.hasException)
+      ordersNumber = result.data['order_aggregate']['aggregate']['count'];
+    return (ordersNumber);
   }
 }

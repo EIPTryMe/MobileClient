@@ -5,17 +5,12 @@ import 'package:tryme/GraphQLConfiguration.dart';
 class Auth0User {
   Auth0User(
       {this.uid,
-      this.username,
       this.picture,
-      this.email,
       this.isEmailVerified});
 
   String uid;
-  String username;
   String picture;
-  String email;
   bool isEmailVerified = false;
-  bool webLogged = false;
 }
 
 class User {
@@ -24,19 +19,19 @@ class User {
       this.firstName,
       this.lastName,
       this.address,
-      this.phoneNumber,
+      this.phone,
       this.email,
       this.birthDate,
-      this.pathToAvatar});
+      this.picture});
 
   int id;
   String firstName;
   String lastName;
   String address;
-  String phoneNumber;
+  String phone;
   String email;
   String birthDate;
-  String pathToAvatar;
+  String picture;
   int companyId;
 }
 
