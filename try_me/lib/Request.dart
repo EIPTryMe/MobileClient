@@ -26,9 +26,17 @@ class Request {
   static Future<void> getUser() async {
     QueryResult result;
     QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
+    QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
     result = await graphQLConfiguration.client.value.query(queryOption);
     QueryParse.getUser(result.data['user'][0]);
+  }
+
+  static Future<void> getCategories() async {
+    QueryResult result;
+    QueryOptions queryOption =
+    QueryOptions(documentNode: gql(Queries.categories()));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    QueryParse.getCategories(result.data['category']);
   }
 
   static Future<bool> modifyUserFirstName(String firstName) async {

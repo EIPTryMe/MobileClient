@@ -92,6 +92,15 @@ class QueryParse {
     order.total = total;
     return (order);
   }
+
+  static void getCategories(List result) {
+    result.forEach((element) {
+      Category category = Category();
+      category.name = element['name'];
+      category.picture = element['image'];
+      categories.add(category);
+    });
+  }
 }
 
 class Mutations {
@@ -314,6 +323,15 @@ class Queries {
       phone
       email
       company_id
+    }
+  }
+  ''';
+
+  static String categories() => '''
+  query {
+    category {
+      name
+      image
     }
   }
   ''';

@@ -25,7 +25,7 @@ class _AppState extends State<App> {
 
     return Scaffold(
       backgroundColor: Styles.colors.background,
-      body: _widgets[_currentIndex],
+      body: SafeArea(child: _widgets[_currentIndex]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(_radius)),

@@ -100,6 +100,13 @@ class Order {
   List<Product> products;
 }
 
+class Category {
+  Category({this.name, this.picture});
+
+  String name;
+  String picture;
+}
+
 GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
 
 bool isLoggedIn = false;
@@ -107,4 +114,5 @@ bool isLoggedIn = false;
 Auth0User auth0User = Auth0User();
 User user = User();
 
+List<Category> categories = List();
 List<Cart> shoppingCard = List();

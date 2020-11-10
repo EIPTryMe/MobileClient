@@ -200,7 +200,6 @@ class _ProductCardState extends State<ProductCard> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                splashColor: Colors.white10,
                 onTap: () => Navigator.pushNamed(
                     context, 'product/${widget.product.id}'),
               ),
