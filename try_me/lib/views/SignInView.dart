@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
-import 'package:tryme/widgets/Loading.dart';
 
 class SignInView extends StatefulWidget {
   @override
@@ -20,8 +20,21 @@ class _SignInViewState extends State<SignInView> {
   var _password;
   String error = '';
 
+  @override
+  void initState() {
+    super.initState();
+    EasyLoading.instance.userInteractions = false;
+  }
+
+  void showLoading() {
+    EasyLoading.show(
+      status: 'Chargement...',
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
   void connection() {
-    Loading.showLoadingDialog(context);
+    showLoading();
     Request.getUser().whenComplete(() {
       if (user.companyId == null) {
         Request.getShoppingCard().whenComplete(() {
@@ -127,7 +140,7 @@ class _SignInViewState extends State<SignInView> {
               _formKeyPassword.currentState.validate()) {
             Auth0API.login(_email, _password).then((isConnected) {
               if (isConnected) {
-                this.connection();
+                connection();
               } else {
                 setState(() {
                   error = 'Email ou mot de passe invalide';
@@ -195,51 +208,54 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: height,
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _iDPasswordWidget(),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      child: Text(
-                        error,
-                        style: TextStyle(color: Colors.red),
+
+    return FlutterEasyLoading(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            height: height,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _iDPasswordWidget(),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Text(
+                          error,
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
-                    ),
-                    _submitButton(),
-                  ],
+                      _submitButton(),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _facebookButton(),
-                    Divider(),
-                    _googleButton(),
-                  ],
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _facebookButton(),
+                      Divider(),
+                      _googleButton(),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _loginAccountLabel(),
+                Expanded(
+                  flex: 1,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: _loginAccountLabel(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

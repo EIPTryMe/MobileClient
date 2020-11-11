@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/views/HomeView.dart';
@@ -7,6 +9,10 @@ import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/UserInformationView.dart';
 
 class App extends StatefulWidget {
+  App({this.index});
+
+  final String index;
+
   @override
   _AppState createState() => _AppState();
 }
@@ -18,11 +24,16 @@ class _AppState extends State<App> {
     UserInformationView(),
   ];
   int _currentIndex = 1;
+  double _radius = 25;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.index != null) _currentIndex = int.parse(widget.index);
+  }
 
   @override
   Widget build(BuildContext context) {
-    double _radius = 25;
-
     return Scaffold(
       backgroundColor: Styles.colors.background,
       body: SafeArea(child: _widgets[_currentIndex]),

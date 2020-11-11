@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -14,6 +12,7 @@ import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+import 'package:tryme/tools/AddressTool.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
 import 'package:tryme/tools/Validator.dart';
 
@@ -68,16 +67,12 @@ class _UserInformationViewState extends State<UserInformationView> {
 
     KeyboardVisibility.onChange.listen((bool visible) {
       if (!visible) {
-        _firstNameFocusNode.unfocus();
-        _nameFocusNode.unfocus();
-        _phoneFocusNode.unfocus();
-        _emailFocusNode.unfocus();
+        unFocusAll();
       }
     });
 
-    if (user.birthDate != null)
-      _currentBirthday = DateTime.parse(user.birthDate);
-    _currentAddress = user.address;
+    if (user.birthday != null) _currentBirthday = DateTime.parse(user.birthday);
+    _currentAddress = user.address.fullAddress.addressLine;
   }
 
   @override
@@ -92,6 +87,13 @@ class _UserInformationViewState extends State<UserInformationView> {
     _phoneFocusNode.dispose();
     _emailFocusNode.dispose();
     super.dispose();
+  }
+
+  void unFocusAll() {
+    _firstNameFocusNode.unfocus();
+    _nameFocusNode.unfocus();
+    _phoneFocusNode.unfocus();
+    _emailFocusNode.unfocus();
   }
 
   void getData() async {
@@ -159,21 +161,26 @@ class _UserInformationViewState extends State<UserInformationView> {
   }
 
   void saveBirthday(String str) {
-    if (str == user.birthDate) return;
+    if (str == user.birthday) return;
     Request.modifyUserBirthday(str).then((hasException) {
       setState(() {
-        user.birthDate = hasException ? user.birthDate : str;
+        user.birthday = hasException ? user.birthday : str;
       });
       showSnackBarMessage(
           hasException ? 'Erreur' : 'Date de naissance sauvegardée');
     });
   }
 
-  void saveAddress(String str) {
-    if (str == user.address) return;
-    Request.modifyUserAddress(str).then((hasException) {
+  void saveAddress(Address address) async {
+    Request.modifyUserAddress(
+            '${address.subThoroughfare} ${address.thoroughfare}',
+            address.postalCode,
+            address.locality,
+            address.countryName)
+        .then((hasException) {
       setState(() {
-        user.address = hasException ? user.address : str;
+        user.address.fullAddress =
+            hasException ? user.address.fullAddress : address;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Adresse sauvegardée');
     });
@@ -204,26 +211,20 @@ class _UserInformationViewState extends State<UserInformationView> {
     );
   }
 
-  Future getAddress(String address) async {
-    bool error = false;
-    List<Address> addresses =
-        await Geocoder.local.findAddressesFromQuery(address).catchError((_) {
-      error = true;
-    });
-    Address first;
+  Future getAddress(String str) async {
+    Address address = await AddressTool.getAddressFromString(str);
 
-    if (error == false) first = addresses.first;
     LocationResult locationResult = await showLocationPicker(
       context,
-      'AIzaSyBOfQxDPTnCGCVw-OMy4yt4Iy9LgMCKbcQ',
-      automaticallyAnimateToCurrentLocation: error == true ? true : false,
-      initialCenter: error == true
+      mapApiKey,
+      automaticallyAnimateToCurrentLocation: address == null ? true : false,
+      initialCenter: address == null
           ? LatLng(48.8589507, 2.2770205) // Paris
-          : LatLng(first.coordinates.latitude, first.coordinates.longitude),
+          : LatLng(address.coordinates.latitude, address.coordinates.longitude),
       myLocationButtonEnabled: true,
       desiredAccuracy: LocationAccuracy.best,
     );
-    return (locationResult.address);
+    return (await AddressTool.getAddressFromString(locationResult.address));
   }
 
   void disconnect(BuildContext context) {
@@ -265,7 +266,8 @@ class _UserInformationViewState extends State<UserInformationView> {
                   child: Padding(
                     padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(user.picture),
+                      backgroundImage: NetworkImage(
+                          user.picture != null ? user.picture : ""),
                     ),
                   ),
                 ),
@@ -550,6 +552,7 @@ class _UserInformationViewState extends State<UserInformationView> {
             iconBackground: _iconColor2,
             widget: GestureDetector(
               onTap: () {
+                unFocusAll();
                 DatePicker.showDatePicker(
                   context,
                   showTitleActions: true,
@@ -560,7 +563,7 @@ class _UserInformationViewState extends State<UserInformationView> {
                     saveBirthday(
                         '${date.year}-${NumberFormatTool.formatDate(month: date.month)}-${NumberFormatTool.formatDate(day: date.day)}');
                   },
-                  currentTime: DateTime.parse(user.birthDate),
+                  currentTime: DateTime.parse(user.birthday),
                 );
               },
               child: Container(
@@ -593,11 +596,13 @@ class _UserInformationViewState extends State<UserInformationView> {
             iconBackground: _iconColor3,
             widget: GestureDetector(
               onTap: () {
+                unFocusAll();
                 if (!lock) {
                   lock = true;
-                  getAddress(user.address).then((address) {
+                  getAddress(user.address.fullAddress.addressLine)
+                      .then((address) {
                     lock = false;
-                    setState(() => _currentAddress = address);
+                    setState(() => _currentAddress = address.addressLine);
                     saveAddress(address);
                   }).catchError((_) {
                     lock = false;

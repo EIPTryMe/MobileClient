@@ -1,42 +1,44 @@
 import 'package:tryme/Globals.dart';
+import 'package:tryme/tools/AddressTool.dart';
 
 enum productInfo_e { CARD }
 
 class QueryParse {
-  static void getUser(Map result) {
+  static Future getUser(Map result) async {
     user = User();
-    user.id = result['id'];
-    user.firstName = result['first_name'];
-    user.lastName = result['name'];
-    user.address = result['address'];
-    user.phone = result['phone'];
-    user.email = result['email'];
-    user.birthDate = result['birth_date'];
+    if (user.picture == null) print('fuck');
+    if (result['id'] != null) user.id = result['id'];
+    if (result['first_name'] != null) user.firstName = result['first_name'];
+    if (result['name'] != null) user.lastName = result['name'];
+    if (result['address'] != null) user.address.street = result['address'];
+    if (result['city'] != null) user.address.city = result['city'];
+    //if (result['postcode'] != null) user.address.postCode = result['postcode'];
+    if (result['country'] != null) user.address.country = result['country'];
+    user.address.fullAddress = await AddressTool.getAddressFromString('${user.address.street} ${user.address.postCode} ${user.address.city} ${user.address.country}');
+    if (result['phone'] != null) user.phone = result['phone'];
+    if (result['email'] != null) user.email = result['email'];
+    if (result['birth_date'] != null) user.birthday = result['birth_date'];
     user.companyId = result['company_id'];
     user.picture = auth0User.picture;
   }
 
   static Product getProduct(Map result, [productInfo_e productInfo]) {
     Product product = Product();
-    product.id = result['id'];
-    product.name = result['name'];
-    product.brand = result['brand'];
-    product.stock = result['stock'];
-    product.pricePerDay = result['price_per_day'] != null
-        ? result['price_per_day'].toDouble()
-        : null;
-    product.pricePerWeek = result['price_per_week'] != null
-        ? result['price_per_week'].toDouble()
-        : null;
-    product.pricePerMonth = result['price_per_month'] != null
-        ? result['price_per_month'].toDouble()
-        : null;
-    product.stock = result['stock'];
+    if (result['id'] != null) product.id = result['id'];
+    if (result['name'] != null) product.name = result['name'];
+    if (result['brand'] != null) product.brand = result['brand'];
+    if (result['stock'] != null) product.stock = result['stock'];
+    if (result['price_per_month'] != null)
+      product.pricePerMonth = result['price_per_month'] != null
+          ? result['price_per_month'].toDouble()
+          : null;
+    if (result['stock'] != null) product.stock = result['stock'];
     if (productInfo != productInfo_e.CARD) {
-      product.description = result['description'];
-      product.specifications = result['product_specifications'];
+      if (result['description'] != null)
+        product.description = result['description'];
+      if (result['product_specifications'] != null)
+        product.specifications = result['product_specifications'];
     }
-    product.reviews = Reviews(reviews: List());
     (result['reviews'] as List).forEach((element) {
       product.reviews.reviews.add(productInfo != productInfo_e.CARD
           ? Review(
@@ -46,7 +48,6 @@ class QueryParse {
     });
     product.reviews.computeAverageRating();
     if (result['picture'] != null) {
-      product.pictures = List();
       product.pictures.add(result['picture']['url']);
     }
     return (product);
@@ -56,23 +57,22 @@ class QueryParse {
     shoppingCard.clear();
     result.forEach((element) {
       Product product = Product();
-      product.id = element['product']['id'];
-      product.name = element['product']['name'];
-      product.pricePerDay = element['product']['price_per_day'] != null
-          ? element['product']['price_per_day'].toDouble()
-          : null;
-      product.pricePerWeek = element['product']['price_per_week'] != null
-          ? element['product']['price_per_week'].toDouble()
-          : null;
-      product.pricePerMonth = element['product']['price_per_month'] != null
-          ? element['product']['price_per_month'].toDouble()
-          : null;
-      if (element['product']['picture'] != null) {
-        product.pictures = List();
-        product.pictures.add(element['product']['picture']['url']);
+      if (element['product'] != null) {
+        if (element['product']['id'] != null)
+          product.id = element['product']['id'];
+        if (element['product']['name'] != null)
+          product.name = element['product']['name'];
+        if (element['product']['price_per_month'] != null)
+          product.pricePerMonth =
+              element['product']['price_per_month'].toDouble();
+        if (element['product']['picture'] != null) {
+          product.pictures = List();
+          if (element['product']['picture']['url'] != null)
+            product.pictures.add(element['product']['picture']['url']);
+        }
+        Cart cart = Cart(product: product);
+        shoppingCard.add(cart);
       }
-      Cart cart = Cart(product: product);
-      shoppingCard.add(cart);
     });
   }
 
@@ -81,8 +81,11 @@ class QueryParse {
     List<Product> products = List();
     double total = 0;
 
-    order.id = result['id'];
-    order.status = result['order_statuses'][0]['status'];
+    if (result['id'] != null) order.id = result['id'];
+    if (result['order_statuses'] != null &&
+        (result['order_statuses'] as List).isNotEmpty &&
+        result['order_statuses'][0]['status'] != null)
+      order.status = result['order_statuses'][0]['status'];
 
     (result['order_items'] as List).forEach((element) {
       products.add(getProduct(element['product']));
@@ -96,8 +99,8 @@ class QueryParse {
   static void getCategories(List result) {
     result.forEach((element) {
       Category category = Category();
-      category.name = element['name'];
-      category.picture = element['image'];
+      if (element['name'] != null) category.name = element['name'];
+      if (element['image'] != null) category.picture = element['image'];
       categories.add(category);
     });
   }
@@ -160,26 +163,21 @@ class Mutations {
   }
   ''';
 
-  static String modifyUserAddress(String uid, String address) => '''
+  static String modifyUserAddress(String uid, String street, String postcode,
+          String city, String country) =>
+      '''
   mutation {
-    update_user(where: {uid: {_eq: "$uid"}}, _set: {address: "$address"}) {
+    update_user(where: {uid: {_eq: "$uid"}}, _set: {address: "$street", postcode: "$postcode", city: "$city", country: "$country"}) {
       affected_rows
     }
   }
   ''';
 
-  static String modifyProduct(
-          int id,
-          String title,
-          String brand,
-          double monthPrice,
-          double weekPrice,
-          double dayPrice,
-          int stock,
-          String description) =>
+  static String modifyProduct(int id, String title, String brand,
+          double monthPrice, int stock, String description) =>
       '''
   mutation {
-    update_product(_set: {name: "$title", brand: "$brand", price_per_month: "$monthPrice", price_per_week: "$weekPrice", price_per_day: "$dayPrice", stock: $stock, description: "$description"}, where: {id: {_eq: $id}}) {
+    update_product(_set: {name: "$title", brand: "$brand", price_per_month: "$monthPrice", stock: $stock, description: "$description"}, where: {id: {_eq: $id}}) {
       affected_rows
     }
   }
@@ -236,17 +234,29 @@ class Queries {
   query {
     product($sort) {
       id
-      name
       brand
-      price_per_week
+      name
       price_per_month
-      price_per_day
       stock
       picture {
         url
       }
       reviews {
         score
+      }
+    }
+  }
+  ''';
+
+  static String productsSearch(String keyword) => '''
+  query {
+    product(where: {name: {_ilike: "%$keyword%"}}) {
+      id
+      brand
+      name
+      price_per_month
+      picture {
+        url
       }
     }
   }
@@ -319,6 +329,9 @@ class Queries {
       first_name
       name
       address
+      city
+      country
+      postcode
       birth_date
       phone
       email

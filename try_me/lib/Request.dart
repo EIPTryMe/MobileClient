@@ -26,15 +26,15 @@ class Request {
   static Future<void> getUser() async {
     QueryResult result;
     QueryOptions queryOption =
-    QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
+        QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
     result = await graphQLConfiguration.client.value.query(queryOption);
-    QueryParse.getUser(result.data['user'][0]);
+    await QueryParse.getUser(result.data['user'][0]);
   }
 
   static Future<void> getCategories() async {
     QueryResult result;
     QueryOptions queryOption =
-    QueryOptions(documentNode: gql(Queries.categories()));
+        QueryOptions(documentNode: gql(Queries.categories()));
     result = await graphQLConfiguration.client.value.query(queryOption);
     QueryParse.getCategories(result.data['category']);
   }
@@ -84,11 +84,12 @@ class Request {
     return (result.hasException);
   }
 
-  static Future<bool> modifyUserAddress(String address) async {
+  static Future<bool> modifyUserAddress(
+      String street, String postcode, String city, String country) async {
     QueryResult result;
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserAddress(
-            auth0User.uid, address != null ? address : "")));
+            auth0User.uid, street, postcode, city, country)));
     result = await graphQLConfiguration.client.value.query(queryOption);
     return (result.hasException);
   }
@@ -101,8 +102,6 @@ class Request {
             product.name,
             product.brand,
             product.pricePerMonth,
-            product.pricePerWeek,
-            product.pricePerDay,
             product.stock,
             product.description.replaceAll('\n', '\\n'))));
     result = await graphQLConfiguration.client.value.query(queryOption);

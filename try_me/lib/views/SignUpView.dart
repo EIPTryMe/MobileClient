@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
@@ -19,6 +20,28 @@ class _SignUpViewState extends State<SignUpView> {
   var _password;
   var _confirmPassword;
   String error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    EasyLoading.instance.userInteractions = false;
+  }
+
+  void showLoading() {
+    EasyLoading.show(
+      status: 'Chargement...',
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
+  void connection() {
+    showLoading();
+    Request.getUser().whenComplete(() {
+      isLoggedIn = true;
+      Navigator.pushNamedAndRemoveUntil(
+          context, 'app/2', ModalRoute.withName('/'));
+    });
+  }
 
   Widget _entryFieldEmail(String title) {
     return Container(
@@ -143,14 +166,7 @@ class _SignUpViewState extends State<SignUpView> {
               _formKeyConfirmPassword.currentState.validate()) {
             Auth0API.register(_email, _password).then((isConnected) {
               if (isConnected) {
-                Request.getUser().whenComplete(() {
-                  isLoggedIn = true;
-                  Navigator.popUntil(context, ModalRoute.withName('home'));
-                  Navigator.pushNamed(
-                      //context, 'personalInformationAfterInscription');
-                      context,
-                      'personalInformation');
-                });
+                connection();
               }
             });
           }
@@ -189,12 +205,7 @@ class _SignUpViewState extends State<SignUpView> {
         onPressed: () {
           Auth0API.webAuth(SocialAuth_e.FACEBOOK).then((isConnected) {
             if (isConnected) {
-              Request.getUser().whenComplete(() {
-                Request.getShoppingCard();
-                isLoggedIn = true;
-                Navigator.pushNamedAndRemoveUntil(
-                    context, 'app', ModalRoute.withName('/'));
-              });
+              connection();
             }
           });
         },
@@ -210,12 +221,7 @@ class _SignUpViewState extends State<SignUpView> {
         onPressed: () {
           Auth0API.webAuth(SocialAuth_e.GOOGLE).then((isConnected) {
             if (isConnected) {
-              Request.getUser().whenComplete(() {
-                Request.getShoppingCard();
-                isLoggedIn = true;
-                Navigator.pushNamedAndRemoveUntil(
-                    context, 'app', ModalRoute.withName('/'));
-              });
+              connection();
             }
           });
         },
@@ -226,51 +232,53 @@ class _SignUpViewState extends State<SignUpView> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: height,
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _iDPasswordWidget(),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      child: Text(
-                        error,
-                        style: TextStyle(color: Colors.red),
+    return FlutterEasyLoading(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            height: height,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _iDPasswordWidget(),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Text(
+                          error,
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
-                    ),
-                    _submitButton(),
-                  ],
+                      _submitButton(),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _facebookButton(),
-                    Divider(),
-                    _googleButton(),
-                  ],
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _facebookButton(),
+                      Divider(),
+                      _googleButton(),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _createAccountLabel(),
+                Expanded(
+                  flex: 1,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: _createAccountLabel(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

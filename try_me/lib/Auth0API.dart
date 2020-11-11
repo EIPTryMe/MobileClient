@@ -80,9 +80,10 @@ class Auth0API {
       var info = await authClient.getUserInfo();
 
       global.auth0User = global.Auth0User();
-      global.auth0User.uid = info['sub'];
-      global.auth0User.picture = info['picture'];
-      global.auth0User.isEmailVerified = info['email_verified'];
+      if (info['sub'] != null) global.auth0User.uid = info['sub'];
+      if (info['picture'] != null) global.auth0User.picture = info['picture'];
+      if (info['email_verified'] != null)
+        global.auth0User.isEmailVerified = info['email_verified'];
 
       global.graphQLConfiguration.initClient(uid: global.auth0User.uid);
 

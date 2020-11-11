@@ -9,7 +9,6 @@ import 'package:tryme/GraphQLConfiguration.dart';
 import 'package:tryme/Queries.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
-import 'package:tryme/widgets/Loading.dart';
 
 class ProductView extends StatefulWidget {
   ProductView({this.id});
@@ -42,7 +41,6 @@ class _ProductViewState extends State<ProductView> {
 
   void addProduct(BuildContext context) async {
     if (auth0User.uid == null) return;
-    Loading.showLoadingDialog(context);
     Request.addProductShoppingCard(int.parse(widget.id)).whenComplete(() {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -50,7 +48,6 @@ class _ProductViewState extends State<ProductView> {
           textAlign: TextAlign.center,
         ),
       ));
-      Loading.closeLoadingDialog();
     });
     //Request.getShoppingCard();
   }

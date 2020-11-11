@@ -6,7 +6,6 @@ import 'package:stripe_payment/stripe_payment.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
-import 'package:tryme/widgets/Loading.dart';
 
 enum deliveryMethodOptions_e { FREE }
 
@@ -21,7 +20,7 @@ class _OrderDeliveryOptionsViewState extends State<OrderDeliveryOptionsView> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   GlobalKey<FormState> _formKey = GlobalKey();
   PaymentMethod _paymentMethod;
-  final _addressController = TextEditingController(text: user.address);
+  final _addressController = TextEditingController(text: user.address.street);
   final _cityController = TextEditingController();
   final _postalCodeController = TextEditingController();
   String _country = '';
@@ -273,7 +272,6 @@ class _OrderDeliveryOptionsViewState extends State<OrderDeliveryOptionsView> {
                   ? null
                   : () {
                       if (_formKey.currentState.validate()) {
-                        Loading.showLoadingDialog(context);
                         checkout().then((succeed) {
                           if (succeed) {
                             shoppingCard.clear();

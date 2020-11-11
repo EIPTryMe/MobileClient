@@ -16,6 +16,9 @@ import 'package:tryme/views/SignUpView.dart';
 
 class FluroRouter {
   static fluro.Router router = fluro.Router();
+  static fluro.Handler _appIndexHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          App(index: params['index'][0]));
   static fluro.Handler _appHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           App());
@@ -51,6 +54,11 @@ class FluroRouter {
           SignUpView());
 
   static void setupRouter() {
+    router.define(
+      'app/:index',
+      handler: _appIndexHandler,
+      transitionType: fluro.TransitionType.cupertino,
+    );
     router.define(
       'app',
       handler: _appHandler,

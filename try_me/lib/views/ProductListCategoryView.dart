@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 class ProductListCategoryView extends StatefulWidget {
   ProductListCategoryView({this.category});
 
