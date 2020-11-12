@@ -12,7 +12,7 @@ class QueryParse {
     if (result['name'] != null) user.lastName = result['name'];
     if (result['address'] != null) user.address.street = result['address'];
     if (result['city'] != null) user.address.city = result['city'];
-    //if (result['postcode'] != null) user.address.postCode = result['postcode'];
+    if (result['postcode'] != null) user.address.postCode = result['postcode'];
     if (result['country'] != null) user.address.country = result['country'];
     user.address.fullAddress = await AddressTool.getAddressFromString('${user.address.street} ${user.address.postCode} ${user.address.city} ${user.address.country}');
     if (result['phone'] != null) user.phone = result['phone'];

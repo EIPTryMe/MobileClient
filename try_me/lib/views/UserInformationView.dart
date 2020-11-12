@@ -172,6 +172,7 @@ class _UserInformationViewState extends State<UserInformationView> {
   }
 
   void saveAddress(Address address) async {
+    if (address.addressLine == user.address.fullAddress.addressLine) return;
     Request.modifyUserAddress(
             '${address.subThoroughfare} ${address.thoroughfare}',
             address.postalCode,
@@ -179,8 +180,7 @@ class _UserInformationViewState extends State<UserInformationView> {
             address.countryName)
         .then((hasException) {
       setState(() {
-        user.address.fullAddress =
-            hasException ? user.address.fullAddress : address;
+        user.address.fullAddress = hasException ? user.address.fullAddress : address;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Adresse sauvegardée');
     });
