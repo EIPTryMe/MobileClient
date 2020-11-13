@@ -25,18 +25,16 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _categoryCard(Category category, int index) {
-    double radius = 25.0;
-
     return Stack(
       children: [
         index == 0
             ? Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(radius)),
+                  borderRadius: BorderRadius.circular(Styles.cardRadius),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
+                  borderRadius: BorderRadius.circular(Styles.cardRadius),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Row(
@@ -72,10 +70,10 @@ class _HomeViewState extends State<HomeView> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(radius),
+                        borderRadius: BorderRadius.circular(Styles.cardRadius),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(radius),
+                        borderRadius: BorderRadius.circular(Styles.cardRadius),
                         child: Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: Image(
@@ -102,7 +100,7 @@ class _HomeViewState extends State<HomeView> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(radius),
+              borderRadius: BorderRadius.circular(Styles.cardRadius),
               onTap: () => Navigator.pushNamed(
                   context, 'productListCategory/${category.name}'),
             ),
@@ -115,7 +113,7 @@ class _HomeViewState extends State<HomeView> {
   Widget _listCategories() {
     return Expanded(
       child: StaggeredGridView.countBuilder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
         crossAxisCount: 4,
         mainAxisSpacing: 16.0,
         crossAxisSpacing: 12.0,

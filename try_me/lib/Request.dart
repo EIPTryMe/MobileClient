@@ -124,26 +124,14 @@ class Request {
     result = await graphQLConfiguration.client.value.query(queryOption);
   }
 
-  static Future getProducts(OrderBy orderBy, bool asc) async {
+  static Future<List<Product>> getProducts(String category) async {
     List<Product> products = List();
-    String sort = '';
-
-    if (orderBy == OrderBy.PRICE)
-      sort = 'order_by: {price_per_month: ' +
-          (asc ? 'asc' : 'desc') +
-          ', name: asc}';
-    else if (orderBy == OrderBy.NEW)
-      sort = 'order_by: {created_at: ' + (asc ? 'asc' : 'desc') + '}';
-    else if (orderBy == OrderBy.NAME)
-      sort = 'order_by: {name: ' + (asc ? 'asc' : 'desc') + '}';
-
     QueryResult result;
     QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.products(sort)));
-    graphQLConfiguration = GraphQLConfiguration();
+    QueryOptions(documentNode: gql(Queries.products(category)));
     result = await graphQLConfiguration.client.value.query(queryOption);
     (result.data['product'] as List).forEach((element) {
-      products.add(QueryParse.getProduct(element, productInfo_e.CARD));
+      products.add(QueryParse.getProduct(element));
     });
     return (products);
   }

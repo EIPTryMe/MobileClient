@@ -371,7 +371,7 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   Widget _myOrders() {
     return Container(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       color: Styles.colors.lightBackground,
       child: _input(
         icon: Icons.favorite,
@@ -429,7 +429,7 @@ class _UserInformationViewState extends State<UserInformationView> {
 
     return Container(
       color: Styles.colors.lightBackground,
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       child: Column(
         children: [
           _input(

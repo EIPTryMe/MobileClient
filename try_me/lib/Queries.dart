@@ -14,7 +14,8 @@ class QueryParse {
     if (result['city'] != null) user.address.city = result['city'];
     if (result['postcode'] != null) user.address.postCode = result['postcode'];
     if (result['country'] != null) user.address.country = result['country'];
-    user.address.fullAddress = await AddressTool.getAddressFromString('${user.address.street} ${user.address.postCode} ${user.address.city} ${user.address.country}');
+    user.address.fullAddress = await AddressTool.getAddressFromString(
+        '${user.address.street} ${user.address.postCode} ${user.address.city} ${user.address.country}');
     if (result['phone'] != null) user.phone = result['phone'];
     if (result['email'] != null) user.email = result['email'];
     if (result['birth_date'] != null) user.birthday = result['birth_date'];
@@ -24,6 +25,7 @@ class QueryParse {
 
   static Product getProduct(Map result, [productInfo_e productInfo]) {
     Product product = Product();
+
     if (result['id'] != null) product.id = result['id'];
     if (result['name'] != null) product.name = result['name'];
     if (result['brand'] != null) product.brand = result['brand'];
@@ -39,14 +41,16 @@ class QueryParse {
       if (result['product_specifications'] != null)
         product.specifications = result['product_specifications'];
     }
-    (result['reviews'] as List).forEach((element) {
-      product.reviews.reviews.add(productInfo != productInfo_e.CARD
-          ? Review(
-              score: element['score'].toDouble(),
-              description: element['description'])
-          : Review(score: element['score'].toDouble()));
-    });
-    product.reviews.computeAverageRating();
+    if (result['reviews'] != null) {
+      (result['reviews'] as List).forEach((element) {
+        product.reviews.reviews.add(productInfo != productInfo_e.CARD
+            ? Review(
+                score: element['score'].toDouble(),
+                description: element['description'])
+            : Review(score: element['score'].toDouble()));
+      });
+      product.reviews.computeAverageRating();
+    }
     if (result['picture'] != null) {
       product.pictures.add(result['picture']['url']);
     }
@@ -230,19 +234,14 @@ class Queries {
   }
   ''';
 
-  static String products(String sort) => '''
+  static String products(String category) => '''
   query {
-    product($sort) {
+    product(where: {category: {name: {_eq: "$category"}}}) {
       id
-      brand
       name
       price_per_month
-      stock
       picture {
         url
-      }
-      reviews {
-        score
       }
     }
   }
