@@ -10,6 +10,7 @@ import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
 import 'package:tryme/views/ProductListCategoryView.dart';
 import 'package:tryme/views/ProductView.dart';
+import 'package:tryme/views/SearchResultView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
 import 'package:tryme/views/SignUpView.dart';
@@ -43,6 +44,9 @@ class FluroRouter {
   static fluro.Handler _productHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
+  static fluro.Handler _searchResultHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          SearchResultView(keywords: params['keywords'][0]));
   static fluro.Handler _shoppingCardHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ShoppingCardView());
@@ -97,6 +101,11 @@ class FluroRouter {
     router.define(
       'product/:id',
       handler: _productHandler,
+      transitionType: fluro.TransitionType.cupertino,
+    );
+    router.define(
+      'searchResult/:keywords',
+      handler: _searchResultHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(

@@ -26,7 +26,7 @@ class _SignInViewState extends State<SignInView> {
     EasyLoading.instance.userInteractions = false;
   }
 
-  void showLoading() {
+  void showLoading() async {
     EasyLoading.show(
       status: 'Chargement...',
       maskType: EasyLoadingMaskType.black,

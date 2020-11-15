@@ -247,11 +247,10 @@ class Queries {
   }
   ''';
 
-  static String productsSearch(String keyword) => '''
+  static String productsSearch(String keywords) => '''
   query {
-    product(where: {name: {_ilike: "%$keyword%"}}) {
+    product(where: {name: {_ilike: "%$keywords%"}}) {
       id
-      brand
       name
       price_per_month
       picture {

@@ -15,6 +15,7 @@ import 'package:tryme/Styles.dart';
 import 'package:tryme/tools/AddressTool.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
 import 'package:tryme/tools/Validator.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 class UserInformationView extends StatefulWidget {
   @override
@@ -37,6 +38,7 @@ class _UserInformationViewState extends State<UserInformationView> {
   Color _iconColor2 = Color(0xFF39FEBF);
   Color _iconColor3 = Styles.colors.main;
   int _ordersNumber = 0;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -119,9 +121,11 @@ class _UserInformationViewState extends State<UserInformationView> {
   void saveFirstName(String str) {
     if (str == user.firstName) return;
     if (Validator.nameValidator(str) != null) return;
+    setState(() => _loading = true);
     Request.modifyUserFirstName(str).then((hasException) {
       setState(() {
         user.firstName = hasException ? user.firstName : str;
+        _loading = false;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Prénom sauvegardé');
     });
@@ -130,9 +134,11 @@ class _UserInformationViewState extends State<UserInformationView> {
   void saveName(String str) {
     if (str == user.lastName) return;
     if (Validator.nameValidator(str) != null) return;
+    setState(() => _loading = true);
     Request.modifyUserName(str).then((hasException) {
       setState(() {
         user.lastName = hasException ? user.lastName : str;
+        _loading = false;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Nom sauvegardé');
     });
@@ -141,9 +147,11 @@ class _UserInformationViewState extends State<UserInformationView> {
   void savePhone(String str) {
     if (str == user.phone) return;
     if (Validator.phoneValidator(str) != null) return;
+    setState(() => _loading = true);
     Request.modifyUserPhone(str).then((hasException) {
       setState(() {
         user.phone = hasException ? user.phone : str;
+        _loading = false;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Téléphone sauvegardé');
     });
@@ -152,9 +160,11 @@ class _UserInformationViewState extends State<UserInformationView> {
   void saveEmail(String str) {
     if (Validator.emailValidator(str) != null) return;
     if (str == user.email) return;
+    setState(() => _loading = true);
     Request.modifyUserEmail(str).then((hasException) {
       setState(() {
         user.email = hasException ? user.email : str;
+        _loading = false;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Email sauvegardé');
     });
@@ -162,9 +172,11 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   void saveBirthday(String str) {
     if (str == user.birthday) return;
+    setState(() => _loading = true);
     Request.modifyUserBirthday(str).then((hasException) {
       setState(() {
         user.birthday = hasException ? user.birthday : str;
+        _loading = false;
       });
       showSnackBarMessage(
           hasException ? 'Erreur' : 'Date de naissance sauvegardée');
@@ -173,6 +185,7 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   void saveAddress(Address address) async {
     if (address.addressLine == user.address.fullAddress.addressLine) return;
+    setState(() => _loading = true);
     Request.modifyUserAddress(
             '${address.subThoroughfare} ${address.thoroughfare}',
             address.postalCode,
@@ -180,7 +193,9 @@ class _UserInformationViewState extends State<UserInformationView> {
             address.countryName)
         .then((hasException) {
       setState(() {
-        user.address.fullAddress = hasException ? user.address.fullAddress : address;
+        user.address.fullAddress =
+            hasException ? user.address.fullAddress : address;
+        _loading = false;
       });
       showSnackBarMessage(hasException ? 'Erreur' : 'Adresse sauvegardée');
     });
@@ -371,7 +386,8 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   Widget _myOrders() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+      padding:
+          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       color: Styles.colors.lightBackground,
       child: _input(
         icon: Icons.favorite,
@@ -429,7 +445,8 @@ class _UserInformationViewState extends State<UserInformationView> {
 
     return Container(
       color: Styles.colors.lightBackground,
-      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+      padding:
+          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       child: Column(
         children: [
           _input(
@@ -599,13 +616,18 @@ class _UserInformationViewState extends State<UserInformationView> {
                 unFocusAll();
                 if (!lock) {
                   lock = true;
+                  setState(() => _loading = true);
                   getAddress(user.address.fullAddress.addressLine)
                       .then((address) {
                     lock = false;
-                    setState(() => _currentAddress = address.addressLine);
+                    setState(() {
+                      _currentAddress = address.addressLine;
+                      _loading = false;
+                    });
                     saveAddress(address);
                   }).catchError((_) {
                     lock = false;
+                    setState(() => _loading = false);
                   });
                 }
               },
@@ -640,13 +662,19 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Stack(
+      alignment: Alignment.center,
       children: [
-        _topInfoCard(),
-        SizedBox(height: 15),
-        _myOrders(),
-        SizedBox(height: 15),
-        _contactInfo(),
+        ListView(
+          children: [
+            _topInfoCard(),
+            SizedBox(height: 15),
+            _myOrders(),
+            SizedBox(height: 15),
+            _contactInfo(),
+          ],
+        ),
+        Loading(active: _loading),
       ],
     );
   }

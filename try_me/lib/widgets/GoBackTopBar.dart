@@ -18,6 +18,7 @@ class GoBackTopBar extends StatelessWidget {
               Icons.arrow_back,
               color: Styles.colors.text,
             ),
+            padding: const EdgeInsets.all(0.0),
             onPressed: () => Navigator.pop(context),
           ),
           Text(

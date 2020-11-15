@@ -16,44 +16,32 @@ class ProductList extends StatefulWidget {
 }
 
 class _ProductListState extends State<ProductList> {
-  List<Product> _products = List();
-
-  @override
-  void initState() {
-    super.initState();
-    _products = widget.products;
-  }
-
   @override
   Widget build(BuildContext context) {
     const double crossAxisSpacing = 16.0;
 
-    return Expanded(
-      child: AnimationLimiter(
-        child: GridView.count(
+    return AnimationLimiter(
+      child: GridView.builder(
           padding: const EdgeInsets.only(
               left: Styles.mainHorizontalPadding,
               right: Styles.mainHorizontalPadding,
               bottom: crossAxisSpacing),
-          crossAxisCount: 2,
-          crossAxisSpacing: crossAxisSpacing,
-          mainAxisSpacing: 16.0,
-          childAspectRatio: 0.65,
-          children: List.generate(
-              _products.length,
-              (index) => AnimationConfiguration.staggeredGrid(
-                    position: index,
-                    columnCount: _products.length,
-                    child: ScaleAnimation(
-                        child: ProductCard(product: _products[index])),
-                  )),
-          /*children: widget.products
-              .map((product) => AnimationConfiguration.staggeredGrid(
-                  columnCount: 3,
-                  child: ScaleAnimation(child: ProductCard(product: product))))
-              .toList(),*/
-        ),
-      ),
+          itemCount: widget.products.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: crossAxisSpacing,
+            mainAxisSpacing: 16.0,
+            childAspectRatio: 0.65,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            return AnimationConfiguration.staggeredGrid(
+              position: index,
+              columnCount: widget.products.length,
+              child: ScaleAnimation(
+                child: ProductCard(product: widget.products[index]),
+              ),
+            );
+          }),
     );
   }
 }

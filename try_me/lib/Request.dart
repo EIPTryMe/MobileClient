@@ -1,7 +1,6 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:tryme/Globals.dart';
-import 'package:tryme/GraphQLConfiguration.dart';
 import 'package:tryme/Queries.dart';
 
 enum OrderBy { PRICE, NEW, NAME }
@@ -128,7 +127,19 @@ class Request {
     List<Product> products = List();
     QueryResult result;
     QueryOptions queryOption =
-    QueryOptions(documentNode: gql(Queries.products(category)));
+        QueryOptions(documentNode: gql(Queries.products(category)));
+    result = await graphQLConfiguration.client.value.query(queryOption);
+    (result.data['product'] as List).forEach((element) {
+      products.add(QueryParse.getProduct(element));
+    });
+    return (products);
+  }
+
+  static Future<List<Product>> getProductsSearch(String keywords) async {
+    List<Product> products = List();
+    QueryResult result;
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Queries.productsSearch(keywords)));
     result = await graphQLConfiguration.client.value.query(queryOption);
     (result.data['product'] as List).forEach((element) {
       products.add(QueryParse.getProduct(element));

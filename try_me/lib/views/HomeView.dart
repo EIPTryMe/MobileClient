@@ -113,7 +113,8 @@ class _HomeViewState extends State<HomeView> {
   Widget _listCategories() {
     return Expanded(
       child: StaggeredGridView.countBuilder(
-        padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+        padding: const EdgeInsets.symmetric(
+            horizontal: Styles.mainHorizontalPadding),
         crossAxisCount: 4,
         mainAxisSpacing: 16.0,
         crossAxisSpacing: 12.0,
@@ -130,8 +131,13 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(categories.length.toString()),
-        SearchBar(),
+        Padding(
+          padding: const EdgeInsets.only(left: Styles.mainHorizontalPadding, right: Styles.mainHorizontalPadding, bottom: 8.0),
+          child: SearchBar(
+            onSubmitted: (keywords) =>
+                Navigator.pushNamed(context, 'searchResult/$keywords'),
+          ),
+        ),
         _listCategories(),
       ],
     );
