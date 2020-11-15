@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart' as fluro;
 
 import 'package:tryme/App.dart';
-import 'package:tryme/views/AuthentificationView.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
@@ -12,7 +11,8 @@ import 'package:tryme/views/ProductListCategoryView.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
-import 'package:tryme/views/SignUpView.dart';
+import 'package:tryme/views/SignUpEmailView.dart';
+import 'package:tryme/views/SignUpPasswordView.dart';
 
 class FluroRouter {
   static fluro.Router router = fluro.Router();
@@ -22,9 +22,6 @@ class FluroRouter {
   static fluro.Handler _appHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           App());
-  static fluro.Handler _authentificationHandler = fluro.Handler(
-      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          AuthentificationView());
   static fluro.Handler _landingHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           LandingView());
@@ -49,9 +46,13 @@ class FluroRouter {
   static fluro.Handler _signInHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignInView());
-  static fluro.Handler _signUpHandler = fluro.Handler(
+  static fluro.Handler _signUpEmailViewHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          SignUpView());
+          SignUpEmailView());
+  static fluro.Handler _signUpPasswordViewHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          SignUpPasswordView());
+
 
   static void setupRouter() {
     router.define(
@@ -62,11 +63,6 @@ class FluroRouter {
     router.define(
       'app',
       handler: _appHandler,
-      transitionType: fluro.TransitionType.cupertino,
-    );
-    router.define(
-      'authentification',
-      handler: _authentificationHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
@@ -110,8 +106,13 @@ class FluroRouter {
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'signUp',
-      handler: _signUpHandler,
+      'signUpEmail',
+      handler: _signUpEmailViewHandler,
+      transitionType: fluro.TransitionType.cupertino,
+    );
+    router.define(
+      'signUpPassword',
+      handler: _signUpPasswordViewHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
   }
