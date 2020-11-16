@@ -73,8 +73,10 @@ class _UserInformationViewState extends State<UserInformationView> {
       }
     });
 
-    if (user.birthday != null) _currentBirthday = DateTime.parse(user.birthday);
-    _currentAddress = user.address.fullAddress.addressLine;
+    if (user.birthday != null)
+      _currentBirthday = DateTime.tryParse(user.birthday);
+    if (user.address.fullAddress != null)
+      _currentAddress = user.address.fullAddress.addressLine;
   }
 
   @override

@@ -5,11 +5,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:tryme/GraphQLConfiguration.dart';
 
 class Auth0User {
-  Auth0User({this.uid, this.picture, this.isEmailVerified}) {
-    uid = "";
-    picture = "";
-    isEmailVerified = false;
-  }
+  Auth0User({this.uid = "", this.picture = "", this.isEmailVerified = false});
 
   String uid;
   String picture;
@@ -18,24 +14,16 @@ class Auth0User {
 
 class User {
   User(
-      {this.id,
-      this.firstName,
-      this.lastName,
+      {this.id = 0,
+      this.firstName = "",
+      this.lastName = "",
       this.address,
-      this.phone,
-      this.email,
-      this.birthday,
-      this.picture,
-      this.companyId}) {
-    id = 0;
-    firstName = "";
-    lastName = "";
-    address = UserAddress();
-    phone = "";
-    email = "";
-    birthday = "";
-    picture = "";
-    companyId = 0;
+      this.phone = "",
+      this.email = "",
+      this.birthday = "",
+      this.picture = "",
+      this.companyId = 0}) {
+    if (address == null) address = UserAddress();
   }
 
   int id;
@@ -51,12 +39,12 @@ class User {
 
 class UserAddress {
   UserAddress(
-      {this.street, this.postCode, this.city, this.country, this.fullAddress}) {
-    street = "";
-    postCode = "";
-    city = "";
-    country = "";
-    fullAddress = Address();
+      {this.street = "",
+      this.postCode = "",
+      this.city = "",
+      this.country = "",
+      this.fullAddress}) {
+    if (fullAddress == null) fullAddress = Address();
   }
 
   String street;
@@ -67,19 +55,15 @@ class UserAddress {
 }
 
 class Review {
-  Review({this.score, this.description}) {
-    score = 0.0;
-    description = "";
-  }
+  Review({this.score = 0.0, this.description = ""});
 
   double score;
   String description;
 }
 
 class Reviews {
-  Reviews({this.reviews, this.averageRating}) {
-    reviews = List();
-    averageRating = 0.0;
+  Reviews({this.reviews, this.averageRating = 0.0}) {
+    if (reviews == null) reviews = List();
   }
 
   void computeAverageRating() {
@@ -96,24 +80,18 @@ class Reviews {
 
 class Product {
   Product(
-      {this.id,
-      this.name,
-      this.brand,
-      this.pricePerMonth,
-      this.stock,
-      this.description,
+      {this.id = 0,
+      this.name = "",
+      this.brand = "",
+      this.pricePerMonth = 0.0,
+      this.stock = 0,
+      this.description = "",
       this.specifications,
       this.reviews,
       this.pictures}) {
-    id = 0;
-    name = "";
-    brand = "";
-    pricePerMonth = 0.0;
-    stock = 0;
-    description = "";
-    specifications = List();
-    reviews = Reviews();
-    pictures = List();
+    if (specifications == null) specifications = List();
+    if (reviews == null) reviews = Reviews();
+    if (pictures == null) pictures = List();
   }
 
   int id;
@@ -128,9 +106,8 @@ class Product {
 }
 
 class Cart {
-  Cart({this.product, this.quantity}) {
-    product = Product();
-    quantity = 0;
+  Cart({this.product, this.quantity = 0}) {
+    if (product == null) product = Product();
   }
 
   Product product;

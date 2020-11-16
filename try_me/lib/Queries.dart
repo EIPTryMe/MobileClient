@@ -70,12 +70,10 @@ class QueryParse {
           product.pricePerMonth =
               element['product']['price_per_month'].toDouble();
         if (element['product']['picture'] != null) {
-          product.pictures = List();
           if (element['product']['picture']['url'] != null)
             product.pictures.add(element['product']['picture']['url']);
         }
-        Cart cart = Cart(product: product);
-        shoppingCard.add(cart);
+        shoppingCard.add(Cart(product: product, quantity: 1));
       }
     });
   }
@@ -215,8 +213,6 @@ class Queries {
       id
       name
       brand
-      price_per_day
-      price_per_week
       price_per_month
       stock
       description
@@ -267,9 +263,7 @@ class Queries {
         product {
           id
           name
-          price_per_week
           price_per_month
-          price_per_day
           picture {
             url
           }

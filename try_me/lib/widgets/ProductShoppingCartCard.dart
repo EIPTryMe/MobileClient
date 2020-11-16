@@ -29,7 +29,7 @@ class _ProductShoppingCartCardState extends State<ProductShoppingCartCard> {
                 flex: 3,
                 child: Container(
                   color: Colors.grey[300],
-                  child: widget.cart.product.pictures == null
+                  child: widget.cart.product.pictures.isEmpty
                       ? null
                       : Image.network(
                           widget.cart.product.pictures[0],

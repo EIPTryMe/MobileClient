@@ -1,4 +1,195 @@
-import 'dart:typed_data';
+import 'package:flutter/material.dart';
+
+import 'package:carousel_slider/carousel_slider.dart';
+
+import 'package:tryme/Globals.dart';
+import 'package:tryme/Request.dart';
+import 'package:tryme/Styles.dart';
+import 'package:tryme/widgets/GoBackTopBar.dart';
+import 'package:tryme/widgets/Loading.dart';
+
+class ProductView extends StatefulWidget {
+  ProductView({this.id});
+
+  final String id;
+
+  @override
+  _ProductViewState createState() => _ProductViewState();
+}
+
+class _ProductViewState extends State<ProductView> {
+  Product _product = Product();
+  bool _loading = true;
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  void getData() async {
+    int id;
+
+    if (widget.id != null) id = int.tryParse(widget.id);
+    if (id != null)
+      Request.getProduct(id).then((product) {
+        setState(() {
+          _product = product;
+          _loading = false;
+          _product.pictures.add(
+              'https://www.desjardins.fr/27565-large_default/balancoire-siege-plastique-soulet-pour-portique-de-2-a-250-m.jpg');
+          _product.pictures.add(
+              'https://www.magequip.com/media/catalog/product/cache/31a470d3411692d4c06a09bc75181cbc/6/0/600316_2.jpg');
+          _product.pictures.add(
+              'https://www.ksl-living.fr/93567-large_default/balancoire-de-jardin-design-et-de-qualite-en-aluminium-et-corde-grise-swing-armchair-moon-alu-par-talenti.jpg');
+          _product.reviews.averageRating = 4.5;
+        });
+      });
+  }
+
+  Widget _carouselFullScreen({List images, int current}) {
+    double height = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: Styles.colors.background,
+      body: SafeArea(
+        child: CarouselSlider(
+          items: images
+              .map((item) => GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Image.network(
+                      item,
+                      height: height,
+                    ),
+                  ))
+              .toList(),
+          options: CarouselOptions(
+              height: height, viewportFraction: 1.0, initialPage: current),
+        ),
+      ),
+    );
+  }
+
+  Widget _carousel({double height = 400.0}) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Styles.cardRadius),
+      ),
+      child: _product.pictures == null
+          ? null
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(Styles.cardRadius),
+              child: CarouselSlider(
+                items: _product.pictures == null
+                    ? null
+                    : _product.pictures
+                        .asMap()
+                        .map(
+                          (i, item) => MapEntry(
+                            i,
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => _carouselFullScreen(
+                                      images: _product.pictures, current: i),
+                                ),
+                              ),
+                              child: Image.network(
+                                item,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                //width: width,
+                              ),
+                            ),
+                          ),
+                        )
+                        .values
+                        .toList(),
+                options: CarouselOptions(height: height, viewportFraction: 1.0),
+              ),
+            ),
+    );
+  }
+
+  Widget _header() {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                _product.name,
+                style: TextStyle(color: Styles.colors.title),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: List.generate(5, (index) {
+                IconData icon;
+
+                if (_product.reviews.averageRating.floor() >= index + 1)
+                  icon = Icons.star;
+                else if (_product.reviews.averageRating.round() == index + 1)
+                  icon = Icons.star_half;
+                else
+                  icon = Icons.star_border;
+                return Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 20,
+                );
+              }),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _productInfo() {
+    return ListView(
+      padding:
+          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+      children: [
+        _carousel(),
+        SizedBox(height: 10),
+        _header(),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Styles.colors.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Styles.mainHorizontalPadding),
+              child: GoBackTopBar(title: _product.name, titleFontSize: 24.0),
+            ),
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _productInfo(),
+                  Loading(active: _loading),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/*import 'dart:typed_data';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -361,4 +552,4 @@ class CarouselFullscreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/

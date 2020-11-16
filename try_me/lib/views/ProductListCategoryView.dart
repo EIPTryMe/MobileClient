@@ -44,12 +44,13 @@ class _ProductListCategoryViewState extends State<ProductListCategoryView> {
       backgroundColor: Styles.colors.background,
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: Styles.mainHorizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              GoBackTopBar(title: widget.category),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+                child: GoBackTopBar(title: widget.category),
+              ),
               Expanded(
                 child: Stack(
                   alignment: Alignment.center,

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:tryme/Styles.dart';
 
 class GoBackTopBar extends StatelessWidget {
-  GoBackTopBar({this.title = ""});
+  GoBackTopBar({this.title = "", this.titleFontSize = 36});
 
   final String title;
+  final double titleFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +22,15 @@ class GoBackTopBar extends StatelessWidget {
             padding: const EdgeInsets.all(0.0),
             onPressed: () => Navigator.pop(context),
           ),
-          Text(
-            this.title,
-            style: TextStyle(
-              color: Styles.colors.text,
-              fontSize: 36,
-              fontWeight: FontWeight.w700,
+          Expanded(
+            child: Text(
+              this.title,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Styles.colors.text,
+                fontSize: titleFontSize,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

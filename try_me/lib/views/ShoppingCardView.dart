@@ -40,22 +40,27 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
   @override
   void initState() {
-    super.initState();
-    Request.getShoppingCard().whenComplete(() => computeTotal().then((value) {
+    Request.getShoppingCard().then((hasException) {
+      if (!hasException)
+        computeTotal().then((total) {
           setState(() {
-            _total = value;
+            _total = total;
           });
-        }));
+        });
+    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: !widget.appBar ? null : AppBar(
-        title: Text('Panier'),
-        centerTitle: true,
-        backgroundColor: Color(0xff1F2C47),
-      ),
+      appBar: !widget.appBar
+          ? null
+          : AppBar(
+              title: Text('Panier'),
+              centerTitle: true,
+              backgroundColor: Color(0xff1F2C47),
+            ),
       body: (() {
         if (shoppingCard.isNotEmpty)
           return Column(
