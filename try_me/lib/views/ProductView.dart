@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -187,9 +187,9 @@ class _ProductViewState extends State<ProductView> {
       ),
     );
   }
-}*/
+}
 
-import 'dart:typed_data';
+/*import 'dart:typed_data';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -548,4 +548,4 @@ class CarouselFullscreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/
