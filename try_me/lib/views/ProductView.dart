@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -187,16 +187,15 @@ class _ProductViewState extends State<ProductView> {
       ),
     );
   }
-}
+}*/
 
-/*import 'dart:typed_data';
+import 'dart:typed_data';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:tryme/Globals.dart';
-import 'package:tryme/GraphQLConfiguration.dart';
 import 'package:tryme/Queries.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
@@ -221,8 +220,7 @@ class _ProductViewState extends State<ProductView> {
     QueryResult result;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.product(int.parse(widget.id))));
-    graphQLConfiguration = GraphQLConfiguration();
-    result = await graphQLConfiguration.client.value.query(queryOption);
+    result = await client.value.query(queryOption);
     if (this.mounted) {
       setState(() {
         product = QueryParse.getProduct(result.data['product'][0]);
@@ -231,16 +229,14 @@ class _ProductViewState extends State<ProductView> {
   }
 
   void addProduct(BuildContext context) async {
-    if (auth0User.uid == null) return;
-    Request.addProductShoppingCard(int.parse(widget.id)).whenComplete(() {
+    Request.addProductShoppingCard(int.parse(widget.id)).then((hasException) {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
-          'Produit ajouté',
+          hasException ? 'Erreur' : 'Produit ajouté',
           textAlign: TextAlign.center,
         ),
       ));
     });
-    //Request.getShoppingCard();
   }
 
   @override
@@ -552,4 +548,4 @@ class CarouselFullscreen extends StatelessWidget {
       ),
     );
   }
-}*/
+}

@@ -37,7 +37,8 @@ class _SignInViewState extends State<SignInView> {
     showLoading();
     Request.getUser().whenComplete(() {
       if (user.companyId == null) {
-        Request.getShoppingCard().whenComplete(() {
+        Request.getShoppingCard().then((cards) {
+          shoppingCard = cards;
           isLoggedIn = true;
           Navigator.pushNamedAndRemoveUntil(
               context, 'app', ModalRoute.withName('/'));

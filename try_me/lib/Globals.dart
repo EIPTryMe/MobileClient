@@ -1,6 +1,9 @@
 library my_prj.globals;
 
+import 'package:flutter/material.dart';
+
 import 'package:geocoder/geocoder.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:tryme/GraphQLConfiguration.dart';
 
@@ -138,7 +141,7 @@ class Category {
   String picture;
 }
 
-GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+ValueNotifier<GraphQLClient> client = getGraphQLClient();
 
 bool isLoggedIn = false;
 

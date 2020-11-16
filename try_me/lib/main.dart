@@ -21,7 +21,6 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //SystemChrome.setEnabledSystemUIOverlays([]);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -47,7 +46,7 @@ class MyApp extends StatelessWidget {
           ],
         ),
       ),
-      client: graphQLConfiguration.client,
+      client: client,
     );
   }
 }

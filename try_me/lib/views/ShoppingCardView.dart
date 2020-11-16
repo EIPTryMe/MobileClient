@@ -1,5 +1,36 @@
 import 'package:flutter/material.dart';
 
+import 'package:tryme/Globals.dart';
+import 'package:tryme/Request.dart';
+
+class ShoppingCardView extends StatefulWidget {
+  @override
+  _ShoppingCardViewState createState() => _ShoppingCardViewState();
+}
+
+class _ShoppingCardViewState extends State<ShoppingCardView> {
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  void getData() async {
+    Request.getShoppingCard().then((cards) {
+      setState(() {
+        shoppingCard = cards;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text(shoppingCard.length.toString()));
+  }
+}
+
+/*import 'package:flutter/material.dart';
+
 import 'package:tryme/widgets/ProductShoppingCartCard.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
@@ -15,6 +46,7 @@ class ShoppingCardView extends StatefulWidget {
 
 class _ShoppingCardViewState extends State<ShoppingCardView> {
   double _total = 0.0;
+  List<Cart> _shoppingCard = List();
 
   void callback() {
     computeTotal().then((value) {
@@ -28,7 +60,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
   Future computeTotal() async {
     double total = 0.0;
 
-    shoppingCard.forEach((element) {
+    _shoppingCard.forEach((element) {
       total += element.product.pricePerMonth;
     });
     return (total);
@@ -38,16 +70,22 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     print(error.toString());
   }
 
-  @override
-  void initState() {
+  void getData() async {
     Request.getShoppingCard().then((hasException) {
       if (!hasException)
         computeTotal().then((total) {
           setState(() {
+            _shoppingCard = shoppingCard;
             _total = total;
           });
         });
     });
+  }
+
+  @override
+  void initState() {
+    print('taracelapute');
+    getData();
     super.initState();
   }
 
@@ -62,17 +100,22 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
               backgroundColor: Color(0xff1F2C47),
             ),
       body: (() {
-        if (shoppingCard.isNotEmpty)
+        if (_shoppingCard.isNotEmpty)
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 flex: 12,
-                child: ListView(
-                  children: shoppingCard
+                child: ListView.builder(
+                  itemCount: _shoppingCard.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ProductShoppingCartCard(
+                        cart: _shoppingCard[index], callback: callback);
+                  },
+                  /*children: _shoppingCard
                       .map((cart) => ProductShoppingCartCard(
                           cart: cart, callback: callback))
-                      .toList(),
+                      .toList(),*/
                 ),
               ),
               Expanded(
@@ -120,4 +163,4 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
       }()),
     );
   }
-}
+}*/

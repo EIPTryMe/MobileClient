@@ -57,8 +57,9 @@ class QueryParse {
     return (product);
   }
 
-  static void getShoppingCard(List result) {
-    shoppingCard.clear();
+  static List<Cart> getShoppingCard(List result) {
+    List<Cart> shoppingCard = List();
+
     result.forEach((element) {
       Product product = Product();
       if (element['product'] != null) {
@@ -76,6 +77,7 @@ class QueryParse {
         shoppingCard.add(Cart(product: product, quantity: 1));
       }
     });
+    return (shoppingCard);
   }
 
   static Order getOrder(Map result) {

@@ -6,37 +6,35 @@ import 'package:tryme/Queries.dart';
 enum OrderBy { PRICE, NEW, NAME }
 
 class Request {
-  static Future<bool> getShoppingCard() async {
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.shoppingCard(auth0User.uid)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+  static Future<List<Cart>> getShoppingCard() async {
+    List<Cart> shoppingCard = List();
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.shoppingCard(auth0User.uid)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
+    QueryResult result = await client.value.query(queryOption);
 
     if (!result.hasException &&
         result.data['user'] != null &&
         (result.data['user'] as List).isNotEmpty &&
         result.data['user'][0]['cartsUid'] != null)
-      QueryParse.getShoppingCard(result.data['user'][0]['cartsUid']);
-    return (result.hasException);
+      shoppingCard =
+          QueryParse.getShoppingCard(result.data['user'][0]['cartsUid']);
+    return (shoppingCard);
   }
 
-  static void deleteShoppingCard(int id) async {
+  static Future<bool> deleteShoppingCard(int id) async {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.deleteShoppingCard(auth0User.uid, id)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
-    if (result.hasException) {
-      print('Request exception');
-      return;
-    }
+    return (result.hasException);
   }
 
   static Future<void> getUser() async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     if (result.hasException) {
       print('Request exception');
@@ -49,8 +47,7 @@ class Request {
   static Future<void> getCategories() async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.categories()));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     if (result.hasException) {
       print('Request exception');
@@ -64,8 +61,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserFirstName(
             auth0User.uid, firstName != null ? firstName : "")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -74,8 +70,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(
             Mutations.modifyUserName(auth0User.uid, name != null ? name : "")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -84,8 +79,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserPhone(
             auth0User.uid, phone != null ? phone : "")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -94,8 +88,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserEmail(
             auth0User.uid, email != null ? email : "")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -104,8 +97,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserBirthday(
             auth0User.uid, birthday != null ? birthday : "")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -115,8 +107,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.modifyUserAddress(
             auth0User.uid, street, postcode, city, country)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -130,8 +121,7 @@ class Request {
             product.pricePerMonth,
             product.stock,
             product.description.replaceAll('\n', '\\n'))));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -141,8 +131,7 @@ class Request {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.orderPayment(
             currency, city, country, address, postalCode)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.data['orderPayment']);
   }
@@ -150,8 +139,7 @@ class Request {
   static Future<bool> payOrder(int orderId) async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Mutations.payOrder(orderId)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
@@ -160,8 +148,7 @@ class Request {
     Product product = Product();
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.product(id)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     if (result.hasException) {
       print('Request exception');
@@ -176,11 +163,12 @@ class Request {
     List<Product> products = List();
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.products(category)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
-    (result.data['product'] as List).forEach((element) {
-      products.add(QueryParse.getProduct(element));
-    });
+    QueryResult result = await client.value.query(queryOption);
+
+    if (result.data['product'] != null)
+      (result.data['product'] as List).forEach((element) {
+        products.add(QueryParse.getProduct(element));
+      });
     return (products);
   }
 
@@ -188,31 +176,33 @@ class Request {
     List<Product> products = List();
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.productsSearch(keywords)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
-    (result.data['product'] as List).forEach((element) {
-      products.add(QueryParse.getProduct(element));
-    });
+    QueryResult result = await client.value.query(queryOption);
+
+    if (result.data['product'] != null)
+      (result.data['product'] as List).forEach((element) {
+        products.add(QueryParse.getProduct(element));
+      });
     return (products);
   }
 
-  static Future addProductShoppingCard(int id) async {
+  static Future<bool> addProductShoppingCard(int id) async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Mutations.addProduct(id)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
+
+    return (result.hasException);
   }
 
   static Future<List<Order>> getOrders(String status) async {
     List<Order> orders = List();
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.orders(status)));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
-    (result.data['order'] as List).forEach((element) {
-      orders.add(QueryParse.getOrder(element));
-    });
+    if (result.data['order'] != null)
+      (result.data['order'] as List).forEach((element) {
+        orders.add(QueryParse.getOrder(element));
+      });
     return (orders);
   }
 
@@ -220,8 +210,7 @@ class Request {
     int ordersNumber = 0;
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.ordersNumber("")));
-    QueryResult result =
-        await graphQLConfiguration.client.value.query(queryOption);
+    QueryResult result = await client.value.query(queryOption);
 
     if (!result.hasException)
       ordersNumber = result.data['order_aggregate']['aggregate']['count'];

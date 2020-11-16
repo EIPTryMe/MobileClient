@@ -1,6 +1,7 @@
 import 'package:flutter_auth0/flutter_auth0.dart';
 
 import 'package:tryme/Globals.dart' as global;
+import 'package:tryme/GraphQLConfiguration.dart';
 
 enum SocialAuth_e { FACEBOOK, GOOGLE }
 
@@ -85,7 +86,7 @@ class Auth0API {
       if (info['email_verified'] != null)
         global.auth0User.isEmailVerified = info['email_verified'];
 
-      global.graphQLConfiguration.initClient(uid: global.auth0User.uid);
+      global.client = getGraphQLClient(uid: global.auth0User.uid);
 
       print(info);
 

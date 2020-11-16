@@ -125,9 +125,13 @@ class _ProductShoppingCartCardState extends State<ProductShoppingCartCard> {
                 IconButton(
                   icon: Icon(Icons.delete_outline),
                   onPressed: () {
-                    Request.deleteShoppingCard(widget.cart.product.id);
-                    shoppingCard.remove(widget.cart);
-                    widget.callback();
+                    Request.deleteShoppingCard(widget.cart.product.id)
+                        .then((hasException) {
+                      if (!hasException) {
+                        Request.getShoppingCard()
+                            .whenComplete(() => widget.callback());
+                      }
+                    });
                   },
                 ),
               ],
