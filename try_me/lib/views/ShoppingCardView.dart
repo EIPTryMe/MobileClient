@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
+import 'package:tryme/Styles.dart';
+
+import 'package:tryme/widgets/GoBackTopBar.dart';
 
 class ShoppingCardView extends StatefulWidget {
   @override
@@ -23,9 +26,100 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     });
   }
 
+  Widget ShoppingCardCart(BuildContext context, Cart cart) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+      child: Row(
+        children: [
+          Container(
+              height: 125.0,
+              width: 105,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(Styles.cardRadius),
+              ),
+              child: cart.product.pictures.isEmpty
+                  ? null
+                  : Image.network(cart.product.pictures[0])),
+          Expanded(
+              child: Container(
+            height: 125.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  cart.product.name,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Styles.colors.text,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  "€" + cart.product.pricePerMonth.toString() + " / mois",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Styles.colors.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          )),
+          Container(
+            height: 125.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 36,
+                  width: 36,
+                  child: RaisedButton(
+                      onPressed: () {},
+                      color: Styles.colors.background,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Styles.colors.border)),
+                      child: Text(
+                        "1",
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w700,
+                          color: Styles.colors.main,
+                        ),
+                        textAlign: TextAlign.center,
+                      )),
+                ),
+                IconButton(icon: Icon(Icons.delete_forever), color: Styles.colors.unSelected, onPressed: () {})
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(shoppingCard.length.toString()));
+    return Padding(
+      padding: const EdgeInsets.all(28.0),
+      child: Column(
+        children: [
+          Expanded(flex: 1, child: GoBackTopBar(title: "Panier")),
+          Expanded(
+            flex: 10,
+            child: ListView.builder(
+              itemCount: shoppingCard.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ShoppingCardCart(context, shoppingCard[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

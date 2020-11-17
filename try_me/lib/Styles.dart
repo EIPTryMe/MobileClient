@@ -9,6 +9,7 @@ class _Colors {
   Color textPlaceholder = Color(0xFFFFFFFF).withOpacity(0.5);
   Color unSelected = Color(0xFF96A7AF);
   Color divider = Color(0xFFB8C2C0).withOpacity(0.35);
+  Color border = Color(0xFFB7EDDA);
 }
 
 class Styles {

@@ -62,7 +62,7 @@ class _AppState extends State<App> {
               ),
             ),
             BottomNavigationBarItem(
-              label: 'Acceuil',
+              label: 'Accueil',
               icon: Icon(
                 Icons.home_filled,
                 size: 30,
