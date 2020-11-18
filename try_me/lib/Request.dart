@@ -186,8 +186,10 @@ class Request {
   }
 
   static Future<bool> addProductShoppingCard(int id) async {
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Mutations.addProduct(id)));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Mutations.addProduct(id)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);

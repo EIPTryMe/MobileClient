@@ -79,7 +79,7 @@ class _AppState extends State<App> {
           onTap: (index) {
             setState(() {
               if (isLoggedIn == false && (index == 0 || index == 2))
-                Navigator.pushNamed(context, 'authentification');
+                Navigator.pushNamed(context, 'signIn');
               else
                 _currentIndex = index;
             });
