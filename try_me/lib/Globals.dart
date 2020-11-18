@@ -69,14 +69,6 @@ class Reviews {
     if (reviews == null) reviews = List();
   }
 
-  void computeAverageRating() {
-    averageRating = 0.0;
-    reviews.forEach((element) {
-      averageRating += element.score;
-    });
-    averageRating /= reviews.length;
-  }
-
   List<Review> reviews;
   double averageRating;
 }

@@ -1,8 +1,6 @@
 import 'package:tryme/Globals.dart';
 import 'package:tryme/tools/AddressTool.dart';
 
-enum productInfo_e { CARD }
-
 class QueryParse {
   static Future getUser(Map result) async {
     user = User();
@@ -23,7 +21,7 @@ class QueryParse {
     user.picture = auth0User.picture;
   }
 
-  static Product getProduct(Map result, [productInfo_e productInfo]) {
+  static Product getProduct(Map result) {
     Product product = Product();
 
     if (result['id'] != null) product.id = result['id'];
@@ -35,24 +33,26 @@ class QueryParse {
           ? result['price_per_month'].toDouble()
           : null;
     if (result['stock'] != null) product.stock = result['stock'];
-    if (productInfo != productInfo_e.CARD) {
-      if (result['description'] != null)
-        product.description = result['description'];
-      if (result['product_specifications'] != null)
-        product.specifications = result['product_specifications'];
-    }
+    if (result['description'] != null)
+      product.description = result['description'];
+    if (result['product_specifications'] != null)
+      product.specifications = result['product_specifications'];
     if (result['reviews'] != null) {
       (result['reviews'] as List).forEach((element) {
-        product.reviews.reviews.add(productInfo != productInfo_e.CARD
-            ? Review(
-                score: element['score'].toDouble(),
-                description: element['description'])
-            : Review(score: element['score'].toDouble()));
+        if (element['score'] != null && element['description'] != null)
+          product.reviews.reviews.add(Review(
+              score: element['score'].toDouble(),
+              description: element['description']));
       });
-      product.reviews.computeAverageRating();
     }
-    if (result['picture'] != null) {
-      product.pictures.add(result['picture']['url']);
+    if (result['reviews_aggregate'] != null &&
+        result['reviews_aggregate']['aggregate'] != null &&
+        result['reviews_aggregate']['aggregate']['avg'] != null &&
+        result['reviews_aggregate']['aggregate']['avg']['score'] != null)
+      product.reviews.averageRating =
+          result['reviews_aggregate']['aggregate']['avg']['score'].toDouble();
+    if (result['picture_url'] != null) {
+      product.pictures.add(result['picture_url'].trim());
     }
     return (product);
   }
@@ -70,10 +70,8 @@ class QueryParse {
         if (element['product']['price_per_month'] != null)
           product.pricePerMonth =
               element['product']['price_per_month'].toDouble();
-        if (element['product']['picture'] != null) {
-          if (element['product']['picture']['url'] != null)
-            product.pictures.add(element['product']['picture']['url']);
-        }
+        if (element['product']['picture_url'] != null)
+          product.pictures.add(element['product']['picture_url']);
         shoppingCard.add(Cart(product: product, quantity: 1));
       }
     });
@@ -221,12 +219,17 @@ class Queries {
       product_specifications {
         name
       }
-      picture {
-        url
-      }
+      picture_url
       reviews {
         description
         score
+      }
+      reviews_aggregate {
+        aggregate {
+          avg {
+            score
+          }
+        }
       }
     }
   }
@@ -238,9 +241,7 @@ class Queries {
       id
       name
       price_per_month
-      picture {
-        url
-      }
+      picture_url
     }
   }
   ''';
@@ -251,9 +252,7 @@ class Queries {
       id
       name
       price_per_month
-      picture {
-        url
-      }
+      picture_url
     }
   }
   ''';
@@ -266,9 +265,7 @@ class Queries {
           id
           name
           price_per_month
-          picture {
-            url
-          }
+          picture_url
         }
       }
     }
@@ -290,9 +287,7 @@ class Queries {
           brand
           price_per_month
           stock
-          picture {
-            url
-          }
+          picture_url
           reviews {
             score
           }

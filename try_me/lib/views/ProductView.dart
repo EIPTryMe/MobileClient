@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+import 'package:tryme/tools/NumberFormatTool.dart';
 import 'package:tryme/widgets/GoBackTopBar.dart';
 import 'package:tryme/widgets/Loading.dart';
 
@@ -19,7 +22,9 @@ class ProductView extends StatefulWidget {
 
 class _ProductViewState extends State<ProductView> {
   Product _product = Product();
+  String _pricePerMonth = "";
   bool _loading = true;
+  ButtonState _buttonState = ButtonState.idle;
 
   @override
   void initState() {
@@ -35,14 +40,8 @@ class _ProductViewState extends State<ProductView> {
       Request.getProduct(id).then((product) {
         setState(() {
           _product = product;
+          _pricePerMonth = NumberFormatTool.formatPrice(_product.pricePerMonth);
           _loading = false;
-          _product.pictures.add(
-              'https://www.desjardins.fr/27565-large_default/balancoire-siege-plastique-soulet-pour-portique-de-2-a-250-m.jpg');
-          _product.pictures.add(
-              'https://www.magequip.com/media/catalog/product/cache/31a470d3411692d4c06a09bc75181cbc/6/0/600316_2.jpg');
-          _product.pictures.add(
-              'https://www.ksl-living.fr/93567-large_default/balancoire-de-jardin-design-et-de-qualite-en-aluminium-et-corde-grise-swing-armchair-moon-alu-par-talenti.jpg');
-          _product.reviews.averageRating = 4.5;
         });
       });
   }
@@ -115,6 +114,7 @@ class _ProductViewState extends State<ProductView> {
 
   Widget _header() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,25 +125,74 @@ class _ProductViewState extends State<ProductView> {
                 style: TextStyle(color: Styles.colors.title),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: List.generate(5, (index) {
-                IconData icon;
+            _product.reviews.reviews.isEmpty
+                ? Text('Pas encore noté',
+                    style: TextStyle(color: Styles.colors.title))
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: List.generate(5, (index) {
+                      IconData icon;
 
-                if (_product.reviews.averageRating.floor() >= index + 1)
-                  icon = Icons.star;
-                else if (_product.reviews.averageRating.round() == index + 1)
-                  icon = Icons.star_half;
-                else
-                  icon = Icons.star_border;
-                return Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 20,
-                );
-              }),
-            ),
+                      if (_product.reviews.averageRating.floor() >= index + 1)
+                        icon = Icons.star;
+                      else if (_product.reviews.averageRating.round() ==
+                          index + 1)
+                        icon = Icons.star_half;
+                      else
+                        icon = Icons.star_border;
+                      return Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 20,
+                      );
+                    }),
+                  ),
           ],
+        ),
+        SizedBox(height: 3),
+        Text(
+          '$_pricePerMonth€ / mois',
+          style: TextStyle(color: Styles.colors.text),
+        ),
+      ],
+    );
+  }
+
+  Widget _description() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Description:',
+          style: TextStyle(
+              color: Styles.colors.title, decoration: TextDecoration.underline),
+        ),
+        SizedBox(height: 10),
+        Text(
+          _product.description,
+          style: TextStyle(color: Styles.colors.title),
+        ),
+      ],
+    );
+  }
+
+  Widget _specification() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Spécification:',
+          style: TextStyle(
+              color: Styles.colors.title, decoration: TextDecoration.underline),
+        ),
+        SizedBox(height: 10),
+        Column(
+          children: _product.specifications
+              .map((spec) => Text(
+                    spec,
+                    style: TextStyle(color: Styles.colors.title),
+                  ))
+              .toList(),
         ),
       ],
     );
@@ -157,7 +206,54 @@ class _ProductViewState extends State<ProductView> {
         _carousel(),
         SizedBox(height: 10),
         _header(),
+        SizedBox(height: 30),
+        _description(),
+        if (_product.specifications.isNotEmpty) SizedBox(height: 30),
+        if (_product.specifications.isNotEmpty) _specification(),
       ],
+    );
+  }
+
+  Widget _addButton() {
+    double width = MediaQuery.of(context).size.width;
+
+    return ProgressButton.icon(
+      maxWidth: width,
+      radius: Styles.buttonRadius,
+      iconedButtons: {
+        ButtonState.idle: IconedButton(
+            text: "Ajouter au panier",
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
+            color: Styles.colors.main),
+        ButtonState.loading: IconedButton(color: Styles.colors.main),
+        ButtonState.fail: IconedButton(
+            text: "Erreur",
+            icon: Icon(Icons.cancel, color: Colors.white),
+            color: Colors.red.withOpacity(0.7)),
+        ButtonState.success: IconedButton(
+            text: "Produit ajouté au panier",
+            icon: Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+            color: Colors.green.shade400)
+      },
+      onPressed: () {
+        if (isLoggedIn == false) {
+          Navigator.pushNamed(context, 'signIn');
+          return;
+        }
+        setState(() {
+          _buttonState = ButtonState.loading;
+        });
+        Request.addProductShoppingCard(_product.id).then((hasException) {
+          setState(() {
+            _buttonState =
+                hasException ? ButtonState.fail : ButtonState.success;
+          });
+        });
+      },
+      state: _buttonState,
     );
   }
 
@@ -181,6 +277,15 @@ class _ProductViewState extends State<ProductView> {
                   Loading(active: _loading),
                 ],
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: Styles.mainHorizontalPadding,
+                right: Styles.mainHorizontalPadding,
+                top: 8.0,
+                bottom: 15.0,
+              ),
+              child: _addButton(),
             ),
           ],
         ),

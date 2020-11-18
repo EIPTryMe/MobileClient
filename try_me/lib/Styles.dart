@@ -15,5 +15,6 @@ class _Colors {
 class Styles {
   static _Colors colors = _Colors();
   static const double cardRadius = 25.0;
+  static const double buttonRadius = 12.0;
   static const double mainHorizontalPadding = 12.0;
 }
