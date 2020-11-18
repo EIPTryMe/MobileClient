@@ -33,7 +33,7 @@ class _AppState extends State<App> {
 
   Widget _bottomNavBar() {
     return Container(
-      height: 95,
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius:
