@@ -50,92 +50,88 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-      child: Container(
-        height: 125.0,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-                width: 105,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(Styles.cardRadius),
+      child: Stack(
+        children: [
+          Container(
+            height: 125.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                    width: 105,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(Styles.cardRadius),
+                    ),
+                    child: cart.product.pictures.isEmpty
+                        ? null
+                        : ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(Styles.cardRadius),
+                            child: Image.network(cart.product.pictures[0]))),
+                Expanded(
+                    child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10.0, top: 20.0, bottom: 20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        cart.product.name,
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Styles.colors.text,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        "$price€ / mois",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Styles.colors.text,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+                Container(
+                  width: 50,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.delete_forever),
+                        color: Styles.colors.unSelected,
+                        onPressed: () {
+                          Request.deleteShoppingCard(cart.product.id)
+                              .then((hasException) {
+                            if (!hasException) {
+                              getData();
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                child: cart.product.pictures.isEmpty
-                    ? null
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(Styles.cardRadius),
-                        child: Image.network(cart.product.pictures[0]))),
-            Expanded(
-                child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 10.0, top: 20.0, bottom: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    cart.product.name,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Styles.colors.text,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    "$price€ / mois",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Styles.colors.text,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            )),
-            Container(
-              width: 50,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-//                  Container(
-//                    height: 36,
-//                    width: 36,
-//                    child: RaisedButton(
-//                        onPressed: () {},
-//                        color: Styles.colors.background,
-//                        shape: RoundedRectangleBorder(
-//                            borderRadius: BorderRadius.circular(18.0),
-//                            side: BorderSide(color: Styles.colors.border)),
-//                        child: Text(
-//                          "1",
-//                          style: TextStyle(
-//                            fontSize: 12.0,
-//                            fontWeight: FontWeight.w700,
-//                            color: Styles.colors.main,
-//                          ),
-//                          textAlign: TextAlign.center,
-//                        )),
-//                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete_forever),
-                    color: Styles.colors.unSelected,
-                    onPressed: () {
-                      Request.deleteShoppingCard(cart.product.id)
-                          .then((hasException) {
-                        if (!hasException) {
-                          getData();
-                        }
-                      });
-                    },
-                  ),
-                ],
+              ],
+            ),
+          ),
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(Styles.cardRadius),
+                onTap: () =>
+                    Navigator.pushNamed(context, 'product/${cart.product.id}'),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
