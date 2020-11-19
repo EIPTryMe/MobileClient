@@ -51,7 +51,7 @@ class FluroRouter {
           SignUpEmailView());
   static fluro.Handler _signUpPasswordViewHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          SignUpPasswordView());
+          SignUpPasswordView(email: params['email'][0]));
 
 
   static void setupRouter() {
@@ -111,7 +111,7 @@ class FluroRouter {
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'signUpPassword',
+      'signUpPassword/:email',
       handler: _signUpPasswordViewHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
