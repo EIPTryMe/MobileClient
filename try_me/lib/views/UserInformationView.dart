@@ -186,7 +186,8 @@ class _UserInformationViewState extends State<UserInformationView> {
   }
 
   void saveAddress(Address address) async {
-    if (address.addressLine == user.address.fullAddress.addressLine) return;
+    if (user.address.fullAddress != null &&
+        address.addressLine == user.address.fullAddress.addressLine) return;
     setState(() => _loading = true);
     Request.modifyUserAddress(
             '${address.subThoroughfare} ${address.thoroughfare}',
@@ -582,7 +583,7 @@ class _UserInformationViewState extends State<UserInformationView> {
                     saveBirthday(
                         '${date.year}-${NumberFormatTool.formatDate(month: date.month)}-${NumberFormatTool.formatDate(day: date.day)}');
                   },
-                  currentTime: DateTime.parse(user.birthday),
+                  currentTime: DateTime.tryParse(user.birthday),
                 );
               },
               child: Container(
@@ -619,7 +620,9 @@ class _UserInformationViewState extends State<UserInformationView> {
                 if (!lock) {
                   lock = true;
                   setState(() => _loading = true);
-                  getAddress(user.address.fullAddress.addressLine)
+                  getAddress(user.address.fullAddress != null
+                          ? user.address.fullAddress.addressLine
+                          : "")
                       .then((address) {
                     lock = false;
                     setState(() {
