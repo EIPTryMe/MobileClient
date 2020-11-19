@@ -25,7 +25,7 @@ class User {
       this.email = "",
       this.birthday = "",
       this.picture = "",
-      this.companyId = 0}) {
+      this.companyId}) {
     if (address == null) address = UserAddress();
   }
 
