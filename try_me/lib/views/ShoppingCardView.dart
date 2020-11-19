@@ -5,8 +5,6 @@ import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
 
-import 'package:tryme/widgets/GoBackTopBar.dart';
-
 class ShoppingCardView extends StatefulWidget {
   @override
   _ShoppingCardViewState createState() => _ShoppingCardViewState();
@@ -122,12 +120,15 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
             ),
           ),
           Positioned.fill(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(Styles.cardRadius),
-                onTap: () =>
-                    Navigator.pushNamed(context, 'product/${cart.product.id}'),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 40.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(Styles.cardRadius),
+                  onTap: () =>
+                      Navigator.pushNamed(context, 'product/${cart.product.id}'),
+                ),
               ),
             ),
           ),
