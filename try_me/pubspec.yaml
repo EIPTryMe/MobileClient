@@ -31,7 +31,7 @@ dependencies:
   google_fonts: ^1.0.0
   fluro: ^1.6.3
   stripe_payment: ^1.0.7
-  flutter_auth_buttons: ^0.8.0
+  flutter_auth_buttons: ^0.10.0
   country_code_picker: ^1.4.0
   intl: ^0.16.1
   flutter_keyboard_visibility: ^3.2.2

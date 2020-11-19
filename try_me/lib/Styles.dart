@@ -10,6 +10,11 @@ class _Colors {
   Color unSelected = Color(0xFF96A7AF);
   Color divider = Color(0xFFB8C2C0).withOpacity(0.35);
   Color border = Color(0xFFB7EDDA);
+  Color iconAccount = Color(0xFFFFC542);
+  Color iconLock = Color(0xFFFF575F);
+  Color facebookButton = Color(0xFF4E71A8);
+  Color googleButton = Color(0xFFFFFFFF);
+  Color mainAlpha50 = Color(0x8FFE5239);
 }
 
 class Styles {
