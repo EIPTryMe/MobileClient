@@ -28,7 +28,7 @@ class FluroRouter {
           LandingView());
   static fluro.Handler _ordersHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          OrdersView(status: params['status'][0]));
+          OrdersView());
   static fluro.Handler _orderDeliveryOptionsHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderDeliveryOptionsView());
@@ -75,14 +75,14 @@ class FluroRouter {
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'orders/:status',
+      'orders',
       handler: _ordersHandler,
-      transitionType: fluro.TransitionType.cupertinoFullScreenDialog,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'orderDeliveryOptions',
       handler: _orderDeliveryOptionsHandler,
-      transitionType: fluro.TransitionType.cupertinoFullScreenDialog,
+      transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
       'orderFinished',

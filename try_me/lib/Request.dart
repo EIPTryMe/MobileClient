@@ -195,10 +195,10 @@ class Request {
     return (result.hasException);
   }
 
-  static Future<List<Order>> getOrders(String status) async {
+  static Future<List<Order>> getOrders() async {
     List<Order> orders = List();
     QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.orders(status)));
+        QueryOptions(documentNode: gql(Queries.orders()));
     QueryResult result = await client.value.query(queryOption);
 
     if (result.data['order'] != null)

@@ -81,20 +81,19 @@ class QueryParse {
   static Order getOrder(Map result) {
     Order order = Order();
     List<Product> products = List();
-    double total = 0;
 
     if (result['id'] != null) order.id = result['id'];
-    if (result['order_statuses'] != null &&
-        (result['order_statuses'] as List).isNotEmpty &&
-        result['order_statuses'][0]['status'] != null)
-      order.status = result['order_statuses'][0]['status'];
 
     (result['order_items'] as List).forEach((element) {
       products.add(getProduct(element['product']));
-      total += products.last.pricePerMonth;
     });
     order.products = products;
-    order.total = total;
+    if (result['order_items_aggregate'] != null &&
+        result['order_items_aggregate']['aggregate'] != null &&
+        result['order_items_aggregate']['aggregate']['sum'] != null &&
+        result['order_items_aggregate']['aggregate']['sum']['price'] != null)
+      order.total = result['order_items_aggregate']['aggregate']['sum']['price']
+          .toDouble();
     return (order);
   }
 
@@ -272,30 +271,25 @@ class Queries {
   }
   ''';
 
-  static String orders(String status) =>
-      '''
+  static String orders() => '''
   query {
-    order(where: {''' +
-      (status.isEmpty
-          ? ""
-          : '''order_statuses: {status: {_eq: "$status"}}, ''') +
-      '''user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
+    order(where: {user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
       order_items {
-         product {
+        product {
           id
           name
-          brand
+          description
           price_per_month
-          stock
           picture_url
-          reviews {
-            score
-          }
         }
       }
       id
-      order_statuses {
-        status
+      order_items_aggregate {
+        aggregate {
+          sum {
+            price
+          }
+        }
       }
     }
   }

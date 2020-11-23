@@ -398,7 +398,7 @@ class _UserInformationViewState extends State<UserInformationView> {
         widget: FlatButton(
           padding: const EdgeInsets.all(0.0),
           height: _inputHeight,
-          onPressed: () => Navigator.pushNamed(context, 'orders/'),
+          onPressed: () => Navigator.pushNamed(context, 'orders'),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
