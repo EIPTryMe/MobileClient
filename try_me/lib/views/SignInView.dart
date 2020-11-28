@@ -112,7 +112,7 @@ class _SignInViewState extends State<SignInView> {
                   )),
               validator: (value) {
                 if (value.isEmpty) {
-                  return "Vous n'avez pas rentré votre email";
+                  return "Vous n'avez pas saisi votre email";
                 }
                 _email = value;
                 return null;
@@ -176,7 +176,7 @@ class _SignInViewState extends State<SignInView> {
                   )),
               validator: (value) {
                 if (value.isEmpty) {
-                  return "Vous n'avez pas rentré votre mot de passe";
+                  return "Vous n'avez pas saisi votre mot de passe";
                 }
                 _password = value;
                 return null;
