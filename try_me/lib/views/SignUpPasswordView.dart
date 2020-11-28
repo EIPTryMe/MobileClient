@@ -174,7 +174,7 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
                         r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,20})")
                     .hasMatch(value);
                 if (value.isEmpty) {
-                  return "Vous n\'avez pas rentré votre mot de passe";
+                  return "Vous n\'avez pas saisi votre mot de passe";
                 } else if (!passwordIsValid) {
                   print("je suis ici");
                   _showMyDialog();
