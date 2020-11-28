@@ -101,12 +101,14 @@ class Product {
 }
 
 class Cart {
-  Cart({this.product, this.quantity = 0}) {
+  Cart({this.product, this.duration = 0, this.quantity = 0, this.id = 0}) {
     if (product == null) product = Product();
   }
 
   Product product;
+  int duration;
   int quantity;
+  int id;
 }
 
 class Order {

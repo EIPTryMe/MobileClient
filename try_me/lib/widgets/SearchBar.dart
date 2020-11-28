@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
-import 'package:tryme/Styles.dart';
-
 class SearchBar extends StatefulWidget {
-  SearchBar({this.text, this.onSubmitted});
+  SearchBar({this.text, this.onSubmitted, this.height = 50.0});
 
   final String text;
   final Function(String) onSubmitted;
+  final double height;
 
   @override
   _SearchBarState createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchBar> {
-  double _height = 50;
   Function _onSubmitted;
   TextEditingController _controller;
   FocusNode _focusNode;
@@ -36,7 +34,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: _height,
+      height: widget.height,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.0),
@@ -59,7 +57,7 @@ class _SearchBarState extends State<SearchBar> {
           hintText: 'Rechercher...',
           hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: _height / 2 - 10),
+          contentPadding: EdgeInsets.symmetric(vertical: widget.height / 2 - 10),
         ),
         onFieldSubmitted: (keywords) {
           if (keywords.isNotEmpty) {
