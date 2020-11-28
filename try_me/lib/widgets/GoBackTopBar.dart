@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:tryme/Styles.dart';
 
 class GoBackTopBar extends StatelessWidget {
-  GoBackTopBar({this.title = "", this.titleFontSize = 36});
+  GoBackTopBar({this.title = "", this.titleFontSize = 36, this.titleHeightSize = 70,});
 
   final String title;
   final double titleFontSize;
+  final double titleHeightSize;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: titleHeightSize,
       child: Row(
         children: [
           IconButton(

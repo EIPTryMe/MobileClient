@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
       child: CacheProvider(
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: 'app',
-          //initialRoute: 'landing',
+          //initialRoute: 'app',
+          initialRoute: 'landing',
           onGenerateRoute: FluroRouter.router.generator,
           supportedLocales: [
             Locale('en'),

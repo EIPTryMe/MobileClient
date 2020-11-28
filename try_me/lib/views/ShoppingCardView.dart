@@ -126,8 +126,8 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(Styles.cardRadius),
-                  onTap: () =>
-                      Navigator.pushNamed(context, 'product/${cart.product.id}'),
+                  onTap: () => Navigator.pushNamed(
+                      context, 'product/${cart.product.id}'),
                 ),
               ),
             ),
@@ -139,30 +139,47 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: ListView.builder(
+    if (shoppingCard.length != 0)
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(
+                  right: Styles.mainHorizontalPadding,
+                  left: Styles.mainHorizontalPadding,
+                  top: 15.0),
+              itemCount: shoppingCard.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _shoppingCardCart(shoppingCard[index]);
+              },
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.only(
+                top: 5.0,
                 right: Styles.mainHorizontalPadding,
                 left: Styles.mainHorizontalPadding,
-                top: 15.0),
-            itemCount: shoppingCard.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _shoppingCardCart(shoppingCard[index]);
-            },
+                bottom: 10.0),
+            child: _orderButton(),
           ),
+        ],
+      );
+    else
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Votre panier est vide",
+              style: TextStyle(color: Styles.colors.text, fontSize: 30.0, fontWeight: FontWeight.w700),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Icon(Icons.shopping_cart_rounded, color: Styles.colors.text,size: 50),
+            ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(
-              top: 5.0,
-              right: Styles.mainHorizontalPadding,
-              left: Styles.mainHorizontalPadding,
-              bottom: 10.0),
-          child: _orderButton(),
-        ),
-      ],
-    );
+      );
   }
 }

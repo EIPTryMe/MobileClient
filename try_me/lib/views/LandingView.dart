@@ -23,8 +23,12 @@ class _LandingViewState extends State<LandingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text('Landing View '),
+      body: Image(
+        image: AssetImage("assets/landingView.jpg"),
+        fit: BoxFit.cover,
+        height: double.infinity,
+        width: double.infinity,
+        alignment: Alignment.center,
       ),
     );
   }

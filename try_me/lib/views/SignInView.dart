@@ -10,6 +10,7 @@ import 'package:tryme/Request.dart';
 
 import 'package:tryme/Styles.dart';
 
+import 'package:tryme/widgets/GoBackTopBar.dart';
 import 'package:tryme/widgets/HeaderAuthentication.dart';
 
 class SignInView extends StatefulWidget {
@@ -264,11 +265,12 @@ class _SignInViewState extends State<SignInView> {
         resizeToAvoidBottomInset: false,
         backgroundColor: Styles.colors.background,
         body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 58.0, horizontal: 30.0),
+          padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              GoBackTopBar(titleFontSize: 10, titleHeightSize: 12),
               HeaderAuthentication(content: "Connectez-vous"),
               _accountRow(),
               _passwordRow(),

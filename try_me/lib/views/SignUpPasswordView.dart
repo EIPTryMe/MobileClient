@@ -95,6 +95,35 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
     });
   }
 
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Format invalide', style: TextStyle(color: Colors.red),),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Votre mot de passe doit contenir :'),
+                Text('Au minimum 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('J\'ai compris', style: TextStyle(color: Styles.colors.main)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 
   Widget _passwordRow() {
     return Row(
@@ -147,6 +176,8 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
                 if (value.isEmpty) {
                   return "Vous n\'avez pas rentré votre mot de passe";
                 } else if (!passwordIsValid) {
+                  print("je suis ici");
+                  _showMyDialog();
                   return "Le format de votre mot de passe est incorrect";
                 }
                 _password = value;
