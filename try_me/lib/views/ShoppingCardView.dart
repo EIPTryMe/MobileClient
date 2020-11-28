@@ -4,6 +4,7 @@ import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 class ShoppingCardView extends StatefulWidget {
   @override
@@ -11,6 +12,8 @@ class ShoppingCardView extends StatefulWidget {
 }
 
 class _ShoppingCardViewState extends State<ShoppingCardView> {
+  bool _loading = true;
+
   @override
   void initState() {
     getData();
@@ -21,6 +24,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     Request.getShoppingCard().then((cards) {
       setState(() {
         shoppingCard = cards;
+        _loading = false;
       });
     });
   }
@@ -105,11 +109,10 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                         icon: Icon(Icons.delete_forever),
                         color: Styles.colors.unSelected,
                         onPressed: () {
-                          Request.deleteShoppingCard(cart.product.id)
+                          setState(() => _loading = true);
+                          Request.deleteShoppingCard(cart.id)
                               .then((hasException) {
-                            if (!hasException) {
-                              getData();
-                            }
+                            getData();
                           });
                         },
                       ),
@@ -144,15 +147,21 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(
-                  right: Styles.mainHorizontalPadding,
-                  left: Styles.mainHorizontalPadding,
-                  top: 15.0),
-              itemCount: shoppingCard.length,
-              itemBuilder: (BuildContext context, int index) {
-                return _shoppingCardCart(shoppingCard[index]);
-              },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                ListView.builder(
+                  padding: const EdgeInsets.only(
+                      right: Styles.mainHorizontalPadding,
+                      left: Styles.mainHorizontalPadding,
+                      top: 15.0),
+                  itemCount: shoppingCard.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _shoppingCardCart(shoppingCard[index]);
+                  },
+                ),
+                Loading(active: _loading),
+              ],
             ),
           ),
           Padding(
@@ -172,11 +181,15 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
           children: [
             Text(
               "Votre panier est vide",
-              style: TextStyle(color: Styles.colors.text, fontSize: 30.0, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: Styles.colors.text,
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.w700),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 15.0),
-              child: Icon(Icons.shopping_cart_rounded, color: Styles.colors.text,size: 50),
+              child: Icon(Icons.shopping_cart_rounded,
+                  color: Styles.colors.text, size: 50),
             ),
           ],
         ),

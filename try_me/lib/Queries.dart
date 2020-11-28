@@ -67,7 +67,7 @@ class QueryParse {
       int id = 0;
       if (element['duration'] != null) duration = element['duration'];
       if (element['quantity'] != null) quantity = element['quantity'];
-      if (element['id'] != null) quantity = element['id'];
+      if (element['id'] != null) id = element['id'];
       if (element['product'] != null) {
         if (element['product']['id'] != null)
           product.id = element['product']['id'];
