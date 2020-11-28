@@ -1,4 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:tryme/Globals.dart';
+
+/*class FilterOptions {
+  double priceMin = 0.0;
+  double priceMax = 0.0;
+  List<String> categories = List();
+  String currentCategory = '';
+}*/
+
+class Filter extends StatefulWidget {
+  @override
+  _FilterState createState() => _FilterState();
+}
+
+class _FilterState extends State<Filter> {
+  //FilterOptions _filterOptions = FilterOptions();
+
+  @override
+  void initState() {
+    //_filterOptions.categories = categories;
+    super.initState();
+  }
+
+  Widget _categories() {
+    return Container(
+      height: 50,
+      child: ListView(
+        children: [],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _categories(),
+        ),
+      ],
+    );
+  }
+}
+
+
+/*import 'package:flutter/material.dart';
 
 class Filter extends StatefulWidget {
   Filter(this.callback);
@@ -8,7 +55,7 @@ class Filter extends StatefulWidget {
   @override
   _FilterState createState() => _FilterState();
 }
-
+      
 class _FilterState extends State<Filter> {
   List _options = [
     "Nom A-Z",
@@ -57,4 +104,4 @@ class _FilterState extends State<Filter> {
       ),
     );
   }
-}
+}*/

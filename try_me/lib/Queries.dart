@@ -62,6 +62,12 @@ class QueryParse {
 
     result.forEach((element) {
       Product product = Product();
+      int duration = 0;
+      int quantity = 0;
+      int id = 0;
+      if (element['duration'] != null) duration = element['duration'];
+      if (element['quantity'] != null) quantity = element['quantity'];
+      if (element['id'] != null) quantity = element['id'];
       if (element['product'] != null) {
         if (element['product']['id'] != null)
           product.id = element['product']['id'];
@@ -72,7 +78,8 @@ class QueryParse {
               element['product']['price_per_month'].toDouble();
         if (element['product']['picture_url'] != null)
           product.pictures.add(element['product']['picture_url']);
-        shoppingCard.add(Cart(product: product, quantity: 1));
+        shoppingCard.add(
+            Cart(product: product, duration: duration, quantity: quantity, id: id));
       }
     });
     return (shoppingCard);
@@ -108,17 +115,17 @@ class QueryParse {
 }
 
 class Mutations {
-  static String addProduct(int id) => '''
+  static String addProduct(int id, int quantity, int duration) => '''
   mutation {
-    createCartItem(product_id: $id) {
+    createCartItem(product_id: $id, quantity: $quantity, duration: $duration) {
       id
     }
   }
   ''';
 
-  static String deleteShoppingCard(String user_uid, int product_id) => '''
+  static String deleteShoppingCard(int id) => '''
   mutation {
-    delete_cart(where: {product_id: {_eq: $product_id}, user_uid: {_eq: "$user_uid"}}) {
+    delete_cartItem(where: {id: {_eq: $id}}) {
       affected_rows
     }
   }
@@ -258,15 +265,16 @@ class Queries {
 
   static String shoppingCard(String uid) => '''
   query {
-    user(where: {uid: {_eq: "$uid"}}) {
-      cartsUid {
-        product {
-          id
-          name
-          price_per_month
-          picture_url
-        }
+    cartItem(where: {userUid: {_eq: "$uid"}}, order_by: {id: desc}) {
+      duration
+      product {
+        name
+        price_per_month
+        picture_url
+        id
       }
+      quantity
+      id
     }
   }
   ''';

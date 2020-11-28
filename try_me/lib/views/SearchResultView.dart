@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+import 'package:tryme/widgets/Filter.dart';
 import 'package:tryme/widgets/Loading.dart';
 import 'package:tryme/widgets/ProductList.dart';
 import 'package:tryme/widgets/SearchBar.dart';
@@ -19,6 +20,8 @@ class SearchResultView extends StatefulWidget {
 class _SearchResultViewState extends State<SearchResultView> {
   List<Product> _products = List();
   bool _loading = true;
+  double _topBarHeight = 50.0;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -44,7 +47,13 @@ class _SearchResultViewState extends State<SearchResultView> {
     final GlobalKey key = GlobalKey();
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Styles.colors.background,
+      endDrawer: SafeArea(
+        child: Drawer(
+          child: Filter(),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,12 +75,29 @@ class _SearchResultViewState extends State<SearchResultView> {
                   ),
                   Expanded(
                     child: SearchBar(
+                      height: _topBarHeight,
                       text: widget.keywords,
                       onSubmitted: (keywords) {
                         getData(keywords);
                       },
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: FlatButton(
+                      height: _topBarHeight,
+                      minWidth: _topBarHeight,
+                      color: Styles.colors.main,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
+                      child: Icon(
+                        Icons.filter_alt,
+                        color: Colors.white,
+                      ),
+                      onPressed: () =>
+                          _scaffoldKey.currentState.openEndDrawer(),
+                    ),
+                  )
                 ],
               ),
             ),

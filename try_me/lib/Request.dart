@@ -14,18 +14,14 @@ class Request {
     );
     QueryResult result = await client.value.query(queryOption);
 
-    if (!result.hasException &&
-        result.data['user'] != null &&
-        (result.data['user'] as List).isNotEmpty &&
-        result.data['user'][0]['cartsUid'] != null)
-      shoppingCard =
-          QueryParse.getShoppingCard(result.data['user'][0]['cartsUid']);
+    if (!result.hasException && result.data['cartItem'] != null)
+      shoppingCard = QueryParse.getShoppingCard(result.data['cartItem']);
     return (shoppingCard);
   }
 
   static Future<bool> deleteShoppingCard(int id) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.deleteShoppingCard(auth0User.uid, id)));
+        documentNode: gql(Mutations.deleteShoppingCard(id)));
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -185,9 +181,9 @@ class Request {
     return (products);
   }
 
-  static Future<bool> addProductShoppingCard(int id) async {
+  static Future<bool> addProductShoppingCard(int id, int duration) async {
     QueryOptions queryOption = QueryOptions(
-      documentNode: gql(Mutations.addProduct(id)),
+      documentNode: gql(Mutations.addProduct(id, 1, duration)),
       fetchPolicy: FetchPolicy.cacheAndNetwork,
     );
     QueryResult result = await client.value.query(queryOption);
