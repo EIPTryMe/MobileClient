@@ -18,25 +18,36 @@ class SearchResultView extends StatefulWidget {
 }
 
 class _SearchResultViewState extends State<SearchResultView> {
-  List<Product> _products = List();
+  ProductListData _productListData = ProductListData();
   bool _loading = true;
   double _topBarHeight = 50.0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  FilterOptions _filterOptions = FilterOptions();
+  String _keywords = '';
 
   @override
   void initState() {
     super.initState();
+    _keywords = widget.keywords;
     getData(widget.keywords);
   }
 
   void getData(String keywords) async {
     setState(() {
-      _products = List();
+      _productListData = ProductListData();
       _loading = true;
     });
-    Request.getProductsSearch(keywords).then((products) {
+    Request.getProductsSearch(keywords, _filterOptions).then((productListData) {
       setState(() {
-        _products = products;
+        _productListData = productListData;
+        _filterOptions.categories = _productListData.categories;
+        _filterOptions.brands = List();
+        _productListData.products.forEach((product) {
+          if (product.brand.isNotEmpty &&
+              !_filterOptions.brands.contains(product.brand))
+            _filterOptions.brands.add(product.brand);
+        });
+        _filterOptions.priceRange = _productListData.priceRange;
         _loading = false;
       });
     });
@@ -51,7 +62,15 @@ class _SearchResultViewState extends State<SearchResultView> {
       backgroundColor: Styles.colors.background,
       endDrawer: SafeArea(
         child: Drawer(
-          child: Filter(),
+          child: Filter(
+            filterOptions: _filterOptions,
+            onSubmit: (filterOptions) {
+              setState(() {
+                _filterOptions = filterOptions;
+                getData(_keywords);
+              });
+            },
+          ),
         ),
       ),
       body: SafeArea(
@@ -79,6 +98,9 @@ class _SearchResultViewState extends State<SearchResultView> {
                       text: widget.keywords,
                       onSubmitted: (keywords) {
                         getData(keywords);
+                        setState(() {
+                          _keywords = keywords;
+                        });
                       },
                     ),
                   ),
@@ -106,7 +128,8 @@ class _SearchResultViewState extends State<SearchResultView> {
                 alignment: Alignment.center,
                 children: [
                   KeyedSubtree(
-                      key: key, child: ProductList(products: _products)),
+                      key: key,
+                      child: ProductList(products: _productListData.products)),
                   Loading(active: _loading),
                 ],
               ),

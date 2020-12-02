@@ -2,6 +2,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Queries.dart';
+import 'package:tryme/widgets/Filter.dart';
 
 enum OrderBy { PRICE, NEW, NAME }
 
@@ -20,8 +21,8 @@ class Request {
   }
 
   static Future<bool> deleteShoppingCard(int id) async {
-    QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.deleteShoppingCard(id)));
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Mutations.deleteShoppingCard(id)));
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -156,29 +157,25 @@ class Request {
   }
 
   static Future<List<Product>> getProducts(String category) async {
-    List<Product> products = List();
+    ProductListData productList = ProductListData();
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.products(category)));
     QueryResult result = await client.value.query(queryOption);
 
-    if (result.data['product'] != null)
-      (result.data['product'] as List).forEach((element) {
-        products.add(QueryParse.getProduct(element));
-      });
-    return (products);
+    productList = QueryParse.getProductList(result.data);
+    return (productList.products);
   }
 
-  static Future<List<Product>> getProductsSearch(String keywords) async {
-    List<Product> products = List();
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.productsSearch(keywords)));
+  static Future<ProductListData> getProductsSearch(
+      String keywords, FilterOptions filterOptions) async {
+    ProductListData productList = ProductListData();
+    QueryOptions queryOption = QueryOptions(
+        documentNode: gql(
+            Queries.productsSearch(keywords, filterOptions.selectedCategory, filterOptions.selectedBrands, filterOptions.priceCurrent)));
     QueryResult result = await client.value.query(queryOption);
 
-    if (result.data['product'] != null)
-      (result.data['product'] as List).forEach((element) {
-        products.add(QueryParse.getProduct(element));
-      });
-    return (products);
+    productList = QueryParse.getProductList(result.data);
+    return (productList);
   }
 
   static Future<bool> addProductShoppingCard(int id, int duration) async {
