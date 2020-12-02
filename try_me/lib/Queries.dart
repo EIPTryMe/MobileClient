@@ -320,7 +320,7 @@ class Queries {
       price_per_month
       picture_url
     }
-    product_aggregate(where: {${getAllFilter(keywords, category, brands, price)}}) {
+    product_aggregate(where: {${getAllFilter(keywords, category, brands, RangeValues(0.0, 0.0))}}) {
       aggregate {
         max {
           price_per_month
