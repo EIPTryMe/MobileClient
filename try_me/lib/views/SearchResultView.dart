@@ -144,6 +144,11 @@ class _SearchResultViewState extends State<SearchResultView> {
                   KeyedSubtree(
                       key: key,
                       child: ProductList(products: _productListData.products)),
+                  if (_productListData.products.isEmpty && !_loading)
+                    Text(
+                      'Aucun résultat',
+                      style: TextStyle(color: Styles.colors.text),
+                    ),
                   Loading(active: _loading),
                 ],
               ),
