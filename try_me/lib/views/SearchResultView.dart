@@ -4,13 +4,16 @@ import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/widgets/Filter.dart';
+import 'package:tryme/widgets/GoBackTopBar.dart';
 import 'package:tryme/widgets/Loading.dart';
 import 'package:tryme/widgets/ProductList.dart';
 import 'package:tryme/widgets/SearchBar.dart';
+import 'package:tryme/widgets/Sort.dart';
 
 class SearchResultView extends StatefulWidget {
-  SearchResultView({Key key, this.keywords}) : super(key: key);
+  SearchResultView({this.category, this.keywords});
 
+  final String category;
   final String keywords;
 
   @override
@@ -24,6 +27,7 @@ class _SearchResultViewState extends State<SearchResultView> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   FilterOptions _filterOptions = FilterOptions();
   String _keywords = '';
+  String _sort = '';
 
   @override
   void initState() {
@@ -37,7 +41,10 @@ class _SearchResultViewState extends State<SearchResultView> {
       _productListData = ProductListData();
       _loading = true;
     });
-    Request.getProductsSearch(keywords, _filterOptions).then((productListData) {
+    if (widget.category.isNotEmpty)
+      _filterOptions.selectedCategory = widget.category;
+    Request.getProductsSearch(keywords, _filterOptions, _sort)
+        .then((productListData) {
       setState(() {
         _productListData = productListData;
         _filterOptions.categories = _productListData.categories;
@@ -63,6 +70,7 @@ class _SearchResultViewState extends State<SearchResultView> {
       endDrawer: SafeArea(
         child: Drawer(
           child: Filter(
+            lockCategory: widget.category,
             filterOptions: _filterOptions,
             onSubmit: (filterOptions) {
               setState(() {
@@ -82,46 +90,51 @@ class _SearchResultViewState extends State<SearchResultView> {
                   left: Styles.mainHorizontalPadding,
                   right: Styles.mainHorizontalPadding,
                   bottom: 8.0),
-              child: Row(
+              child: Column(
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    padding: const EdgeInsets.all(0.0),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: SearchBar(
-                      height: _topBarHeight,
-                      text: widget.keywords,
-                      onSubmitted: (keywords) {
-                        _filterOptions = FilterOptions();
-                        getData(keywords);
-                        setState(() {
-                          _keywords = keywords;
-                        });
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: FlatButton(
-                      height: _topBarHeight,
-                      minWidth: _topBarHeight,
-                      color: Styles.colors.main,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0)),
-                      child: Icon(
-                        Icons.filter_alt,
-                        color: Colors.white,
+                  if (widget.category.isNotEmpty)
+                    GoBackTopBar(title: widget.category),
+                  Row(
+                    children: [
+                      if (widget.category.isEmpty)
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
+                          padding: const EdgeInsets.all(0.0),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      Expanded(
+                        child: SearchBar(
+                          showFilter: true,
+                          scaffoldKey: _scaffoldKey,
+                          height: _topBarHeight,
+                          text: widget.keywords,
+                          onSubmitted: (keywords) {
+                            _filterOptions = FilterOptions();
+                            getData(keywords);
+                            setState(() {
+                              _keywords = keywords;
+                            });
+                          },
+                        ),
                       ),
-                      onPressed: () =>
-                          _scaffoldKey.currentState.openEndDrawer(),
-                    ),
-                  )
+                    ],
+                  ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: Styles.mainHorizontalPadding,
+                  right: Styles.mainHorizontalPadding,
+                  bottom: 8.0),
+              child: Sort(
+                onSelected: (sort) {
+                  _sort = sort;
+                  getData(_keywords);
+                },
               ),
             ),
             Expanded(

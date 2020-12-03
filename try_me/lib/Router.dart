@@ -7,7 +7,6 @@ import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
-import 'package:tryme/views/ProductListCategoryView.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/SearchResultView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
@@ -35,15 +34,14 @@ class FluroRouter {
   static fluro.Handler _orderFinishedHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderFinishedView());
-  static fluro.Handler _productListCategoryHandler = fluro.Handler(
-      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          ProductListCategoryView(category: params['category'][0]));
   static fluro.Handler _productHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
   static fluro.Handler _searchResultHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          SearchResultView(keywords: params['keywords'][0]));
+          SearchResultView(
+              category: params['category'][0],
+              keywords: params['keywords'][0]));
   static fluro.Handler _shoppingCardHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ShoppingCardView());
@@ -56,7 +54,6 @@ class FluroRouter {
   static fluro.Handler _signUpPasswordViewHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignUpPasswordView(email: params['email'][0]));
-
 
   static void setupRouter() {
     router.define(
@@ -90,17 +87,12 @@ class FluroRouter {
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'productListCategory/:category',
-      handler: _productListCategoryHandler,
-      transitionType: fluro.TransitionType.cupertino,
-    );
-    router.define(
       'product/:id',
       handler: _productHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(
-      'searchResult/:keywords',
+      'searchResult/:category/:keywords',
       handler: _searchResultHandler,
       transitionType: fluro.TransitionType.cupertino,
     );

@@ -167,11 +167,11 @@ class Request {
   }
 
   static Future<ProductListData> getProductsSearch(
-      String keywords, FilterOptions filterOptions) async {
+      String keywords, FilterOptions filterOptions, String sort) async {
     ProductListData productList = ProductListData();
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(
-            Queries.productsSearch(keywords, filterOptions.selectedCategory, filterOptions.selectedBrands, filterOptions.priceCurrent)));
+            Queries.productsSearch(keywords, filterOptions.selectedCategory, filterOptions.selectedBrands, filterOptions.priceCurrent, sort)));
     QueryResult result = await client.value.query(queryOption);
 
     productList = QueryParse.getProductList(result.data);

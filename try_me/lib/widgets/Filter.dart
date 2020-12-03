@@ -13,8 +13,9 @@ class FilterOptions {
 }
 
 class Filter extends StatefulWidget {
-  Filter({this.filterOptions, this.onSubmit});
+  Filter({this.lockCategory = '', this.filterOptions, this.onSubmit});
 
+  final String lockCategory;
   final FilterOptions filterOptions;
   final Function onSubmit;
 
@@ -31,6 +32,10 @@ class _FilterState extends State<Filter> {
   @override
   void initState() {
     _filterOptions = widget.filterOptions;
+    if (widget.lockCategory.isNotEmpty) {
+      _filterOptions.categories = ['${widget.lockCategory}'];
+      _filterOptions.selectedCategory = widget.lockCategory;
+    }
     _categorySelectedIndex =
         _filterOptions.categories.indexOf(_filterOptions.selectedCategory);
     if (_filterOptions.priceCurrent != RangeValues(0.0, 0.0)) {
@@ -86,6 +91,7 @@ class _FilterState extends State<Filter> {
                         selected: _categorySelectedIndex == index,
                         onSelected: (selected) {
                           setState(() {
+                            if (widget.lockCategory.isNotEmpty) return;
                             if (selected) {
                               _categorySelectedIndex = index;
                               _filterOptions.selectedCategory =

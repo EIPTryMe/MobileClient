@@ -102,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
             child: InkWell(
               borderRadius: BorderRadius.circular(Styles.cardRadius),
               onTap: () => Navigator.pushNamed(
-                  context, 'productListCategory/${category.name}'),
+                  context, 'searchResult/${category.name}/'),
             ),
           ),
         ),
@@ -132,10 +132,13 @@ class _HomeViewState extends State<HomeView> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: Styles.mainHorizontalPadding, right: Styles.mainHorizontalPadding, bottom: 8.0),
+          padding: const EdgeInsets.only(
+              left: Styles.mainHorizontalPadding,
+              right: Styles.mainHorizontalPadding,
+              bottom: 8.0),
           child: SearchBar(
             onSubmitted: (keywords) =>
-                Navigator.pushNamed(context, 'searchResult/$keywords'),
+                Navigator.pushNamed(context, 'searchResult//$keywords'),
           ),
         ),
         _listCategories(),

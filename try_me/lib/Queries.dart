@@ -309,11 +309,23 @@ class Queries {
           List<String> brands, RangeValues price) =>
       '${getKeywordsFilter(keywords)}, _and: {${getCategoryFilter(category)}, ${getBrandFilter(brands)}, ${getPriceFilter(price)}}';
 
+  static String getSorting(String sort) {
+    String orderBy = '';
+
+    if (sort == 'Pertinence') orderBy = '';
+    else if (sort == 'Prix (Croissant)')
+      orderBy = 'price_per_month: asc';
+    else if (sort == 'Prix (Décroissant)') orderBy = 'price_per_month: desc';
+    else if (sort == 'Note moyenne') orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
+    else if (sort == 'Nouveauté') orderBy = 'created_at: desc';
+    return (orderBy);
+  }
+
   static String productsSearch(String keywords, String category,
-          List<String> brands, RangeValues price) =>
+          List<String> brands, RangeValues price, String sort) =>
       '''
   query {
-    product(where: {${getAllFilter(keywords, category, brands, price)}}) {
+    product(where: {${getAllFilter(keywords, category, brands, price)}}, order_by: {${getSorting(sort)}}) {
       id
       name
       brand
