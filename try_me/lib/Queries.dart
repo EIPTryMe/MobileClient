@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/tools/AddressTool.dart';
 
@@ -57,6 +58,37 @@ class QueryParse {
     return (product);
   }
 
+  static ProductListData getProductList(Map result) {
+    ProductListData productList = ProductListData();
+    double min = 0.0;
+    double max = 0.0;
+
+    if (result['product'] != null)
+      (result['product'] as List).forEach((element) {
+        productList.products.add(getProduct(element));
+      });
+    if (result['product_aggregate'] != null &&
+        result['product_aggregate']['aggregate'] != null) {
+      if (result['product_aggregate']['aggregate']['min'] != null &&
+          result['product_aggregate']['aggregate']['min']['price_per_month'] !=
+              null)
+        min = result['product_aggregate']['aggregate']['min']['price_per_month']
+            .toDouble();
+      if (result['product_aggregate']['aggregate']['max'] != null &&
+          result['product_aggregate']['aggregate']['max']['price_per_month'] !=
+              null)
+        max = result['product_aggregate']['aggregate']['max']['price_per_month']
+            .toDouble();
+    }
+    if (result['category'] != null)
+      (result['category'] as List).forEach((category) {
+        if (category['name'] != null)
+          productList.categories.add(category['name']);
+      });
+    productList.priceRange = RangeValues(min, max);
+    return (productList);
+  }
+
   static List<Cart> getShoppingCard(List result) {
     List<Cart> shoppingCard = List();
 
@@ -78,8 +110,8 @@ class QueryParse {
               element['product']['price_per_month'].toDouble();
         if (element['product']['picture_url'] != null)
           product.pictures.add(element['product']['picture_url']);
-        shoppingCard.add(
-            Cart(product: product, duration: duration, quantity: quantity, id: id));
+        shoppingCard.add(Cart(
+            product: product, duration: duration, quantity: quantity, id: id));
       }
     });
     return (shoppingCard);
@@ -252,13 +284,66 @@ class Queries {
   }
   ''';
 
-  static String productsSearch(String keywords) => '''
+  static String getKeywordsFilter(String keywords) =>
+      '_or: [{name: {_ilike: "%$keywords%"}}, {category: {name: {_ilike: "%$keywords%"}}}, {brand: {_ilike: "%$keywords%"}}]';
+
+  static String getCategoryFilter(String category) =>
+      category.isNotEmpty ? 'category: {name: {_eq: "$category"}}' : '';
+
+  static String getBrandFilter(List<String> brands) {
+    String brandsStr = '';
+
+    for (int i = 0; i < brands.length; ++i) {
+      brandsStr += '"${brands[i]}"';
+      if (i + 1 >= brands.length) brandsStr += ', ';
+    }
+    return (brands.isNotEmpty ? 'brand: {_in: [$brandsStr]}' : '');
+  }
+
+  static String getPriceFilter(RangeValues price) =>
+      price != RangeValues(0.0, 0.0)
+          ? 'price_per_month: {_gte: ${price.start}, _lte: ${price.end}}'
+          : '';
+
+  static String getAllFilter(String keywords, String category,
+          List<String> brands, RangeValues price) =>
+      '${getKeywordsFilter(keywords)}, _and: {${getCategoryFilter(category)}, ${getBrandFilter(brands)}, ${getPriceFilter(price)}}';
+
+  static String getSorting(String sort) {
+    String orderBy = '';
+
+    if (sort == 'Pertinence') orderBy = '';
+    else if (sort == 'Prix (Croissant)')
+      orderBy = 'price_per_month: asc';
+    else if (sort == 'Prix (Décroissant)') orderBy = 'price_per_month: desc';
+    else if (sort == 'Note moyenne') orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
+    else if (sort == 'Nouveauté') orderBy = 'created_at: desc';
+    return (orderBy);
+  }
+
+  static String productsSearch(String keywords, String category,
+          List<String> brands, RangeValues price, String sort) =>
+      '''
   query {
-    product(where: {name: {_ilike: "%$keywords%"}}) {
+    product(where: {${getAllFilter(keywords, category, brands, price)}}, order_by: {${getSorting(sort)}}) {
       id
       name
+      brand
       price_per_month
       picture_url
+    }
+    product_aggregate(where: {${getAllFilter(keywords, category, brands, RangeValues(0.0, 0.0))}}) {
+      aggregate {
+        max {
+          price_per_month
+        }
+        min {
+          price_per_month
+        }
+      }
+    }
+    category(where: {products: {${getAllFilter(keywords, category, brands, price)}}}) {
+      name
     }
   }
   ''';

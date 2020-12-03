@@ -112,11 +112,8 @@ class Cart {
 }
 
 class Order {
-  Order({this.id, this.total, this.status, this.products}) {
-    id = 0;
-    total = 0.0;
-    status = "";
-    products = List();
+  Order({this.id = 0, this.total = 0.0, this.status = "", this.products}) {
+    if (products == null) products = List();
   }
 
   int id;
@@ -126,13 +123,24 @@ class Order {
 }
 
 class Category {
-  Category({this.name, this.picture}) {
-    name = "";
-    picture = "";
-  }
+  Category({this.name = "", this.picture = ""});
 
   String name;
   String picture;
+}
+
+class ProductListData {
+  ProductListData({this.products, this.categories, this.brands, this.priceRange}) {
+    if (products == null) products = List();
+    if (categories == null) categories = List();
+    if (brands == null) brands = List();
+    if (priceRange == null) priceRange = RangeValues(0.0, 0.0);
+  }
+
+  List<Product> products;
+  List<String> categories;
+  List<String> brands;
+  RangeValues priceRange;
 }
 
 ValueNotifier<GraphQLClient> client = getGraphQLClient();
