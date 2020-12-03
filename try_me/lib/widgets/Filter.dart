@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import 'package:tryme/Globals.dart';
 import 'package:tryme/Styles.dart';
 
 class FilterOptions {
@@ -25,23 +25,37 @@ class Filter extends StatefulWidget {
 class _FilterState extends State<Filter> {
   FilterOptions _filterOptions = FilterOptions();
   int _categorySelectedIndex;
-  RangeValues _priceCurrent = RangeValues(0, 0);
+  TextEditingController _priceMinController = TextEditingController();
+  TextEditingController _priceMaxController = TextEditingController();
 
   @override
   void initState() {
     _filterOptions = widget.filterOptions;
     _categorySelectedIndex =
         _filterOptions.categories.indexOf(_filterOptions.selectedCategory);
-    _priceCurrent = widget.filterOptions.priceCurrent == RangeValues(0.0, 0.0)
-        ? widget.filterOptions.priceRange
-        : widget.filterOptions.priceCurrent;
-    if (_priceCurrent.start < widget.filterOptions.priceRange.start)
-      _priceCurrent =
-          RangeValues(widget.filterOptions.priceRange.start, _priceCurrent.end);
-    if (_priceCurrent.end > widget.filterOptions.priceRange.end)
-      _priceCurrent =
-          RangeValues(_priceCurrent.start, widget.filterOptions.priceRange.end);
+    if (_filterOptions.priceCurrent != RangeValues(0.0, 0.0)) {
+      if (_filterOptions.priceCurrent.start != null)
+        _priceMinController.text =
+            _filterOptions.priceCurrent.start.round().toString();
+      if (_filterOptions.priceCurrent.end != null)
+        _priceMaxController.text =
+            _filterOptions.priceCurrent.end.round().toString();
+    }
     super.initState();
+  }
+
+  void validatePrice() {
+    double min = double.tryParse(_priceMinController.text);
+    double max = double.tryParse(_priceMaxController.text);
+
+    if (min != null && max != null && min > max) {
+      double tmp = min;
+      min = max;
+      max = tmp;
+      _priceMinController.text = min.toInt().toString();
+      _priceMaxController.text = max.toInt().toString();
+    }
+    _filterOptions.priceCurrent = RangeValues(min, max);
   }
 
   Widget _categories() {
@@ -142,44 +156,83 @@ class _FilterState extends State<Filter> {
   }
 
   Widget _price() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Prix',
-          style: TextStyle(color: Styles.colors.text),
-        ),
-        Row(
-          children: [
-            Text(
-              '${_priceCurrent.start.round()}€',
-              style: TextStyle(color: Styles.colors.text),
-            ),
-            Expanded(
-              child: RangeSlider(
-                min: widget.filterOptions.priceRange.start,
-                max: widget.filterOptions.priceRange.end,
-                activeColor: Styles.colors.main,
-                values: _priceCurrent,
-                labels: RangeLabels(
-                  _priceCurrent.start.round().toString(),
-                  _priceCurrent.end.round().toString(),
+    return Container(
+      height: 100,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Prix',
+            style: TextStyle(color: Styles.colors.text),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _priceMinController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.all(10.0),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Styles.colors.lightBackground)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Styles.colors.lightBackground)),
+                      hintText:
+                          'Min: ${_filterOptions.priceRange.start.round()}',
+                      hintStyle: TextStyle(
+                          color: Styles.colors.unSelected, fontSize: 13),
+                      border: InputBorder.none,
+                    ),
+                    style: TextStyle(color: Styles.colors.text),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                      LengthLimitingTextInputFormatter(5),
+                    ],
+                    keyboardType: TextInputType.numberWithOptions(
+                        signed: true, decimal: true),
+                  ),
                 ),
-                onChanged: (range) {
-                  setState(() {
-                    _priceCurrent = range;
-                    _filterOptions.priceCurrent = range;
-                  });
-                },
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text('-',
+                      style: TextStyle(
+                          color: Styles.colors.lightBackground, fontSize: 16)),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: _priceMaxController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.all(10.0),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Styles.colors.lightBackground)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Styles.colors.lightBackground)),
+                      hintText: 'Max: ${_filterOptions.priceRange.end.round()}',
+                      hintStyle: TextStyle(
+                          color: Styles.colors.unSelected, fontSize: 13),
+                      border: InputBorder.none,
+                    ),
+                    style: TextStyle(color: Styles.colors.text),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                      LengthLimitingTextInputFormatter(5),
+                    ],
+                    keyboardType: TextInputType.numberWithOptions(
+                        signed: true, decimal: true),
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '${_priceCurrent.end.round()}€',
-              style: TextStyle(color: Styles.colors.text),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -192,12 +245,29 @@ class _FilterState extends State<Filter> {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         onPressed: () {
+          validatePrice();
           widget.onSubmit(_filterOptions);
           Navigator.pop(context);
         },
         child: Text(
           'Appliquer',
           style: TextStyle(color: Styles.colors.text),
+        ),
+      ),
+    );
+  }
+
+  Widget _reset() {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          widget.onSubmit(FilterOptions());
+          Navigator.pop(context);
+        },
+        child: Text(
+          'Réinitialiser',
+          style: TextStyle(color: Styles.colors.text),
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -214,15 +284,31 @@ class _FilterState extends State<Filter> {
             child: ListView(
               padding: const EdgeInsets.all(8.0),
               children: [
-                _categories(),
-                SizedBox(height: 20),
-                _brand(),
-                SizedBox(height: 20),
+                if (_filterOptions.categories.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: _categories(),
+                  ),
+                if (_filterOptions.brands.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: _brand(),
+                  ),
                 _price(),
               ],
             ),
           ),
-          _submit(),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: _submit(),
+              ),
+              Expanded(
+                child: _reset(),
+              ),
+            ],
+          ),
         ],
       ),
     );

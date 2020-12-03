@@ -97,6 +97,7 @@ class _SearchResultViewState extends State<SearchResultView> {
                       height: _topBarHeight,
                       text: widget.keywords,
                       onSubmitted: (keywords) {
+                        _filterOptions = FilterOptions();
                         getData(keywords);
                         setState(() {
                           _keywords = keywords;
