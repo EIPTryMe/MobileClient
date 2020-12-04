@@ -229,22 +229,6 @@ class _UserInformationViewState extends State<UserInformationView> {
     );
   }
 
-  Future getAddress(String str) async {
-    Address address = await AddressTool.getAddressFromString(str);
-
-    LocationResult locationResult = await showLocationPicker(
-      context,
-      mapApiKey,
-      automaticallyAnimateToCurrentLocation: address == null ? true : false,
-      initialCenter: address == null
-          ? LatLng(48.8589507, 2.2770205) // Paris
-          : LatLng(address.coordinates.latitude, address.coordinates.longitude),
-      myLocationButtonEnabled: true,
-      desiredAccuracy: LocationAccuracy.best,
-    );
-    return (await AddressTool.getAddressFromString(locationResult.address));
-  }
-
   void disconnect(BuildContext context) {
     isLoggedIn = false;
     shoppingCard.clear();
@@ -620,9 +604,11 @@ class _UserInformationViewState extends State<UserInformationView> {
                 if (!lock) {
                   lock = true;
                   setState(() => _loading = true);
-                  getAddress(user.address.fullAddress != null
-                          ? user.address.fullAddress.addressLine
-                          : "")
+                  AddressTool.getAddress(
+                          context,
+                          user.address.fullAddress != null
+                              ? user.address.fullAddress.addressLine
+                              : "")
                       .then((address) {
                     lock = false;
                     setState(() {
