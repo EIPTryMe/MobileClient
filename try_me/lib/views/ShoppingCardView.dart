@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
+import 'package:tryme/Router.dart';
 import 'package:tryme/Styles.dart';
+
 import 'package:tryme/tools/NumberFormatTool.dart';
+
 import 'package:tryme/widgets/Loading.dart';
+
 
 class ShoppingCardView extends StatefulWidget {
   @override
@@ -33,7 +37,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     return Container(
       height: 58.0,
       child: RaisedButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, "payment") ,
         textColor: Styles.colors.text,
         color: Styles.colors.main,
         shape: RoundedRectangleBorder(

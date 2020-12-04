@@ -8,6 +8,7 @@ import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
 import 'package:tryme/views/ProductView.dart';
+import 'package:tryme/views/PaymentView.dart';
 import 'package:tryme/views/SearchResultView.dart';
 import 'package:tryme/views/ShoppingCardView.dart';
 import 'package:tryme/views/SignInView.dart';
@@ -54,6 +55,9 @@ class FluroRouter {
   static fluro.Handler _signUpPasswordViewHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SignUpPasswordView(email: params['email'][0]));
+  static fluro.Handler _paymentViewHandler = fluro.Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          PaymentView());
 
   static void setupRouter() {
     router.define(
@@ -114,6 +118,11 @@ class FluroRouter {
     router.define(
       'signUpPassword/:email',
       handler: _signUpPasswordViewHandler,
+      transitionType: fluro.TransitionType.cupertino,
+    );
+    router.define(
+      'payment',
+      handler: _paymentViewHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
   }
