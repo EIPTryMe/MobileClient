@@ -130,10 +130,6 @@ class Request {
             currency, city, country, address, postalCode)));
     QueryResult result = await client.value.query(queryOption);
 
-    print(Mutations.orderPayment(
-        currency, city, country, address, postalCode));
-    print(result.data['clientSecret']);
-    print(result.hasException);
     return (result);
   }
 

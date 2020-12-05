@@ -63,18 +63,12 @@ class _SignInViewState extends State<SignInView> {
   void connection() {
     showLoading();
     Request.getUser().whenComplete(() {
-      if (user.companyId == null) {
-        Request.getShoppingCard().then((cards) {
-          shoppingCard = cards;
-          isLoggedIn = true;
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'app', ModalRoute.withName('/'));
-        });
-      } else {
-        setState(() {
-          _error = 'Connectez-vous en tant qu\'entreprise';
-        });
-      }
+      Request.getShoppingCard().then((cards) {
+        shoppingCard = cards;
+        isLoggedIn = true;
+        Navigator.pushNamedAndRemoveUntil(
+            context, 'app', ModalRoute.withName('/'));
+      });
     });
   }
 
@@ -274,7 +268,11 @@ class _SignInViewState extends State<SignInView> {
               HeaderAuthentication(content: "Connectez-vous"),
               _accountRow(),
               _passwordRow(),
-              if (_error.isNotEmpty) Text(_error, style: TextStyle(color: Colors.red),),
+              if (_error.isNotEmpty)
+                Text(
+                  _error,
+                  style: TextStyle(color: Colors.red),
+                ),
               goButton(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

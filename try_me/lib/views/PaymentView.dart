@@ -13,7 +13,6 @@ import 'package:tryme/widgets/GoBackTopBar.dart';
 
 import 'package:tryme/tools/AddressTool.dart';
 
-
 class PaymentView extends StatefulWidget {
   @override
   _PaymentViewState createState() => _PaymentViewState();
@@ -35,6 +34,15 @@ class _PaymentViewState extends State<PaymentView> {
   String _city = "";
   String _country = "";
 
+  @override
+  void initState() {
+    _street = user.address.street != null ? user.address.street : "";
+    _postCode = user.address.postCode != null ? user.address.postCode : "";
+    _city = user.address.city != null ? user.address.city : "";
+    _country = user.address.country != null ? user.address.country : "";
+    super.initState();
+  }
+
   void addCreditCard() {
     StripePayment.setOptions(StripeOptions(
         publishableKey: "pk_test_qqOqbG3XvLbLfopJ2yWEmrKK00FqSnGPaA",
@@ -47,7 +55,7 @@ class _PaymentViewState extends State<PaymentView> {
         _paymentMethod = paymentMethod;
         _cardNumber = "0000 0000 0000 ${paymentMethod.card.last4}";
         _expiryDate =
-        "${paymentMethod.card.expMonth}/${paymentMethod.card.expYear}";
+            "${paymentMethod.card.expMonth}/${paymentMethod.card.expYear}";
         _cardHolderName = "${user.firstName} ${user.lastName}";
         _cvvCode = "";
       });
@@ -65,15 +73,13 @@ class _PaymentViewState extends State<PaymentView> {
         'eur', _city, _country, _street, int.parse(_postCode));
     await StripePayment.confirmPaymentIntent(
       PaymentIntent(
-        clientSecret: result.data['clientSecret'],
+        clientSecret: result.data['orderPayment']['clientSecret'],
         paymentMethodId: _paymentMethod.id,
       ),
     ).catchError(setError);
-    if (result.hasException)
-      return (false);
-    await Request.payOrder(result.data['order_id']).then((hasException) {
-      if (hasException)
-        return (false);
+    if (result.hasException) return (false);
+    await Request.payOrder(result.data['orderPayment']['order_id']).then((hasException) {
+      if (hasException) return (false);
     });
 
     return (true);
@@ -105,7 +111,7 @@ class _PaymentViewState extends State<PaymentView> {
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
                     backgroundImage:
-                    NetworkImage(user.picture != null ? user.picture : ""),
+                        NetworkImage(user.picture != null ? user.picture : ""),
                   ),
                 ),
               ),
@@ -134,16 +140,11 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Widget _shippingAddress() {
-    _street = user.address.street != null ? user.address.street : "";
-    _postCode = user.address.postCode != null ? user.address.postCode : "";
-    _city = user.address.city != null ? user.address.city : "";
-    _country = user.address.country != null ? user.address.country : "";
-
     _checkAddress =
-    (_street != "" && _postCode != "" && _city != "" && _country != "");
+        (_street != "" && _postCode != "" && _city != "" && _country != "");
     return Container(
       padding:
-      const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       color: Styles.colors.lightBackground,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,20 +195,19 @@ class _PaymentViewState extends State<PaymentView> {
                 child: GestureDetector(
                   onTap: () {
                     AddressTool.getAddress(
-                        context,
-                        user.address.fullAddress != null
-                            ? user.address.fullAddress.addressLine
-                            : "") .then((address) {
-                      //lock = false;
+                            context,
+                            user.address.fullAddress != null
+                                ? user.address.fullAddress.addressLine
+                                : "")
+                        .then((address) {
                       setState(() {
-                      //  _currentAddress = address.addressLine;
-                      //  _loading = false;
+                        _street =
+                            '${address.subThoroughfare} ${address.thoroughfare}';
+                        _postCode = address.postalCode;
+                        _city = address.locality;
+                        _country = address.countryName;
                       });
-                      //saveAddress(address);
-                    }).catchError((_) {
-                     // lock = false;
-                     // setState(() => _loading = false);
-                    });
+                    }).catchError((_) {});
                   },
                   child: Text(
                     "Change",
@@ -224,7 +224,7 @@ class _PaymentViewState extends State<PaymentView> {
           Theme(
               data: Theme.of(context).copyWith(
                 disabledColor:
-                _checkAddress ? Styles.colors.main : Styles.colors.text,
+                    _checkAddress ? Styles.colors.main : Styles.colors.text,
               ),
               child: Radio()),
         ],
@@ -235,7 +235,7 @@ class _PaymentViewState extends State<PaymentView> {
   Widget _creditCard() {
     return Container(
       padding:
-      const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       child: Row(
         children: [
           Column(
@@ -377,10 +377,10 @@ class _PaymentViewState extends State<PaymentView> {
         child: RaisedButton(
           onPressed: (_checkAddress && _paymentMethod != null)
               ? () {
-            checkout().then((succeed) {
-              print("ok");
-            });
-          }
+                  checkout().then((succeed) {
+                    print("ok");
+                  });
+                }
               : null,
           textColor: Styles.colors.text,
           color: Styles.colors.main,
@@ -407,7 +407,8 @@ class _PaymentViewState extends State<PaymentView> {
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: Styles.mainHorizontalPadding, vertical: 10.0),
-              child: GoBackTopBar(title: "Votre commande",
+              child: GoBackTopBar(
+                  title: "Votre commande",
                   titleFontSize: 20,
                   titleHeightSize: 20),
             ),
