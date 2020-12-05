@@ -5,7 +5,6 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:tryme/App.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
-import 'package:tryme/views/OrderDeliveryOptionsView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/PaymentView.dart';
@@ -29,9 +28,6 @@ class FluroRouter {
   static fluro.Handler _ordersHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrdersView());
-  static fluro.Handler _orderDeliveryOptionsHandler = fluro.Handler(
-      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          OrderDeliveryOptionsView());
   static fluro.Handler _orderFinishedHandler = fluro.Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           OrderFinishedView());
@@ -78,11 +74,6 @@ class FluroRouter {
     router.define(
       'orders',
       handler: _ordersHandler,
-      transitionType: fluro.TransitionType.cupertino,
-    );
-    router.define(
-      'orderDeliveryOptions',
-      handler: _orderDeliveryOptionsHandler,
       transitionType: fluro.TransitionType.cupertino,
     );
     router.define(

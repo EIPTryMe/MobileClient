@@ -123,14 +123,18 @@ class Request {
     return (result.hasException);
   }
 
-  static Future order(String currency, String city, String country,
+  static Future<QueryResult> order(String currency, String city, String country,
       String address, int postalCode) async {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.orderPayment(
             currency, city, country, address, postalCode)));
     QueryResult result = await client.value.query(queryOption);
 
-    return (result.data['orderPayment']);
+    print(Mutations.orderPayment(
+        currency, city, country, address, postalCode));
+    print(result.data['clientSecret']);
+    print(result.hasException);
+    return (result);
   }
 
   static Future<bool> payOrder(int orderId) async {

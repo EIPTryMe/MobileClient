@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
+
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+import 'package:tryme/widgets/GoBackTopBar.dart';
+
+import 'package:tryme/tools/AddressTool.dart';
+
 
 class PaymentView extends StatefulWidget {
   @override
@@ -15,6 +20,65 @@ class PaymentView extends StatefulWidget {
 }
 
 class _PaymentViewState extends State<PaymentView> {
+  String _cardNumber = '';
+  String _expiryDate = '';
+  String _cardHolderName = '';
+  String _cvvCode = '';
+
+  bool _isCvvFocused = false;
+  bool _checkAddress = false;
+
+  PaymentMethod _paymentMethod;
+
+  String _street = "";
+  String _postCode = "";
+  String _city = "";
+  String _country = "";
+
+  void addCreditCard() {
+    StripePayment.setOptions(StripeOptions(
+        publishableKey: "pk_test_qqOqbG3XvLbLfopJ2yWEmrKK00FqSnGPaA",
+        merchantId: "Test",
+        androidPayMode: 'test'));
+
+    StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest())
+        .then((paymentMethod) {
+      setState(() {
+        _paymentMethod = paymentMethod;
+        _cardNumber = "0000 0000 0000 ${paymentMethod.card.last4}";
+        _expiryDate =
+        "${paymentMethod.card.expMonth}/${paymentMethod.card.expYear}";
+        _cardHolderName = "${user.firstName} ${user.lastName}";
+        _cvvCode = "";
+      });
+    }).catchError(setError);
+  }
+
+  void setError(dynamic error) {
+    print(error);
+  }
+
+  Future<bool> checkout() async {
+    QueryResult result;
+
+    result = await Request.order(
+        'eur', _city, _country, _street, int.parse(_postCode));
+    await StripePayment.confirmPaymentIntent(
+      PaymentIntent(
+        clientSecret: result.data['clientSecret'],
+        paymentMethodId: _paymentMethod.id,
+      ),
+    ).catchError(setError);
+    if (result.hasException)
+      return (false);
+    await Request.payOrder(result.data['order_id']).then((hasException) {
+      if (hasException)
+        return (false);
+    });
+
+    return (true);
+  }
+
   Widget _divider({height: 2.0}) {
     return Divider(
       height: height,
@@ -41,7 +105,7 @@ class _PaymentViewState extends State<PaymentView> {
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
                     backgroundImage:
-                        NetworkImage(user.picture != null ? user.picture : ""),
+                    NetworkImage(user.picture != null ? user.picture : ""),
                   ),
                 ),
               ),
@@ -70,17 +134,16 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Widget _shippingAddress() {
-    String street = user.address.street != null ? user.address.street : "";
-    String postCode =
-        user.address.postCode != null ? user.address.postCode : "";
-    String city = user.address.city != null ? user.address.city : "";
-    String country = user.address.country != null ? user.address.country : "";
+    _street = user.address.street != null ? user.address.street : "";
+    _postCode = user.address.postCode != null ? user.address.postCode : "";
+    _city = user.address.city != null ? user.address.city : "";
+    _country = user.address.country != null ? user.address.country : "";
 
-    bool checkAddress =
-        (street != "" && postCode != "" && city != "" && country != "");
+    _checkAddress =
+    (_street != "" && _postCode != "" && _city != "" && _country != "");
     return Container(
       padding:
-          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+      const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       color: Styles.colors.lightBackground,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,7 +163,7 @@ class _PaymentViewState extends State<PaymentView> {
                 ),
               ),
               Text(
-                street,
+                _street,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 13.0,
@@ -108,7 +171,7 @@ class _PaymentViewState extends State<PaymentView> {
                 ),
               ),
               Text(
-                "$postCode $city",
+                "$_postCode $_city",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 13.0,
@@ -118,7 +181,7 @@ class _PaymentViewState extends State<PaymentView> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 11.0),
                 child: Text(
-                  country,
+                  _country,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 13.0,
@@ -128,12 +191,31 @@ class _PaymentViewState extends State<PaymentView> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 6.0),
-                child: Text(
-                  "Change",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14.0,
-                    color: Styles.colors.main,
+                child: GestureDetector(
+                  onTap: () {
+                    AddressTool.getAddress(
+                        context,
+                        user.address.fullAddress != null
+                            ? user.address.fullAddress.addressLine
+                            : "") .then((address) {
+                      //lock = false;
+                      setState(() {
+                      //  _currentAddress = address.addressLine;
+                      //  _loading = false;
+                      });
+                      //saveAddress(address);
+                    }).catchError((_) {
+                     // lock = false;
+                     // setState(() => _loading = false);
+                    });
+                  },
+                  child: Text(
+                    "Change",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14.0,
+                      color: Styles.colors.main,
+                    ),
                   ),
                 ),
               ),
@@ -142,7 +224,7 @@ class _PaymentViewState extends State<PaymentView> {
           Theme(
               data: Theme.of(context).copyWith(
                 disabledColor:
-                    checkAddress ? Styles.colors.main : Styles.colors.text,
+                _checkAddress ? Styles.colors.main : Styles.colors.text,
               ),
               child: Radio()),
         ],
@@ -150,16 +232,10 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-
-
   Widget _creditCard() {
-    String cardNumber = '';
-    String expiryDate = '';
-    String cardHolderName = '';
-    String cvvCode = '';
-    bool isCvvFocused = false;
-
     return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       child: Row(
         children: [
           Column(
@@ -174,23 +250,19 @@ class _PaymentViewState extends State<PaymentView> {
                 ),
               ),
               Container(
-                height: 180,
-                width: 300,
-                child: CreditCardWidget(
-                  cardNumber: cardNumber,
-                  expiryDate: expiryDate,
-                  cardHolderName: cardHolderName,
-                  cvvCode: cvvCode,
-                  showBackView: isCvvFocused,
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: CreditCardForm(
-                    onCreditCardModelChange: onCreditCardModelChange,
+                height: 200,
+                width: 350,
+                child: GestureDetector(
+                  onTap: () => addCreditCard(),
+                  child: CreditCardWidget(
+                    cardNumber: _cardNumber,
+                    expiryDate: _expiryDate,
+                    cardHolderName: _cardHolderName,
+                    cvvCode: _cvvCode,
+                    showBackView: _isCvvFocused,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ],
@@ -303,7 +375,13 @@ class _PaymentViewState extends State<PaymentView> {
         height: 58.0,
         width: 315.0,
         child: RaisedButton(
-          onPressed: () {},
+          onPressed: (_checkAddress && _paymentMethod != null)
+              ? () {
+            checkout().then((succeed) {
+              print("ok");
+            });
+          }
+              : null,
           textColor: Styles.colors.text,
           color: Styles.colors.main,
           shape: RoundedRectangleBorder(
@@ -321,21 +399,36 @@ class _PaymentViewState extends State<PaymentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Styles.colors.background,
-      body: Padding(
-        padding: const EdgeInsets.only(top: 40.0),
+      body: SafeArea(
         child: Column(
           children: [
-            _orderNumber(),
-            SizedBox(height: 15),
-            _shippingAddress(),
-            SizedBox(height: 10),
-            Expanded(child: _creditCard()),
-            SizedBox(height: 15),
-            _priceInformation(),
-            SizedBox(height: 15),
-            _checkOutButton(),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Styles.mainHorizontalPadding, vertical: 10.0),
+              child: GoBackTopBar(title: "Votre commande",
+                  titleFontSize: 20,
+                  titleHeightSize: 20),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  _orderNumber(),
+                  SizedBox(height: 15),
+                  _shippingAddress(),
+                  SizedBox(height: 10),
+                  _creditCard(),
+                  SizedBox(height: 15),
+                  _priceInformation(),
+                  SizedBox(height: 15),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: _checkOutButton(),
+            ),
           ],
         ),
       ),

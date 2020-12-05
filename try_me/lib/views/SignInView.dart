@@ -270,7 +270,7 @@ class _SignInViewState extends State<SignInView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GoBackTopBar(titleFontSize: 10, titleHeightSize: 12),
+              GoBackTopBar(titleFontSize: 10, titleHeightSize: 20),
               HeaderAuthentication(content: "Connectez-vous"),
               _accountRow(),
               _passwordRow(),
