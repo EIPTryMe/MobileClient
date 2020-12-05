@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:tryme/Auth0API.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Styles.dart';
@@ -27,8 +28,11 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    super.initState();
+    Auth0API.getLastUser().then((success) {
+      if (success) Auth0API.initData();
+    });
     if (widget.index != null) _currentIndex = int.parse(widget.index);
+    super.initState();
   }
 
   Widget _bottomNavBar() {

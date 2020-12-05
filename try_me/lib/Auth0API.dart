@@ -1,7 +1,9 @@
 import 'package:flutter_auth0/flutter_auth0.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:tryme/Globals.dart' as global;
 import 'package:tryme/GraphQLConfiguration.dart';
+import 'package:tryme/Request.dart';
 
 enum SocialAuth_e { FACEBOOK, GOOGLE }
 
@@ -32,6 +34,7 @@ class Auth0API {
 
   static Future<bool> login(String email, String password) async {
     try {
+      auth0.auth.getUserInfo();
       var response = await auth0.auth.passwordRealm({
         'username': email,
         'password': password,
@@ -74,7 +77,23 @@ class Auth0API {
     }
   }
 
+  static Future saveUser(String token) async {
+    final storage = FlutterSecureStorage();
+
+    await storage.write(key: 'jwt', value: token);
+  }
+
+  static Future<bool> getLastUser() async {
+    final storage = FlutterSecureStorage();
+    String value = await storage.read(key: 'jwt');
+
+    if (value == null) return (false);
+    await userInfo(value);
+    return (true);
+  }
+
   static Future<bool> userInfo(String bearer) async {
+    await saveUser(bearer);
     try {
       var authClient = Auth0Auth(auth0.auth.clientId, auth0.auth.client.baseUrl,
           bearer: bearer);
@@ -95,5 +114,11 @@ class Auth0API {
       print(e);
       return (false);
     }
+  }
+
+  static Future initData() async {
+    await Request.getUser();
+    global.shoppingCard = await Request.getShoppingCard();
+    global.isLoggedIn = true;
   }
 }
