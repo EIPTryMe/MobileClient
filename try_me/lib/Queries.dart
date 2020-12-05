@@ -40,10 +40,16 @@ class QueryParse {
       product.specifications = result['product_specifications'];
     if (result['reviews'] != null) {
       (result['reviews'] as List).forEach((element) {
-        if (element['score'] != null && element['description'] != null)
-          product.reviews.reviews.add(Review(
-              score: element['score'].toDouble(),
-              description: element['description']));
+        Review review = Review();
+        if (element['created_at'] != null) review.date = element['created_at'];
+        if (element['user'] != null && element['user']['name'] != null)
+          review.user = element['user']['name'];
+        if (element['score'] != null)
+          review.score = element['score'].toDouble();
+        if (element['description'] != null)
+          review.description = element['description'];
+        product.reviews.reviews.add(review);
+        print(review.user);
       });
     }
     if (result['reviews_aggregate'] != null &&
@@ -258,9 +264,13 @@ class Queries {
         name
       }
       picture_url
-      reviews {
+      reviews(order_by: {created_at: desc}) {
+        created_at
         description
         score
+        user {
+          name
+        }
       }
       reviews_aggregate {
         aggregate {
@@ -312,11 +322,14 @@ class Queries {
   static String getSorting(String sort) {
     String orderBy = '';
 
-    if (sort == 'Pertinence') orderBy = '';
+    if (sort == 'Pertinence')
+      orderBy = '';
     else if (sort == 'Prix (Croissant)')
       orderBy = 'price_per_month: asc';
-    else if (sort == 'Prix (Décroissant)') orderBy = 'price_per_month: desc';
-    else if (sort == 'Note moyenne') orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
+    else if (sort == 'Prix (Décroissant)')
+      orderBy = 'price_per_month: desc';
+    else if (sort == 'Note moyenne')
+      orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
     else if (sort == 'Nouveauté') orderBy = 'created_at: desc';
     return (orderBy);
   }

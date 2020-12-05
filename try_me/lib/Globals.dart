@@ -58,8 +58,10 @@ class UserAddress {
 }
 
 class Review {
-  Review({this.score = 0.0, this.description = ""});
+  Review({this.date = "", this.user = "", this.score = 0.0, this.description = ""});
 
+  String date;
+  String user;
   double score;
   String description;
 }

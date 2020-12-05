@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -86,147 +87,237 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  Widget _carousel({double height = 400.0}) {
+  Widget _card({Widget child, String title = ""}) {
     return Container(
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Styles.cardRadius),
-      ),
-      child: _product.pictures == null
-          ? null
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(Styles.cardRadius),
-              child: CarouselSlider(
-                items: _product.pictures == null
-                    ? null
-                    : _product.pictures
-                        .asMap()
-                        .map(
-                          (i, item) => MapEntry(
-                            i,
-                            GestureDetector(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => _carouselFullScreen(
-                                      images: _product.pictures, current: i),
-                                ),
-                              ),
-                              child: Image.network(
-                                item,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                //width: width,
-                              ),
-                            ),
-                          ),
-                        )
-                        .values
-                        .toList(),
-                options: CarouselOptions(height: height, viewportFraction: 1.0),
+      color: Styles.colors.lightBackground,
+      padding: const EdgeInsets.only(
+          top: 10.0,
+          bottom: 10.0,
+          right: Styles.mainHorizontalPadding,
+          left: Styles.mainHorizontalPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (title.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Styles.colors.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _carousel({double height = 400.0}) {
+    return _card(
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(Styles.cardRadius),
+        ),
+        child: _product.pictures == null
+            ? null
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(Styles.cardRadius),
+                child: CarouselSlider(
+                  items: _product.pictures == null
+                      ? null
+                      : _product.pictures
+                          .asMap()
+                          .map(
+                            (i, item) => MapEntry(
+                              i,
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => _carouselFullScreen(
+                                        images: _product.pictures, current: i),
+                                  ),
+                                ),
+                                child: Image.network(
+                                  item,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  //width: width,
+                                ),
+                              ),
+                            ),
+                          )
+                          .values
+                          .toList(),
+                  options:
+                      CarouselOptions(height: height, viewportFraction: 1.0),
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _ratingStars({double stars = 0.0}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: List.generate(5, (index) {
+        IconData icon;
+
+        if (stars.floor() >= index + 1)
+          icon = Icons.star;
+        else if (stars.round() == index + 1)
+          icon = Icons.star_half;
+        else
+          icon = Icons.star_border;
+        return Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        );
+      }),
     );
   }
 
   Widget _header() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                _product.name,
-                style: TextStyle(color: Styles.colors.title),
-              ),
-            ),
-            _product.reviews.reviews.isEmpty
-                ? Text('Pas encore noté',
-                    style: TextStyle(color: Styles.colors.title))
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: List.generate(5, (index) {
-                      IconData icon;
-
-                      if (_product.reviews.averageRating.floor() >= index + 1)
-                        icon = Icons.star;
-                      else if (_product.reviews.averageRating.round() ==
-                          index + 1)
-                        icon = Icons.star_half;
-                      else
-                        icon = Icons.star_border;
-                      return Icon(
-                        icon,
-                        color: Colors.white,
-                        size: 20,
-                      );
-                    }),
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  _product.name,
+                  style: TextStyle(
+                    color: Styles.colors.text,
+                    fontSize: 16,
                   ),
-          ],
-        ),
-        SizedBox(height: 3),
-        Text(
-          '$_pricePerMonth€ / mois',
-          style: TextStyle(color: Styles.colors.text),
-        ),
-      ],
+                ),
+              ),
+              _product.reviews.reviews.isEmpty
+                  ? Text('Pas encore noté',
+                      style: TextStyle(color: Styles.colors.title))
+                  : _ratingStars(stars: _product.reviews.averageRating),
+            ],
+          ),
+          SizedBox(height: 3),
+          Row(
+            children: [
+              Text(
+                '€ $_pricePerMonth',
+                style: TextStyle(
+                    color: Styles.colors.text, fontWeight: FontWeight.w700),
+              ),
+              Text(
+                ' / mois',
+                style: TextStyle(color: Styles.colors.unSelected),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _description() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Description:',
-          style: TextStyle(
-              color: Styles.colors.title, decoration: TextDecoration.underline),
-        ),
-        SizedBox(height: 10),
-        Text(
-          _product.description,
-          style: TextStyle(color: Styles.colors.title),
-        ),
-      ],
+    return _card(
+      title: 'Description',
+      child: Text(
+        _product.description,
+        style: TextStyle(color: Styles.colors.text),
+      ),
     );
   }
 
   Widget _specification() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Spécification:',
-          style: TextStyle(
-              color: Styles.colors.title, decoration: TextDecoration.underline),
-        ),
-        SizedBox(height: 10),
-        Column(
-          children: _product.specifications
-              .map((spec) => Text(
-                    spec,
-                    style: TextStyle(color: Styles.colors.title),
-                  ))
-              .toList(),
-        ),
-      ],
+    return _card(
+      title: 'Spécification',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _product.specifications
+            .map((spec) => Text(
+                  spec,
+                  style: TextStyle(color: Styles.colors.text),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _reviews() {
+    List<Review> reviews = _product.reviews.reviews;
+
+    return _card(
+      title: 'Commentaires',
+      child: reviews.isNotEmpty
+          ? Column(
+              children: List.generate(
+                  reviews.length,
+                  (index) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                reviews[index].user.isNotEmpty
+                                    ? '${reviews[index].user[0]}***${reviews[index].user[reviews[index].user.length - 1]}'
+                                    : '',
+                                style: TextStyle(color: Styles.colors.text),
+                              ),
+                              _ratingStars(stars: reviews[index].score),
+                            ],
+                          ),
+                          SizedBox(height: 12.0),
+                          Text(
+                            reviews[index].date.substring(0, reviews[index].date.indexOf('T')),
+                            style: TextStyle(color: Styles.colors.unSelected),
+                          ),
+                          SizedBox(height: 12.0),
+                          Text(
+                            reviews[index].description,
+                            style: TextStyle(color: Styles.colors.text),
+                          ),
+                          if (index + 1 < reviews.length)
+                            Divider(thickness: 2.0),
+                        ],
+                      )),
+            )
+          : Text(
+              'Pas encore noté',
+              style: TextStyle(color: Styles.colors.text),
+              textAlign: TextAlign.center,
+            ),
     );
   }
 
   Widget _productInfo() {
     return ListView(
-      padding:
-          const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
       children: [
         _carousel(),
-        SizedBox(height: 10),
-        _header(),
-        SizedBox(height: 30),
-        _description(),
-        if (_product.specifications.isNotEmpty) SizedBox(height: 30),
-        if (_product.specifications.isNotEmpty) _specification(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: _header(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: _description(),
+        ),
+        if (_product.specifications.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: _specification(),
+          ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: _reviews(),
+        ),
       ],
     );
   }
