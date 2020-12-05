@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:tryme/Auth0API.dart';
 
 class LandingView extends StatefulWidget {
   @override
@@ -9,15 +10,30 @@ class LandingView extends StatefulWidget {
 
 class _LandingViewState extends State<LandingView> {
   int _seconds = 3;
+  bool _triedLogin = false;
+  Timer _timer;
 
   void viewTimeout() {
-    Navigator.popAndPushNamed(context, 'app');
+    if (_triedLogin) Navigator.popAndPushNamed(context, 'app');
+  }
+
+  void autoLogin() async {
+    Auth0API.getLastUser().then((success) {
+      if (success)
+        Auth0API.initData().whenComplete(() {
+          setState(() {
+            _triedLogin = true;
+            if (!_timer.isActive) viewTimeout();
+          });
+        });
+    });
   }
 
   @override
   void initState() {
+    _timer = Timer(Duration(seconds: this._seconds), viewTimeout);
+    autoLogin();
     super.initState();
-    Timer(Duration(seconds: this._seconds), viewTimeout);
   }
 
   @override

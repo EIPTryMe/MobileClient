@@ -80,16 +80,16 @@ class Auth0API {
   static Future saveUser(String token) async {
     final storage = FlutterSecureStorage();
 
+    await storage.deleteAll();
     await storage.write(key: 'jwt', value: token);
   }
 
   static Future<bool> getLastUser() async {
     final storage = FlutterSecureStorage();
-    String value = await storage.read(key: 'jwt');
+    String token = await storage.read(key: 'jwt');
 
-    if (value == null) return (false);
-    await userInfo(value);
-    return (true);
+    if (token == null) return (false);
+    return (await userInfo(token));
   }
 
   static Future<bool> userInfo(String bearer) async {
@@ -108,17 +108,21 @@ class Auth0API {
       global.client = getGraphQLClient(uid: global.auth0User.uid);
 
       print(info);
-
-      return (true);
+      return (await initData());
     } catch (e) {
       print(e);
       return (false);
     }
   }
 
-  static Future initData() async {
-    await Request.getUser();
-    global.shoppingCard = await Request.getShoppingCard();
+  static Future<bool> initData() async {
+    await Request.getUser().then((hasException) {
+      if (hasException) return (false);
+    });
+    await Request.getShoppingCard().then((shoppingCard) {
+      global.shoppingCard = shoppingCard;
+    });
     global.isLoggedIn = true;
+    return (true);
   }
 }

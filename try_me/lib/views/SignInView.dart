@@ -61,10 +61,7 @@ class _SignInViewState extends State<SignInView> {
   }
 
   void connection() {
-    Auth0API.initData().whenComplete(() {
-      Navigator.pushNamedAndRemoveUntil(
-          context, 'app', ModalRoute.withName('/'));
-    });
+    Navigator.pushNamedAndRemoveUntil(context, 'app', ModalRoute.withName('/'));
   }
 
   Widget _accountRow() {

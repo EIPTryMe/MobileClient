@@ -28,30 +28,24 @@ class Request {
     return (result.hasException);
   }
 
-  static Future<void> getUser() async {
+  static Future<bool> getUser() async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.user(auth0User.uid)));
     QueryResult result = await client.value.query(queryOption);
 
-    if (result.hasException) {
-      print('Request exception');
-      return;
-    }
     if (result.data['user'] != null)
       await QueryParse.getUser(result.data['user'][0]);
+    return (result.hasException);
   }
 
-  static Future<void> getCategories() async {
+  static Future<bool> getCategories() async {
     QueryOptions queryOption =
         QueryOptions(documentNode: gql(Queries.categories()));
     QueryResult result = await client.value.query(queryOption);
 
-    if (result.hasException) {
-      print('Request exception');
-      return;
-    }
     if (result.data['category'] != null)
       QueryParse.getCategories(result.data['category']);
+    return (result.hasException);
   }
 
   static Future<bool> modifyUserFirstName(String firstName) async {
