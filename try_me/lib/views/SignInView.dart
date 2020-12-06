@@ -29,8 +29,7 @@ class _SignInViewState extends State<SignInView> {
       _loading = true;
     });
     Request.getUser().whenComplete(() {
-      Request.getShoppingCard().then((cards) {
-        shoppingCard = cards;
+      Request.getShoppingCard().whenComplete(() {
         isLoggedIn = true;
         Navigator.pushNamedAndRemoveUntil(
             context, 'app', ModalRoute.withName('/'));

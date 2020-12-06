@@ -229,7 +229,7 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   void disconnect(BuildContext context) {
     isLoggedIn = false;
-    shoppingCard.clear();
+    shoppingCard.shoppingCard.clear();
     auth0User = Auth0User();
     user = User();
     Navigator.pushNamedAndRemoveUntil(context, 'app', ModalRoute.withName('/'));

@@ -123,9 +123,9 @@ class _PaymentViewState extends State<PaymentView> {
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(
-                        shoppingCard.first.product.pictures.isEmpty
+                        shoppingCard.shoppingCard.first.product.pictures.isEmpty
                             ? ""
-                            : shoppingCard.first.product.pictures[0]),
+                            : shoppingCard.shoppingCard.first.product.pictures[0]),
                   ),
                 ),
               ),

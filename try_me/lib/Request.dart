@@ -7,17 +7,33 @@ import 'package:tryme/widgets/Filter.dart';
 enum OrderBy { PRICE, NEW, NAME }
 
 class Request {
-  static Future<List<Cart>> getShoppingCard() async {
-    List<Cart> shoppingCard = List();
+  static Future<bool> getShoppingCard() async {
     QueryOptions queryOption = QueryOptions(
       documentNode: gql(Queries.shoppingCard(auth0User.uid)),
       fetchPolicy: FetchPolicy.cacheAndNetwork,
     );
     QueryResult result = await client.value.query(queryOption);
 
-    if (!result.hasException && result.data['cartItem'] != null)
-      shoppingCard = QueryParse.getShoppingCard(result.data['cartItem']);
-    return (shoppingCard);
+    if (!result.hasException && result.data['cartItem'] != null) {
+      shoppingCard.shoppingCard =
+          QueryParse.getShoppingCard(result.data['cartItem']);
+      await shoppingCardTotal();
+    }
+    return (result.hasException);
+  }
+
+  static Future<bool> shoppingCardTotal() async {
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.shoppingCardTotal()),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
+    QueryResult result = await client.value.query(queryOption);
+
+    if (!result.hasException &&
+        result.data['totalCart'] != null &&
+        result.data['totalCart']['total'] != null)
+      shoppingCard.total = result.data['totalCart']['total'].toDouble();
+    return (result.hasException);
   }
 
   static Future<bool> deleteShoppingCard(int id) async {

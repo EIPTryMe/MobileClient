@@ -130,7 +130,8 @@ class Category {
 }
 
 class ProductListData {
-  ProductListData({this.products, this.categories, this.brands, this.priceRange}) {
+  ProductListData(
+      {this.products, this.categories, this.brands, this.priceRange}) {
     if (products == null) products = List();
     if (categories == null) categories = List();
     if (brands == null) brands = List();
@@ -143,6 +144,15 @@ class ProductListData {
   RangeValues priceRange;
 }
 
+class ShoppingCard {
+  ShoppingCard({this.shoppingCard, this.total = 0.0}) {
+    if (shoppingCard == null) shoppingCard = List();
+  }
+
+  List<Cart> shoppingCard;
+  double total;
+}
+
 ValueNotifier<GraphQLClient> client = getGraphQLClient();
 
 bool isLoggedIn = false;
@@ -151,6 +161,6 @@ Auth0User auth0User = Auth0User();
 User user = User();
 
 List<Category> categories = List();
-List<Cart> shoppingCard = List();
+ShoppingCard shoppingCard = ShoppingCard();
 
 const String mapApiKey = 'AIzaSyBOfQxDPTnCGCVw-OMy4yt4Iy9LgMCKbcQ';

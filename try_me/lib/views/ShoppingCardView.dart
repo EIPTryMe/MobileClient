@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
-import 'package:tryme/Router.dart';
 import 'package:tryme/Styles.dart';
 
 import 'package:tryme/tools/NumberFormatTool.dart';
 
 import 'package:tryme/widgets/Loading.dart';
-
 
 class ShoppingCardView extends StatefulWidget {
   @override
@@ -25,9 +23,8 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
   }
 
   void getData() async {
-    Request.getShoppingCard().then((cards) {
+    Request.getShoppingCard().whenComplete(() {
       setState(() {
-        shoppingCard = cards;
         _loading = false;
       });
     });
@@ -37,7 +34,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     return Container(
       height: 58.0,
       child: RaisedButton(
-        onPressed: () => Navigator.pushNamed(context, "payment") ,
+        onPressed: () => Navigator.pushNamed(context, "payment"),
         textColor: Styles.colors.text,
         color: Styles.colors.main,
         shape: RoundedRectangleBorder(
@@ -146,10 +143,11 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
   @override
   Widget build(BuildContext context) {
-    if (shoppingCard.length != 0)
+    if (shoppingCard.shoppingCard.length != 0)
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Text(NumberFormatTool.formatPrice(shoppingCard.total)),
           Expanded(
             child: Stack(
               alignment: Alignment.center,
@@ -159,9 +157,9 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                       right: Styles.mainHorizontalPadding,
                       left: Styles.mainHorizontalPadding,
                       top: 15.0),
-                  itemCount: shoppingCard.length,
+                  itemCount: shoppingCard.shoppingCard.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _shoppingCardCart(shoppingCard[index]);
+                    return _shoppingCardCart(shoppingCard.shoppingCard[index]);
                   },
                 ),
                 Loading(active: _loading),

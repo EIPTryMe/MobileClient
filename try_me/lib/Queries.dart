@@ -375,6 +375,14 @@ class Queries {
   }
   ''';
 
+  static String shoppingCardTotal() => '''
+  query totalCart {
+    totalCart {
+      total
+    }
+  }
+  ''';
+
   static String orders() => '''
   query {
     order(where: {user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
