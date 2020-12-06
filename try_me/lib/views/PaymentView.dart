@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
-
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 import 'package:tryme/Globals.dart';
@@ -33,6 +34,8 @@ class _PaymentViewState extends State<PaymentView> {
   String _postCode = "";
   String _city = "";
   String _country = "";
+
+  ButtonState _buttonState = ButtonState.idle;
 
   @override
   void initState() {
@@ -71,14 +74,15 @@ class _PaymentViewState extends State<PaymentView> {
 
     result = await Request.order(
         'eur', _city, _country, _street, int.parse(_postCode));
+    if (result.hasException) return (false);
     await StripePayment.confirmPaymentIntent(
       PaymentIntent(
         clientSecret: result.data['orderPayment']['clientSecret'],
         paymentMethodId: _paymentMethod.id,
       ),
     ).catchError(setError);
-    if (result.hasException) return (false);
-    await Request.payOrder(result.data['orderPayment']['order_id']).then((hasException) {
+    await Request.payOrder(result.data['orderPayment']['order_id'])
+        .then((hasException) {
       if (hasException) return (false);
     });
 
@@ -110,8 +114,10 @@ class _PaymentViewState extends State<PaymentView> {
                 child: Padding(
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(user.picture != null ? user.picture : ""),
+                    backgroundImage: NetworkImage(
+                        shoppingCard.first.product.pictures.isEmpty
+                            ? ""
+                            : shoppingCard.first.product.pictures[0]),
                   ),
                 ),
               ),
@@ -272,7 +278,6 @@ class _PaymentViewState extends State<PaymentView> {
 
   Widget _priceInformation() {
     String price = "28.00";
-    String shippingPrice = "7.20";
     String total = "35.20";
 
     return Container(
@@ -341,7 +346,7 @@ class _PaymentViewState extends State<PaymentView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   child: Text(
-                    "$shippingPrice €",
+                    "Offert",
                     style: TextStyle(
                       color: Styles.colors.text,
                       fontSize: 13.0,
@@ -369,30 +374,42 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Widget _checkOutButton() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30.0, 0, 30.0, 10.0),
-      child: Container(
-        height: 58.0,
-        width: 315.0,
-        child: RaisedButton(
-          onPressed: (_checkAddress && _paymentMethod != null)
-              ? () {
-                  checkout().then((succeed) {
-                    print("ok");
-                  });
-                }
-              : null,
-          textColor: Styles.colors.text,
-          color: Styles.colors.main,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Text(
-            "Payer",
-            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-          ),
-        ),
-      ),
+    double width = MediaQuery.of(context).size.width;
+    return ProgressButton.icon(
+      maxWidth: width,
+      radius: Styles.buttonRadius,
+      iconedButtons: {
+        ButtonState.idle: IconedButton(
+            text: "Payer",
+            icon: Icon(Icons.credit_card, color: Colors.white),
+            color: Styles.colors.main),
+        ButtonState.loading: IconedButton(color: Styles.colors.main),
+        ButtonState.fail: IconedButton(
+            text: "Erreur",
+            icon: Icon(Icons.cancel, color: Colors.white),
+            color: Colors.red.withOpacity(0.7)),
+        ButtonState.success: IconedButton(
+            text: "Paiement réussi",
+            icon: Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+            color: Colors.green.shade400)
+      },
+      onPressed: _checkAddress && _paymentMethod != null
+          ? () {
+              setState(() {
+                _buttonState = ButtonState.loading;
+              });
+              Navigator.pushNamedAndRemoveUntil(
+                  context, 'orderFinished', ModalRoute.withName('home'));
+//        checkout().then((succeed) {
+//          _buttonState =
+//          succeed ? ButtonState.success : ButtonState.fail;
+//        });
+            }
+          : null,
+      state: _buttonState,
     );
   }
 
@@ -403,6 +420,7 @@ class _PaymentViewState extends State<PaymentView> {
       backgroundColor: Styles.colors.background,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -427,7 +445,8 @@ class _PaymentViewState extends State<PaymentView> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 5.0),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Styles.mainHorizontalPadding, vertical: 10.0),
               child: _checkOutButton(),
             ),
           ],
