@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
@@ -47,21 +46,7 @@ class _SignInViewState extends State<SignInView> {
 
   bool _obscureText = true;
 
-  @override
-  void initState() {
-    super.initState();
-    EasyLoading.instance.userInteractions = false;
-  }
-
-  void showLoading() async {
-    EasyLoading.show(
-      status: 'Chargement...',
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
-
   void connection() {
-    showLoading();
     Request.getUser().whenComplete(() {
       Request.getShoppingCard().then((cards) {
         shoppingCard = cards;
@@ -254,17 +239,17 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterEasyLoading(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Styles.colors.background,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 30.0),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Styles.colors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 30, left: 30, bottom: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GoBackTopBar(titleFontSize: 10, titleHeightSize: 20),
+              GoBackTopBar(titleFontSize: 10),
               HeaderAuthentication(content: "Connectez-vous"),
               _accountRow(),
               _passwordRow(),

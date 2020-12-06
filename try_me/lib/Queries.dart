@@ -223,11 +223,19 @@ class Mutations {
   }
   ''';
 
-  static String orderPayment(String currency, String city, String country,
-          String address, int postalCode) =>
+  static String orderPayment(
+          String currency,
+          String city,
+          String country,
+          String address,
+          int postalCode,
+          String billingCity,
+          String billingCountry,
+          String billingAddress,
+          int billingPostalCode) =>
       '''
   mutation {
-    orderPayment(currency: "$currency", addressDetails: {address_city: "$city", address_country: "$country", address_line_1: "$address", address_postal_code: $postalCode}) {
+    orderPayment(currency: "$currency", addressDetails: {address_city: "$city", address_country: "$country", address_line_1: "$address", address_postal_code: $postalCode}, billingDetails: {billing_city: "$billingCity", billing_country: "$billingCountry", billing_address_line_1: "$billingAddress", billing_postal_code: $billingPostalCode}) {
       order_id
       clientSecret
       publishableKey
@@ -312,11 +320,14 @@ class Queries {
   static String getSorting(String sort) {
     String orderBy = '';
 
-    if (sort == 'Pertinence') orderBy = '';
+    if (sort == 'Pertinence')
+      orderBy = '';
     else if (sort == 'Prix (Croissant)')
       orderBy = 'price_per_month: asc';
-    else if (sort == 'Prix (Décroissant)') orderBy = 'price_per_month: desc';
-    else if (sort == 'Note moyenne') orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
+    else if (sort == 'Prix (Décroissant)')
+      orderBy = 'price_per_month: desc';
+    else if (sort == 'Note moyenne')
+      orderBy = 'reviews_aggregate: {avg: {score: desc_nulls_last}}';
     else if (sort == 'Nouveauté') orderBy = 'created_at: desc';
     return (orderBy);
   }
