@@ -73,7 +73,15 @@ class _PaymentViewState extends State<PaymentView> {
     QueryResult result;
 
     result = await Request.order(
-        'eur', _city, _country, _street, int.parse(_postCode));
+        'eur',
+        user.address.city,
+        user.address.country,
+        user.address.street,
+        int.tryParse(user.address.postCode),
+        _city,
+        _country,
+        _street,
+        int.tryParse(_postCode));
     if (result.hasException) return (false);
     await StripePayment.confirmPaymentIntent(
       PaymentIntent(
@@ -402,7 +410,8 @@ class _PaymentViewState extends State<PaymentView> {
                 _buttonState = ButtonState.loading;
               });
               Navigator.pushNamedAndRemoveUntil(
-                  context, 'orderFinished', ModalRoute.withName('home'));
+                  context, 'app', ModalRoute.withName('/'));
+              Navigator.pushNamed(context, 'orderFinished');
 //        checkout().then((succeed) {
 //          _buttonState =
 //          succeed ? ButtonState.success : ButtonState.fail;
