@@ -123,11 +123,27 @@ class Request {
     return (result.hasException);
   }
 
-  static Future<QueryResult> order(String currency, String city, String country,
-      String address, int postalCode) async {
+  static Future<QueryResult> order(
+      String currency,
+      String city,
+      String country,
+      String address,
+      int postalCode,
+      String billingCity,
+      String billingCountry,
+      String billingAddress,
+      int billingPostalCode) async {
     QueryOptions queryOption = QueryOptions(
         documentNode: gql(Mutations.orderPayment(
-            currency, city, country, address, postalCode)));
+            currency,
+            city,
+            country,
+            address,
+            postalCode,
+            billingCity,
+            billingCountry,
+            billingAddress,
+            billingPostalCode)));
     QueryResult result = await client.value.query(queryOption);
 
     return (result);
@@ -170,8 +186,12 @@ class Request {
       String keywords, FilterOptions filterOptions, String sort) async {
     ProductListData productList = ProductListData();
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(
-            Queries.productsSearch(keywords, filterOptions.selectedCategory, filterOptions.selectedBrands, filterOptions.priceCurrent, sort)));
+        documentNode: gql(Queries.productsSearch(
+            keywords,
+            filterOptions.selectedCategory,
+            filterOptions.selectedBrands,
+            filterOptions.priceCurrent,
+            sort)));
     QueryResult result = await client.value.query(queryOption);
 
     productList = QueryParse.getProductList(result.data);
