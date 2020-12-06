@@ -48,7 +48,8 @@ class _PaymentViewState extends State<PaymentView> {
 
   void addCreditCard() {
     StripePayment.setOptions(StripeOptions(
-        publishableKey: "pk_test_qqOqbG3XvLbLfopJ2yWEmrKK00FqSnGPaA",
+        publishableKey:
+            "pk_test_51HvOCIHzD4uJULST7uBkll71K9x6hhY8IECnNisDxCp6i6jJi4ErzfpjJPOyxABNaamP04BAiDeB4WvQ9hqIfUOO00XAbiWlGd",
         merchantId: "Test",
         androidPayMode: 'test'));
 
@@ -122,10 +123,10 @@ class _PaymentViewState extends State<PaymentView> {
                 child: Padding(
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        shoppingCard.shoppingCard.first.product.pictures.isEmpty
-                            ? ""
-                            : shoppingCard.shoppingCard.first.product.pictures[0]),
+                    backgroundImage: NetworkImage(shoppingCard
+                            .shoppingCard.first.product.pictures.isEmpty
+                        ? ""
+                        : shoppingCard.shoppingCard.first.product.pictures[0]),
                   ),
                 ),
               ),
@@ -409,13 +410,12 @@ class _PaymentViewState extends State<PaymentView> {
               setState(() {
                 _buttonState = ButtonState.loading;
               });
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'app', ModalRoute.withName('/'));
-              Navigator.pushNamed(context, 'orderFinished');
-//        checkout().then((succeed) {
-//          _buttonState =
-//          succeed ? ButtonState.success : ButtonState.fail;
-//        });
+              checkout().then((succeed) {
+                _buttonState = succeed ? ButtonState.success : ButtonState.fail;
+                Navigator.pushNamedAndRemoveUntil(
+                    context, 'app', ModalRoute.withName('/'));
+                Navigator.pushNamed(context, 'orderFinished');
+              });
             }
           : null,
       state: _buttonState,

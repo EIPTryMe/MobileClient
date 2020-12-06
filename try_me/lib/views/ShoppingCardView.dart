@@ -147,7 +147,6 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(NumberFormatTool.formatPrice(shoppingCard.total)),
           Expanded(
             child: Stack(
               alignment: Alignment.center,
