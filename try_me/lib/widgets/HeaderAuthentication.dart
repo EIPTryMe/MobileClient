@@ -20,33 +20,30 @@ class _HeaderAuthenticationState extends State<HeaderAuthentication> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Image(image: AssetImage("assets/logoTryMe.png"), fit: BoxFit.contain,
-                width: 150,),
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Image(image: AssetImage("assets/logoTryMe.png"), fit: BoxFit.contain,
+              width: 150,),
+          ),
+          Text(
+            'Bienvenue !',
+            style: TextStyle(
+              fontSize: 42.0,
+              color: Styles.colors.text,
             ),
-            Text(
-              'Bienvenue !',
-              style: TextStyle(
-                fontSize: 42.0,
-                color: Styles.colors.text,
-              ),
+          ),
+          Text(
+            this.content,
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Styles.colors.title,
             ),
-            Text(
-              this.content,
-              style: TextStyle(
-                fontSize: 24.0,
-                color: Styles.colors.title,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

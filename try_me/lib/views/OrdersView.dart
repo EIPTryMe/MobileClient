@@ -144,7 +144,8 @@ class _OrdersViewState extends State<OrdersView> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12.0),
-                          child: order.products.first.pictures.isNotEmpty
+                          child: order.products.isNotEmpty &&
+                                  order.products.first.pictures.isNotEmpty
                               ? Image(
                                   image: NetworkImage(
                                       order.products.first.pictures[0]),

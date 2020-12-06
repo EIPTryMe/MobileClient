@@ -210,8 +210,10 @@ class Request {
 
   static Future<List<Order>> getOrders() async {
     List<Order> orders = List();
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.orders()));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.orders()),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     if (result.data['order'] != null)
@@ -223,8 +225,10 @@ class Request {
 
   static Future<int> getOrdersNumber() async {
     int ordersNumber = 0;
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.ordersNumber("")));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.ordersNumber("")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     if (!result.hasException)
