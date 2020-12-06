@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:tryme/Auth0API.dart';
-
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/views/HomeView.dart';

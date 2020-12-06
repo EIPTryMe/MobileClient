@@ -17,7 +17,7 @@ Widget backButton(BuildContext context) {
     height: 58.0,
     width: 58.0,
     child: RaisedButton(
-      onPressed: () => Navigator.pushNamed(context, 'signIn'),
+      onPressed: () => Navigator.pop(context),
       textColor: Styles.colors.text,
       color: Styles.colors.mainAlpha50,
       shape: RoundedRectangleBorder(
@@ -113,28 +113,30 @@ class _SignUpEmailViewState extends State<SignUpEmailView> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Styles.colors.background,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 58.0, horizontal: 30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HeaderAuthentication(content: "Entrez votre email !"),
-              _accountRow(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: Row(
-                  children: [
-                    backButton(context),
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0),
-                      child: nextButton(),
-                    )),
-                  ],
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 58.0, horizontal: 30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HeaderAuthentication(content: "Entrez votre email !"),
+                _accountRow(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 100),
+                  child: Row(
+                    children: [
+                      backButton(context),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.only(left: 12.0),
+                        child: nextButton(),
+                      )),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }

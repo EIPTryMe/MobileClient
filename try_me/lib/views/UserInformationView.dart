@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_map_location_picker/google_map_location_picker.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
@@ -37,12 +35,11 @@ class _UserInformationViewState extends State<UserInformationView> {
   Color _iconColor1 = Color(0xFF1E2439);
   Color _iconColor2 = Color(0xFF39FEBF);
   Color _iconColor3 = Styles.colors.main;
-  int _ordersNumber = 0;
+  int _ordersNumber;
   bool _loading = false;
 
   @override
   void initState() {
-    super.initState();
     getData();
     _firstNameController = TextEditingController(text: user.firstName);
     _nameController = TextEditingController(text: user.lastName);
@@ -77,6 +74,7 @@ class _UserInformationViewState extends State<UserInformationView> {
       _currentBirthday = DateTime.tryParse(user.birthday);
     if (user.address.fullAddress != null)
       _currentAddress = user.address.fullAddress.addressLine;
+    super.initState();
   }
 
   @override
@@ -231,7 +229,7 @@ class _UserInformationViewState extends State<UserInformationView> {
 
   void disconnect(BuildContext context) {
     isLoggedIn = false;
-    shoppingCard.clear();
+    shoppingCard.shoppingCard.clear();
     auth0User = Auth0User();
     user = User();
     Navigator.pushNamedAndRemoveUntil(context, 'app', ModalRoute.withName('/'));
@@ -396,24 +394,25 @@ class _UserInformationViewState extends State<UserInformationView> {
               ),
               Row(
                 children: [
-                  Container(
-                    height: 17,
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    decoration: BoxDecoration(
-                      color: Styles.colors.main,
-                      borderRadius: BorderRadius.all(Radius.circular(32.5)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _ordersNumber.toString(),
-                        style: TextStyle(
-                          color: Styles.colors.text,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
+                  if (_ordersNumber != null)
+                    Container(
+                      height: 17,
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        color: Styles.colors.main,
+                        borderRadius: BorderRadius.all(Radius.circular(32.5)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _ordersNumber.toString(),
+                          style: TextStyle(
+                            color: Styles.colors.text,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   Icon(
                     Icons.keyboard_arrow_right,
                     color: Color(0xFFBEC7C5),

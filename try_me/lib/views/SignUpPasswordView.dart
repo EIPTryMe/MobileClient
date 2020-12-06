@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
-
 import 'package:tryme/widgets/HeaderAuthentication.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 class SignUpPasswordView extends StatefulWidget {
   SignUpPasswordView({this.email});
@@ -24,7 +21,7 @@ Widget backButton(BuildContext context) {
     height: 58.0,
     width: 58.0,
     child: RaisedButton(
-      onPressed: () => Navigator.pushNamed(context, 'signUpEmail'),
+      onPressed: () => Navigator.pop(context),
       textColor: Styles.colors.text,
       color: Styles.colors.mainAlpha50,
       shape: RoundedRectangleBorder(
@@ -52,6 +49,8 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
 
   String _error = '';
 
+  bool _loading = false;
+
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -64,34 +63,11 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    EasyLoading.instance.userInteractions = false;
-  }
-
-  void showLoading() async {
-    EasyLoading.show(
-      status: 'Chargement...',
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
-
   void connection() {
-    showLoading();
     Request.getUser().whenComplete(() {
-      if (user.companyId == null) {
-        Request.getShoppingCard().then((cards) {
-          shoppingCard = cards;
-          isLoggedIn = true;
-          Navigator.pushNamedAndRemoveUntil(
-              context, 'app', ModalRoute.withName('/'));
-        });
-      } else {
-        setState(() {
-          _error = 'Connectez-vous en tant qu\'entreprise';
-        });
-      }
+      isLoggedIn = true;
+      Navigator.pushNamedAndRemoveUntil(
+          context, 'app/2', ModalRoute.withName('/'));
     });
   }
 
@@ -101,18 +77,23 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Format invalide', style: TextStyle(color: Colors.red),),
+          title: Text(
+            'Format invalide',
+            style: TextStyle(color: Colors.red),
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('Votre mot de passe doit contenir :'),
-                Text('Au minimum 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial.'),
+                Text(
+                    'Au minimum 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial.'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('J\'ai compris', style: TextStyle(color: Styles.colors.main)),
+              child: Text('J\'ai compris',
+                  style: TextStyle(color: Styles.colors.main)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -122,8 +103,6 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
       },
     );
   }
-
-
 
   Widget _passwordRow() {
     return Row(
@@ -257,10 +236,16 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
         onPressed: () {
           if (_formKeyPassword.currentState.validate() &&
               _formKeyPassword2.currentState.validate()) {
+            setState(() {
+              _loading = true;
+            });
             Auth0API.register(widget.email, _password).then((isConnected) {
               if (isConnected) {
                 connection();
-              }
+              } else
+                setState(() {
+                  _loading = false;
+                });
             });
           }
         },
@@ -281,40 +266,48 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterEasyLoading(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Styles.colors.background,
-          body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 58.0, horizontal: 30.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                HeaderAuthentication(content: "Entrez votre mot de passe !"),
-                _passwordRow(),
-                _confirmPasswordRow(),
-                if (_error.isNotEmpty)
-                  Text(
-                    _error,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 50),
-                  child: Row(
-                    children: [
-                      backButton(context),
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: _submitButton(),
-                      )),
-                    ],
-                  ),
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Styles.colors.background,
+        body: SafeArea(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 58.0, horizontal: 30.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HeaderAuthentication(
+                        content: "Entrez votre mot de passe !"),
+                    _passwordRow(),
+                    _confirmPasswordRow(),
+                    if (_error.isNotEmpty)
+                      Text(
+                        _error,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 50),
+                      child: Row(
+                        children: [
+                          backButton(context),
+                          Expanded(
+                              child: Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: _submitButton(),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )),
-    );
+              ),
+              Loading(active: _loading),
+            ],
+          ),
+        ));
   }
 }

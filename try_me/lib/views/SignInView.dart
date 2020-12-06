@@ -1,41 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:tryme/Auth0API.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
-
 import 'package:tryme/Styles.dart';
-
 import 'package:tryme/widgets/GoBackTopBar.dart';
 import 'package:tryme/widgets/HeaderAuthentication.dart';
+import 'package:tryme/widgets/Loading.dart';
 
 class SignInView extends StatefulWidget {
   @override
   _SignInViewState createState() => _SignInViewState();
-}
-
-Widget _createAccountButton(BuildContext context) {
-  return Container(
-    height: 58.0,
-    child: RaisedButton(
-      onPressed: () => Navigator.pushNamed(context, 'signUpEmail'),
-      textColor: Styles.colors.text,
-      color: Styles.colors.mainAlpha50,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Créer un compte"),
-        ],
-      ),
-    ),
-  );
 }
 
 class _SignInViewState extends State<SignInView> {
@@ -44,24 +21,20 @@ class _SignInViewState extends State<SignInView> {
   var _email;
   var _password;
   String _error = '';
-
   bool _obscureText = true;
-
-  @override
-  void initState() {
-    super.initState();
-    EasyLoading.instance.userInteractions = false;
-  }
-
-  void showLoading() async {
-    EasyLoading.show(
-      status: 'Chargement...',
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
+  bool _loading = false;
 
   void connection() {
-    Navigator.pushNamedAndRemoveUntil(context, 'app', ModalRoute.withName('/'));
+    setState(() {
+      _loading = true;
+    });
+    Request.getUser().whenComplete(() {
+      Request.getShoppingCard().whenComplete(() {
+        isLoggedIn = true;
+        Navigator.pushNamedAndRemoveUntil(
+            context, 'app', ModalRoute.withName('/'));
+      });
+    });
   }
 
   Widget _accountRow() {
@@ -181,12 +154,16 @@ class _SignInViewState extends State<SignInView> {
         onPressed: () {
           if (_formKeyEmail.currentState.validate() &&
               _formKeyPassword.currentState.validate()) {
+            setState(() {
+              _loading = true;
+            });
             Auth0API.login(_email, _password).then((isConnected) {
               if (isConnected) {
                 connection();
               } else {
                 setState(() {
                   _error = 'Email ou mot de passe invalide';
+                  _loading = false;
                 });
               }
             });
@@ -244,51 +221,79 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 
+  Widget _createAccountButton() {
+    return Container(
+      height: 58.0,
+      child: RaisedButton(
+        onPressed: () => Navigator.pushNamed(context, 'signUpEmail'),
+        textColor: Styles.colors.text,
+        color: Styles.colors.mainAlpha50,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Créer un compte"),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FlutterEasyLoading(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Styles.colors.background,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GoBackTopBar(titleFontSize: 10, titleHeightSize: 12),
-              HeaderAuthentication(content: "Connectez-vous"),
-              _accountRow(),
-              _passwordRow(),
-              if (_error.isNotEmpty)
-                Text(
-                  _error,
-                  style: TextStyle(color: Colors.red),
-                ),
-              goButton(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Styles.colors.background,
+      body: SafeArea(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 30, left: 30, bottom: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    child: Text(
-                      "Mot de passe oublié ?",
-                      style:
-                          TextStyle(color: Styles.colors.title, fontSize: 14.0),
+                  GoBackTopBar(titleFontSize: 10),
+                  HeaderAuthentication(content: "Connectez-vous"),
+                  _accountRow(),
+                  _passwordRow(),
+                  if (_error.isNotEmpty)
+                    Text(
+                      _error,
+                      style: TextStyle(color: Colors.red),
                     ),
-                    onTap: () {},
+                  goButton(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        child: Text(
+                          "Mot de passe oublié ?",
+                          style: TextStyle(
+                              color: Styles.colors.title, fontSize: 14.0),
+                        ),
+                        onTap: () {
+                          Auth0API.resetPassword();
+                        },
+                      ),
+                    ],
                   ),
+                  Row(
+                    children: [
+                      Expanded(flex: 1, child: _facebookButton()),
+                      SizedBox(width: 7.0),
+                      Expanded(flex: 1, child: _googleButton()),
+                    ],
+                  ),
+                  _createAccountButton(),
                 ],
               ),
-              Row(
-                children: [
-                  Expanded(flex: 1, child: _facebookButton()),
-                  SizedBox(width: 7.0),
-                  Expanded(flex: 1, child: _googleButton()),
-                ],
-              ),
-              _createAccountButton(context),
-            ],
-          ),
+            ),
+            Loading(active: _loading),
+          ],
         ),
       ),
     );

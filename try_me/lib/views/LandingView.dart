@@ -10,21 +10,21 @@ class LandingView extends StatefulWidget {
 
 class _LandingViewState extends State<LandingView> {
   int _seconds = 3;
-  bool _triedLogin = false;
+  bool _lock = true;
   Timer _timer;
 
   void viewTimeout() {
-    if (_triedLogin) Navigator.popAndPushNamed(context, 'app');
+    if (!_lock) Navigator.popAndPushNamed(context, 'app');
   }
 
   void autoLogin() async {
     Auth0API.getLastUser().then((success) {
+      setState(() {
+        _lock = false;
+      });
       if (success)
         Auth0API.initData().whenComplete(() {
-          setState(() {
-            _triedLogin = true;
-            if (!_timer.isActive) viewTimeout();
-          });
+          if (!_timer.isActive) viewTimeout();
         });
     });
   }

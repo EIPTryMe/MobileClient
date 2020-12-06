@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+
 import 'package:tryme/tools/NumberFormatTool.dart';
+
 import 'package:tryme/widgets/Loading.dart';
 
 class ShoppingCardView extends StatefulWidget {
@@ -13,6 +15,7 @@ class ShoppingCardView extends StatefulWidget {
 
 class _ShoppingCardViewState extends State<ShoppingCardView> {
   bool _loading = true;
+  String _total = "";
 
   @override
   void initState() {
@@ -21,26 +24,27 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
   }
 
   void getData() async {
-    Request.getShoppingCard().then((cards) {
+    Request.getShoppingCard().whenComplete(() {
       setState(() {
-        shoppingCard = cards;
         _loading = false;
+        _total = NumberFormatTool.formatPrice(shoppingCard.total);
       });
     });
+    print(_total);
   }
 
   Widget _orderButton() {
     return Container(
       height: 58.0,
       child: RaisedButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, "payment"),
         textColor: Styles.colors.text,
         color: Styles.colors.main,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Text(
-          "Payer",
+          "Payer ($_total€)",
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
         ),
       ),
@@ -142,57 +146,57 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
   @override
   Widget build(BuildContext context) {
-    if (shoppingCard.length != 0)
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ListView.builder(
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (shoppingCard.shoppingCard.length != 0)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ListView.builder(
                   padding: const EdgeInsets.only(
                       right: Styles.mainHorizontalPadding,
                       left: Styles.mainHorizontalPadding,
                       top: 15.0),
-                  itemCount: shoppingCard.length,
+                  itemCount: shoppingCard.shoppingCard.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _shoppingCardCart(shoppingCard[index]);
+                    return _shoppingCardCart(shoppingCard.shoppingCard[index]);
                   },
                 ),
-                Loading(active: _loading),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 5.0,
+                    right: Styles.mainHorizontalPadding,
+                    left: Styles.mainHorizontalPadding,
+                    bottom: 10.0),
+                child: _orderButton(),
+              ),
+            ],
+          )
+        else
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Votre panier est vide",
+                  style: TextStyle(
+                      color: Styles.colors.text,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.w700),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.shopping_cart_rounded,
+                      color: Styles.colors.text, size: 50),
+                ),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-                top: 5.0,
-                right: Styles.mainHorizontalPadding,
-                left: Styles.mainHorizontalPadding,
-                bottom: 10.0),
-            child: _orderButton(),
-          ),
-        ],
-      );
-    else
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Votre panier est vide",
-              style: TextStyle(
-                  color: Styles.colors.text,
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.w700),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Icon(Icons.shopping_cart_rounded,
-                  color: Styles.colors.text, size: 50),
-            ),
-          ],
-        ),
-      );
+        Loading(active: _loading),
+      ],
+    );
   }
 }

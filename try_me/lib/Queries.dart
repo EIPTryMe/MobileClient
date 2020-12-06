@@ -229,11 +229,19 @@ class Mutations {
   }
   ''';
 
-  static String orderPayment(String currency, String city, String country,
-          String address, int postalCode) =>
+  static String orderPayment(
+          String currency,
+          String city,
+          String country,
+          String address,
+          int postalCode,
+          String billingCity,
+          String billingCountry,
+          String billingAddress,
+          int billingPostalCode) =>
       '''
   mutation {
-    orderPayment(currency: "$currency", addressDetails: {address_city: "$city", address_country: "$country", address_line_1: "$address", address_postal_code: $postalCode}) {
+    orderPayment(currency: "$currency", addressDetails: {address_city: "$city", address_country: "$country", address_line_1: "$address", address_postal_code: $postalCode}, billingDetails: {billing_city: "$billingCity", billing_country: "$billingCountry", billing_address_line_1: "$billingAddress", billing_postal_code: $billingPostalCode}) {
       order_id
       clientSecret
       publishableKey
@@ -373,6 +381,14 @@ class Queries {
       }
       quantity
       id
+    }
+  }
+  ''';
+
+  static String shoppingCardTotal() => '''
+  query totalCart {
+    totalCart {
+      total
     }
   }
   ''';

@@ -7,17 +7,33 @@ import 'package:tryme/widgets/Filter.dart';
 enum OrderBy { PRICE, NEW, NAME }
 
 class Request {
-  static Future<List<Cart>> getShoppingCard() async {
-    List<Cart> shoppingCard = List();
+  static Future<bool> getShoppingCard() async {
     QueryOptions queryOption = QueryOptions(
       documentNode: gql(Queries.shoppingCard(auth0User.uid)),
       fetchPolicy: FetchPolicy.cacheAndNetwork,
     );
     QueryResult result = await client.value.query(queryOption);
 
-    if (!result.hasException && result.data['cartItem'] != null)
-      shoppingCard = QueryParse.getShoppingCard(result.data['cartItem']);
-    return (shoppingCard);
+    if (!result.hasException && result.data['cartItem'] != null) {
+      shoppingCard.shoppingCard =
+          QueryParse.getShoppingCard(result.data['cartItem']);
+      await shoppingCardTotal();
+    }
+    return (result.hasException);
+  }
+
+  static Future<bool> shoppingCardTotal() async {
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.shoppingCardTotal()),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
+    QueryResult result = await client.value.query(queryOption);
+
+    if (!result.hasException &&
+        result.data['totalCart'] != null &&
+        result.data['totalCart']['total'] != null)
+      shoppingCard.total = result.data['totalCart']['total'].toDouble();
+    return (result.hasException);
   }
 
   static Future<bool> deleteShoppingCard(int id) async {
@@ -117,19 +133,38 @@ class Request {
     return (result.hasException);
   }
 
-  static Future order(String currency, String city, String country,
-      String address, int postalCode) async {
+  static Future<QueryResult> order(
+      String currency,
+      String city,
+      String country,
+      String address,
+      int postalCode,
+      String billingCity,
+      String billingCountry,
+      String billingAddress,
+      int billingPostalCode) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.orderPayment(
-            currency, city, country, address, postalCode)));
+      documentNode: gql(Mutations.orderPayment(
+          currency,
+          city,
+          country,
+          address,
+          postalCode,
+          billingCity,
+          billingCountry,
+          billingAddress,
+          billingPostalCode)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
-    return (result.data['orderPayment']);
+    return (result);
   }
 
   static Future<bool> payOrder(int orderId) async {
     QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Mutations.payOrder(orderId)));
+        QueryOptions(documentNode: gql(Mutations.payOrder(orderId)),      fetchPolicy: FetchPolicy.cacheAndNetwork,
+        );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -188,8 +223,10 @@ class Request {
 
   static Future<List<Order>> getOrders() async {
     List<Order> orders = List();
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.orders()));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.orders()),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     if (result.data['order'] != null)
@@ -201,8 +238,10 @@ class Request {
 
   static Future<int> getOrdersNumber() async {
     int ordersNumber = 0;
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.ordersNumber("")));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.ordersNumber("")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     if (!result.hasException)
