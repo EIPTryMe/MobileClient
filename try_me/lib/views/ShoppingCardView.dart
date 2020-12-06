@@ -15,6 +15,7 @@ class ShoppingCardView extends StatefulWidget {
 
 class _ShoppingCardViewState extends State<ShoppingCardView> {
   bool _loading = true;
+  String _total = "";
 
   @override
   void initState() {
@@ -26,8 +27,10 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     Request.getShoppingCard().whenComplete(() {
       setState(() {
         _loading = false;
+        _total = NumberFormatTool.formatPrice(shoppingCard.total);
       });
     });
+    print(_total);
   }
 
   Widget _orderButton() {
@@ -41,7 +44,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Text(
-          "Payer",
+          "Payer ($_total€)",
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
         ),
       ),

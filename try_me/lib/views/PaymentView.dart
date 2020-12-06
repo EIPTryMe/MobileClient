@@ -10,6 +10,7 @@ import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
+import 'package:tryme/tools/NumberFormatTool.dart';
 import 'package:tryme/widgets/GoBackTopBar.dart';
 
 import 'package:tryme/tools/AddressTool.dart';
@@ -296,8 +297,8 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Widget _priceInformation() {
-    String price = "28.00";
-    String total = "35.20";
+    String price = NumberFormatTool.formatPrice(shoppingCard.total);
+    String total = NumberFormatTool.formatPrice(shoppingCard.total);
 
     return Container(
       color: Styles.colors.lightBackground,
