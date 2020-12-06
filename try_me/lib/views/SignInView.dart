@@ -275,7 +275,9 @@ class _SignInViewState extends State<SignInView> {
                           style: TextStyle(
                               color: Styles.colors.title, fontSize: 14.0),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Auth0API.resetPassword();
+                        },
                       ),
                     ],
                   ),

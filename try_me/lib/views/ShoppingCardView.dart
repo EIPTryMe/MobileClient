@@ -143,15 +143,15 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
 
   @override
   Widget build(BuildContext context) {
-    if (shoppingCard.shoppingCard.length != 0)
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ListView.builder(
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (shoppingCard.shoppingCard.length != 0)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ListView.builder(
                   padding: const EdgeInsets.only(
                       right: Styles.mainHorizontalPadding,
                       left: Styles.mainHorizontalPadding,
@@ -161,8 +161,54 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                     return _shoppingCardCart(shoppingCard.shoppingCard[index]);
                   },
                 ),
-                Loading(active: _loading),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 5.0,
+                    right: Styles.mainHorizontalPadding,
+                    left: Styles.mainHorizontalPadding,
+                    bottom: 10.0),
+                child: _orderButton(),
+              ),
+            ],
+          )
+        else
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Votre panier est vide",
+                  style: TextStyle(
+                      color: Styles.colors.text,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.w700),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.shopping_cart_rounded,
+                      color: Styles.colors.text, size: 50),
+                ),
               ],
+            ),
+          ),
+        Loading(active: _loading),
+      ],
+    );
+    if (shoppingCard.shoppingCard.length != 0)
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(
+                  right: Styles.mainHorizontalPadding,
+                  left: Styles.mainHorizontalPadding,
+                  top: 15.0),
+              itemCount: shoppingCard.shoppingCard.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _shoppingCardCart(shoppingCard.shoppingCard[index]);
+              },
             ),
           ),
           Padding(

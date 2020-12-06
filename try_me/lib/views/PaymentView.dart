@@ -29,6 +29,9 @@ class _PaymentViewState extends State<PaymentView> {
   bool _checkAddress = false;
 
   PaymentMethod _paymentMethod;
+  PaymentIntentResult _paymentIntent;
+  String _clientSecret;
+  int _orderId;
 
   String _street = "";
   String _postCode = "";
@@ -52,7 +55,6 @@ class _PaymentViewState extends State<PaymentView> {
             "pk_test_51HvOCIHzD4uJULST7uBkll71K9x6hhY8IECnNisDxCp6i6jJi4ErzfpjJPOyxABNaamP04BAiDeB4WvQ9hqIfUOO00XAbiWlGd",
         merchantId: "Test",
         androidPayMode: 'test'));
-
     StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest())
         .then((paymentMethod) {
       setState(() {
@@ -71,30 +73,38 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Future<bool> checkout() async {
-    QueryResult result;
-
-    result = await Request.order(
-        'eur',
-        user.address.city,
-        user.address.country,
-        user.address.street,
-        int.tryParse(user.address.postCode),
-        _city,
-        _country,
-        _street,
-        int.tryParse(_postCode));
-    if (result.hasException) return (false);
+    await Request.order(
+            'eur',
+            user.address.city,
+            user.address.country,
+            user.address.street,
+            int.tryParse(user.address.postCode),
+            _city,
+            _country,
+            _street,
+            int.tryParse(_postCode))
+        .then((result) {
+      if (result.hasException ||
+          result.data['orderPayment']['clientSecret'] == null ||
+          result.data['orderPayment']['order_id'] == null) return (false);
+      setState(() {
+        _clientSecret = result.data['orderPayment']['clientSecret'];
+        _orderId = result.data['orderPayment']['order_id'];
+      });
+    });
     await StripePayment.confirmPaymentIntent(
       PaymentIntent(
-        clientSecret: result.data['orderPayment']['clientSecret'],
+        clientSecret: _clientSecret,
         paymentMethodId: _paymentMethod.id,
       ),
-    ).catchError(setError);
-    await Request.payOrder(result.data['orderPayment']['order_id'])
-        .then((hasException) {
+    ).then((paymentIntent) {
+      setState(() {
+        _paymentIntent = paymentIntent;
+      });
+    }).catchError(setError);
+    await Request.payOrder(_orderId).then((hasException) {
       if (hasException) return (false);
     });
-
     return (true);
   }
 

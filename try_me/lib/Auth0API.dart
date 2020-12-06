@@ -11,12 +11,23 @@ class Auth0API {
 
   static Auth0 auth0 = Auth0(baseUrl: 'https://$domain/', clientId: clientId);
 
+  static Future<bool> resetPassword() async {
+    auth0.webAuth.authorize({
+      'connection': 'Username-Password-Authentication',
+      //'scope': 'openid profile email offline_access',
+      //'prompt': 'reset-password',
+    });
+    return (true);
+  }
+
+  //https://dev-2o6a8byc.eu.auth0.com/u/login?state=g6Fo2SBZMldSeGkxSXd2YjQ4NTRUSEw2UXdlUlJoZzY1NG84b6N0aWTZIHF4UFZFdkd6aUYxZ01hUEd3VkFyMHA0QkNMQnZHWjl6o2NpZNkgWUlmQm94TXN4dVZHNmlUR05seFgzZzdsdmVjeXpyVlE
+  //https://dev-2o6a8byc.eu.auth0.com/u/reset-password/request/Username-Password-Authentication?state=g6Fo2SA4TFd2bldzQ2tOYVI4YnVFUDNObGxiOWtqaEVoci1nN6N0aWTZIEFhZ1dmRXkwMlhRamhiV214S1hJak90WWwyaFZHLW9lo2NpZNkgWUlmQm94TXN4dVZHNmlUR05seFgzZzdsdmVjeXpyVlE
   static Future<bool> register(String email, String password) async {
     try {
       var response = await auth0.auth.createUser({
         'email': email,
         'password': password,
-        'connection': 'Username-Password-Authentication'
+        'connection': 'Username-Password-Authentication',
       });
 
       print('''
@@ -35,7 +46,7 @@ class Auth0API {
       var response = await auth0.auth.passwordRealm({
         'username': email,
         'password': password,
-        'realm': 'Username-Password-Authentication'
+        'realm': 'Username-Password-Authentication',
       });
 
       print('''

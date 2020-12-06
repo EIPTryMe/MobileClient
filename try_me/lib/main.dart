@@ -14,7 +14,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // status bar color
   ));
-  FluroRouter.setupRouter();
+  MyRouter.setupRouter();
   runApp(MyApp());
 }
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           //initialRoute: 'app',
           initialRoute: 'landing',
-          onGenerateRoute: FluroRouter.router.generator,
+          onGenerateRoute: MyRouter.router.generator,
           supportedLocales: [
             Locale('en'),
             Locale('it'),
