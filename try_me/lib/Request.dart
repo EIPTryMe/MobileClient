@@ -150,16 +150,18 @@ class Request {
       String billingAddress,
       int billingPostalCode) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.orderPayment(
-            currency,
-            city,
-            country,
-            address,
-            postalCode,
-            billingCity,
-            billingCountry,
-            billingAddress,
-            billingPostalCode)));
+      documentNode: gql(Mutations.orderPayment(
+          currency,
+          city,
+          country,
+          address,
+          postalCode,
+          billingCity,
+          billingCountry,
+          billingAddress,
+          billingPostalCode)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result);
@@ -167,7 +169,8 @@ class Request {
 
   static Future<bool> payOrder(int orderId) async {
     QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Mutations.payOrder(orderId)));
+        QueryOptions(documentNode: gql(Mutations.payOrder(orderId)),      fetchPolicy: FetchPolicy.cacheAndNetwork,
+        );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
