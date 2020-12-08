@@ -15,6 +15,7 @@ class ShoppingCardView extends StatefulWidget {
 
 class _ShoppingCardViewState extends State<ShoppingCardView> {
   bool _loading = true;
+  bool _lock = false;
   String _total = "";
 
   @override
@@ -30,7 +31,23 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
         _total = NumberFormatTool.formatPrice(shoppingCard.total);
       });
     });
-    print(_total);
+  }
+
+  void updateQuantity(Cart cart, int quantity) async {
+    if (quantity < 1) return;
+    setState(() {
+      _loading = true;
+      _lock = true;
+    });
+    Request.modifyQuantity(cart, quantity).then((hasException) {
+      if (!hasException)
+        getData();
+      else
+        setState(() {
+          _loading = false;
+          _lock = false;
+        });
+    });
   }
 
   Widget _orderButton() {
@@ -135,16 +152,12 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                       children: [
                         Container(
                           child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                /*
-                              (if card.quantity > 1)
-                              * */
-                                cart.quantity--;
-                                _total = NumberFormatTool.formatPrice(
-                                    shoppingCard.total);
-                              });
-                            },
+                            disabledColor: Styles.colors.unSelected,
+                            onPressed: cart.quantity == 1
+                                ? null
+                                : () {
+                                    updateQuantity(cart, cart.quantity - 1);
+                                  },
                             icon: Icon(
                               Icons.remove,
                               color: Styles.colors.text,
@@ -153,16 +166,12 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                         ),
                         Container(
                           child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                /*
-                              if (card.quantity < cart.product.stock)
-                               */
-                                cart.quantity++;
-                                _total = NumberFormatTool.formatPrice(
-                                    shoppingCard.total);
-                              });
-                            },
+                            disabledColor: Styles.colors.unSelected,
+                            onPressed: cart.quantity == cart.product.stock
+                                ? null
+                                : () {
+                                    updateQuantity(cart, cart.quantity + 1);
+                                  },
                             icon: Icon(
                               Icons.add,
                               color: Styles.colors.text,

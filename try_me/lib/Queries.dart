@@ -107,15 +107,7 @@ class QueryParse {
       if (element['quantity'] != null) quantity = element['quantity'];
       if (element['id'] != null) id = element['id'];
       if (element['product'] != null) {
-        if (element['product']['id'] != null)
-          product.id = element['product']['id'];
-        if (element['product']['name'] != null)
-          product.name = element['product']['name'];
-        if (element['product']['price_per_month'] != null)
-          product.pricePerMonth =
-              element['product']['price_per_month'].toDouble();
-        if (element['product']['picture_url'] != null)
-          product.pictures.add(element['product']['picture_url']);
+        product = getProduct(element['product']);
         shoppingCard.add(Cart(
             product: product, duration: duration, quantity: quantity, id: id));
       }
@@ -224,6 +216,14 @@ class Mutations {
       '''
   mutation {
     update_product(_set: {name: "$title", brand: "$brand", price_per_month: "$monthPrice", stock: $stock, description: "$description"}, where: {id: {_eq: $id}}) {
+      affected_rows
+    }
+  }
+  ''';
+
+  static String modifyQuantity(int cartItemId, int quantity) => '''
+  mutation {
+    update_cartItem(where: {id: {_eq: $cartItemId}}, _set: {quantity: $quantity}) {
       affected_rows
     }
   }
@@ -377,6 +377,7 @@ class Queries {
         name
         price_per_month
         picture_url
+        stock
         id
       }
       quantity

@@ -66,8 +66,10 @@ class Request {
 
   static Future<bool> modifyUserFirstName(String firstName) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUserFirstName(
-            auth0User.uid, firstName != null ? firstName : "")));
+      documentNode: gql(Mutations.modifyUserFirstName(
+          auth0User.uid, firstName != null ? firstName : "")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -75,8 +77,10 @@ class Request {
 
   static Future<bool> modifyUserName(String name) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(
-            Mutations.modifyUserName(auth0User.uid, name != null ? name : "")));
+      documentNode: gql(
+          Mutations.modifyUserName(auth0User.uid, name != null ? name : "")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -84,8 +88,10 @@ class Request {
 
   static Future<bool> modifyUserPhone(String phone) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUserPhone(
-            auth0User.uid, phone != null ? phone : "")));
+      documentNode: gql(
+          Mutations.modifyUserPhone(auth0User.uid, phone != null ? phone : "")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -93,8 +99,10 @@ class Request {
 
   static Future<bool> modifyUserEmail(String email) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUserEmail(
-            auth0User.uid, email != null ? email : "")));
+      documentNode: gql(
+          Mutations.modifyUserEmail(auth0User.uid, email != null ? email : "")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -102,8 +110,10 @@ class Request {
 
   static Future<bool> modifyUserBirthday(String birthday) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUserBirthday(
-            auth0User.uid, birthday != null ? birthday : "")));
+      documentNode: gql(Mutations.modifyUserBirthday(
+          auth0User.uid, birthday != null ? birthday : "")),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -112,22 +122,20 @@ class Request {
   static Future<bool> modifyUserAddress(
       String street, String postcode, String city, String country) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyUserAddress(
-            auth0User.uid, street, postcode, city, country)));
+      documentNode: gql(Mutations.modifyUserAddress(
+          auth0User.uid, street, postcode, city, country)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
   }
 
-  static Future<bool> modifyProduct(Product product) async {
+  static Future<bool> modifyQuantity(Cart cart, int quantity) async {
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Mutations.modifyProduct(
-            product.id,
-            product.name,
-            product.brand,
-            product.pricePerMonth,
-            product.stock,
-            product.description.replaceAll('\n', '\\n'))));
+      documentNode: gql(Mutations.modifyQuantity(cart.id, quantity)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
@@ -162,9 +170,10 @@ class Request {
   }
 
   static Future<bool> payOrder(int orderId) async {
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Mutations.payOrder(orderId)),      fetchPolicy: FetchPolicy.cacheAndNetwork,
-        );
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Mutations.payOrder(orderId)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);
