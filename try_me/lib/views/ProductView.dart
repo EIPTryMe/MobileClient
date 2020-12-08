@@ -56,7 +56,7 @@ class _ProductViewState extends State<ProductView> {
           return NumberPickerDialog.integer(
             initialIntegerValue: _duration,
             minValue: 1,
-            maxValue: 24,
+            maxValue: 10,
             title: Text("Durée de la location (mois)"),
           );
         }).then((value) {
