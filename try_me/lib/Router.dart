@@ -30,7 +30,7 @@ class MyRouter {
           OrdersView());
   static Handler _orderFinishedHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
-          OrderFinishedView());
+          OrderFinishedView(orderId: params['orderId'][0]));
   static Handler _productHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
@@ -77,7 +77,7 @@ class MyRouter {
       transitionType: TransitionType.cupertino,
     );
     router.define(
-      'orderFinished',
+      'orderFinished/:orderId',
       handler: _orderFinishedHandler,
       transitionType: TransitionType.cupertino,
     );

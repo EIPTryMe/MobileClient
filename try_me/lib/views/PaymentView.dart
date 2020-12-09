@@ -134,10 +134,11 @@ class _PaymentViewState extends State<PaymentView> {
                 child: Padding(
                   padding: const EdgeInsets.all(imageBoxSize * 0.3 / 2.0),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(shoppingCard
-                            .shoppingCard.first.product.pictures.isEmpty
-                        ? ""
-                        : shoppingCard.shoppingCard.first.product.pictures[0]),
+                    backgroundImage:
+                        shoppingCard.shoppingCard.first.product.pictures.isEmpty
+                            ? null
+                            : NetworkImage(shoppingCard
+                                .shoppingCard.first.product.pictures[0]),
                   ),
                 ),
               ),
@@ -425,7 +426,7 @@ class _PaymentViewState extends State<PaymentView> {
                 _buttonState = succeed ? ButtonState.success : ButtonState.fail;
                 Navigator.pushNamedAndRemoveUntil(
                     context, 'app', ModalRoute.withName('/'));
-                Navigator.pushNamed(context, 'orderFinished');
+                Navigator.pushNamed(context, 'orderFinished/$_orderId');
               });
             }
           : null,
