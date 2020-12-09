@@ -5,7 +5,6 @@ import 'package:tryme/tools/AddressTool.dart';
 class QueryParse {
   static Future getUser(Map result) async {
     user = User();
-    if (user.picture == null) print('fuck');
     if (result['id'] != null) user.id = result['id'];
     if (result['first_name'] != null) user.firstName = result['first_name'];
     if (result['name'] != null) user.lastName = result['name'];
@@ -49,7 +48,6 @@ class QueryParse {
         if (element['description'] != null)
           review.description = element['description'];
         product.reviews.reviews.add(review);
-        print(review.user);
       });
     }
     if (result['reviews_aggregate'] != null &&
@@ -268,9 +266,6 @@ class Queries {
       price_per_month
       stock
       description
-      product_specifications {
-        name
-      }
       picture_url
       reviews(order_by: {created_at: desc}) {
         created_at
