@@ -134,4 +134,10 @@ class Auth0API {
     global.isLoggedIn = true;
     return (true);
   }
+
+  static Future disconnect() async {
+    final storage = FlutterSecureStorage();
+
+    await storage.deleteAll();
+  }
 }

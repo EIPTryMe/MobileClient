@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:tryme/Auth0API.dart';
 
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
@@ -228,11 +229,14 @@ class _UserInformationViewState extends State<UserInformationView> {
   }
 
   void disconnect(BuildContext context) {
-    isLoggedIn = false;
-    shoppingCard.shoppingCard.clear();
-    auth0User = Auth0User();
-    user = User();
-    Navigator.pushNamedAndRemoveUntil(context, 'app', ModalRoute.withName('/'));
+    Auth0API.disconnect().whenComplete(() {
+      isLoggedIn = false;
+      shoppingCard.shoppingCard.clear();
+      auth0User = Auth0User();
+      user = User();
+      Navigator.pushNamedAndRemoveUntil(
+          context, 'app', ModalRoute.withName('/'));
+    });
   }
 
   Widget _divider({height: 1.0}) {
