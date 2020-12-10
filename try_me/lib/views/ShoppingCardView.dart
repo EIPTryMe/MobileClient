@@ -87,6 +87,12 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(Styles.cardRadius),
                   ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(Styles.cardRadius),
+                    child: cart.product.pictures.isNotEmpty
+                        ? Image.network(cart.product.pictures[0])
+                        : null,
+                  ),
                 ),
                 Expanded(
                   child: Padding(
@@ -133,12 +139,15 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                       height: 17,
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
                       decoration: BoxDecoration(
-                        color: Styles.colors.main,
+                        border: Border.all(
+                          width: 2.0,
+                          color: Styles.colors.main,
+                        ),
                         borderRadius: BorderRadius.all(Radius.circular(32.5)),
                       ),
                       child: Center(
                         child: Text(
-                          cart.quantity.toString(),
+                          'x${cart.quantity.toString()}',
                           style: TextStyle(
                             color: Styles.colors.text,
                             fontSize: 12,
@@ -152,7 +161,6 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                       children: [
                         Container(
                           child: IconButton(
-                            disabledColor: Styles.colors.unSelected,
                             onPressed: cart.quantity == 1
                                 ? null
                                 : () {
@@ -160,13 +168,14 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                                   },
                             icon: Icon(
                               Icons.remove,
-                              color: Styles.colors.text,
+                              color: cart.quantity == 1
+                                  ? Styles.colors.unSelected
+                                  : Styles.colors.text,
                             ),
                           ),
                         ),
                         Container(
                           child: IconButton(
-                            disabledColor: Styles.colors.unSelected,
                             onPressed: cart.quantity == cart.product.stock
                                 ? null
                                 : () {
@@ -174,7 +183,9 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                                   },
                             icon: Icon(
                               Icons.add,
-                              color: Styles.colors.text,
+                              color: cart.quantity == cart.product.stock
+                                  ? Styles.colors.unSelected
+                                  : Styles.colors.text,
                             ),
                           ),
                         ),
