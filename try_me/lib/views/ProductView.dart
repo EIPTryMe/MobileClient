@@ -266,8 +266,9 @@ class _ProductViewState extends State<ProductView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                reviews[index].user.isNotEmpty
-                                    ? '${reviews[index].user[0]}***${reviews[index].user[reviews[index].user.length - 1]}'
+                                reviews[index].userFirstName.isNotEmpty &&
+                                        reviews[index].userName.isNotEmpty
+                                    ? '${reviews[index].userFirstName} ${reviews[index].userName}'
                                     : '',
                                 style: TextStyle(color: Styles.colors.text),
                               ),
@@ -276,7 +277,9 @@ class _ProductViewState extends State<ProductView> {
                           ),
                           SizedBox(height: 12.0),
                           Text(
-                            reviews[index].date.substring(0, reviews[index].date.indexOf('T')),
+                            reviews[index]
+                                .date
+                                .substring(0, reviews[index].date.indexOf('T')),
                             style: TextStyle(color: Styles.colors.unSelected),
                           ),
                           SizedBox(height: 12.0),

@@ -41,8 +41,12 @@ class QueryParse {
       (result['reviews'] as List).forEach((element) {
         Review review = Review();
         if (element['created_at'] != null) review.date = element['created_at'];
-        if (element['user'] != null && element['user']['name'] != null)
-          review.user = element['user']['name'];
+        if (element['user'] != null) {
+          if (element['user']['name'] != null)
+            review.userName = element['user']['name'];
+          if (element['user']['first_name'] != null)
+            review.userFirstName = element['user']['first_name'];
+        }
         if (element['score'] != null)
           review.score = element['score'].toDouble();
         if (element['description'] != null)
@@ -272,6 +276,7 @@ class Queries {
         description
         score
         user {
+          first_name
           name
         }
       }
@@ -298,7 +303,7 @@ class Queries {
   ''';
 
   static String getKeywordsFilter(String keywords) =>
-      '_or: [{name: {_ilike: "%$keywords%"}}, {category: {name: {_ilike: "%$keywords%"}}}, {brand: {_ilike: "%$keywords%"}}]';
+      '_or: [{name: {_ilike: "%$keywords%"}}]';
 
   static String getCategoryFilter(String category) =>
       category.isNotEmpty ? 'category: {name: {_eq: "$category"}}' : '';
