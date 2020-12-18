@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
       child: CacheProvider(
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          //initialRoute: 'app',
           initialRoute: 'landing',
           onGenerateRoute: MyRouter.router.generator,
           supportedLocales: [

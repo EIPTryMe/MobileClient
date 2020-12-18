@@ -17,7 +17,10 @@ class Request {
     if (!result.hasException && result.data['cartItem'] != null) {
       shoppingCard.shoppingCard =
           QueryParse.getShoppingCard(result.data['cartItem']);
-      await shoppingCardTotal();
+      shoppingCard.total = 0.0;
+      shoppingCard.shoppingCard.forEach((cart) {
+        shoppingCard.total += cart.product.pricePerMonth * cart.quantity;
+      });
     }
     return (result.hasException);
   }

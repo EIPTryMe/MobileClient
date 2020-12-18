@@ -58,7 +58,12 @@ class UserAddress {
 }
 
 class Review {
-  Review({this.date = "", this.userFirstName = "", this.userName = "", this.score = 0.0, this.description = ""});
+  Review(
+      {this.date = "",
+      this.userFirstName = "",
+      this.userName = "",
+      this.score = 0.0,
+      this.description = ""});
 
   String date;
   String userFirstName;
@@ -115,14 +120,28 @@ class Cart {
 }
 
 class Order {
-  Order({this.id = 0, this.total = 0.0, this.status = "", this.products}) {
-    if (products == null) products = List();
+  Order(
+      {this.id = 0,
+      this.total = 0.0,
+      this.status = "",
+      this.createdAt = "",
+      this.addressLine = "",
+      this.addressPostalCode = 0,
+      this.addressCountry = "",
+      this.addressCity = "",
+      this.carts}) {
+    if (carts == null) carts = List();
   }
 
   int id;
   double total;
   String status;
-  List<Product> products;
+  String createdAt;
+  String addressLine;
+  int addressPostalCode;
+  String addressCountry;
+  String addressCity;
+  List<Cart> carts;
 }
 
 class Category {
