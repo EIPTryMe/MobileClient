@@ -40,8 +40,20 @@ class Request {
   }
 
   static Future<bool> deleteShoppingCard(int id) async {
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Mutations.deleteShoppingCard(id)));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Mutations.deleteShoppingCard(id)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
+    QueryResult result = await client.value.query(queryOption);
+
+    return (result.hasException);
+  }
+
+  static Future<bool> modifyCartDuration(int cartId, int duration) async {
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Mutations.modifyCartDuration(cartId, duration)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     return (result.hasException);

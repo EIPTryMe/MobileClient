@@ -269,6 +269,14 @@ class Mutations {
     }
   }
   ''';
+
+  static String modifyCartDuration(int cartId, int duration) => '''
+  mutation {
+    update_cartItem(where: {id: {_eq: $cartId}}, _set: {duration: $duration}) {
+      affected_rows
+    }
+  }
+  ''';
 }
 
 class Queries {

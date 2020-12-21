@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:numberpicker/numberpicker.dart';
+
 import 'package:tryme/Globals.dart';
 import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
-
 import 'package:tryme/tools/NumberFormatTool.dart';
-
 import 'package:tryme/widgets/Loading.dart';
 
 class ShoppingCardView extends StatefulWidget {
@@ -16,7 +16,6 @@ class ShoppingCardView extends StatefulWidget {
 class _ShoppingCardViewState extends State<ShoppingCardView> {
   bool _loading = true;
   bool _lock = false;
-  String _total = "";
 
   @override
   void initState() {
@@ -28,8 +27,14 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     Request.getShoppingCard().whenComplete(() {
       setState(() {
         _loading = false;
-        _total = NumberFormatTool.formatPrice(shoppingCard.total);
       });
+    });
+  }
+
+  void getTotal() {
+    shoppingCard.total = 0.0;
+    shoppingCard.shoppingCard.forEach((cart) {
+      shoppingCard.total += cart.product.pricePerMonth * cart.quantity;
     });
   }
 
@@ -50,6 +55,32 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
     });
   }
 
+  void _showDialog(int cartId, int duration) {
+    showDialog<int>(
+        context: context,
+        builder: (BuildContext context) {
+          return NumberPickerDialog.integer(
+            initialIntegerValue: duration,
+            minValue: 1,
+            maxValue: 10,
+            title: Text("Durée de la location (mois)"),
+          );
+        }).then((value) {
+      if (value != null) {
+        setState(() {
+          _loading = true;
+        });
+        Request.modifyCartDuration(cartId, value).whenComplete(() {
+          Request.getShoppingCard().whenComplete(() {
+            setState(() {
+              _loading = false;
+            });
+          });
+        });
+      }
+    });
+  }
+
   Widget _orderButton() {
     return Container(
       height: 58.0,
@@ -61,7 +92,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Text(
-          "Payer ($_total€ / mois)",
+          "Payer (${NumberFormatTool.formatPrice(shoppingCard.total)}€ / mois)",
           style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
         ),
       ),
@@ -135,27 +166,6 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Container(
-                      height: 17,
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 2.0,
-                          color: Styles.colors.main,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(32.5)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'x${cart.quantity.toString()}',
-                          style: TextStyle(
-                            color: Styles.colors.text,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -171,6 +181,27 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                               color: cart.quantity == 1
                                   ? Styles.colors.unSelected
                                   : Styles.colors.text,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 2.0,
+                              color: Styles.colors.main,
+                            ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(32.5)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'x${cart.quantity.toString()}',
+                              style: TextStyle(
+                                color: Styles.colors.text,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                         ),
@@ -191,16 +222,34 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
                         ),
                       ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_forever),
-                      color: Styles.colors.unSelected,
-                      onPressed: () {
-                        setState(() => _loading = true);
-                        Request.deleteShoppingCard(cart.id)
-                            .then((hasException) {
-                          getData();
-                        });
-                      },
+                    Row(
+                      children: [
+                        FlatButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          color: Colors.blue,
+                          onPressed: () {
+                            setState(() {
+                              _showDialog(cart.id, cart.duration);
+                            });
+                          },
+                          child: Text(
+                            '${cart.duration} mois',
+                            style: TextStyle(color: Styles.colors.text),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete_forever),
+                          color: Styles.colors.unSelected,
+                          onPressed: () {
+                            setState(() => _loading = true);
+                            Request.deleteShoppingCard(cart.id)
+                                .then((hasException) {
+                              getData();
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -209,7 +258,7 @@ class _ShoppingCardViewState extends State<ShoppingCardView> {
           ),
           Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.only(right: 90.0),
+              padding: const EdgeInsets.only(right: 140.0),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
