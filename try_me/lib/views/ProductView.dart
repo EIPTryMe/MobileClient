@@ -333,7 +333,7 @@ class _ProductViewState extends State<ProductView> {
       radius: Styles.buttonRadius,
       iconedButtons: {
         ButtonState.idle: IconedButton(
-            text: "Ajouter au panier",
+            text: _product.stock <= 0 ? "Hors stock" : "Ajouter au panier",
             icon: Icon(Icons.shopping_cart, color: Colors.white),
             color: Styles.colors.main),
         ButtonState.loading: IconedButton(color: Styles.colors.main),
@@ -349,7 +349,7 @@ class _ProductViewState extends State<ProductView> {
             ),
             color: Colors.green.shade400)
       },
-      onPressed: () {
+      onPressed: _product.stock <= 0 ? null : () {
         if (isLoggedIn == false) {
           Navigator.pushNamed(context, 'signIn');
           return;
@@ -410,7 +410,8 @@ class _ProductViewState extends State<ProductView> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                         color: Colors.blue,
-                        onPressed: () => _showDialog(),
+                        disabledColor: Colors.blue.withOpacity(0.2),
+                        onPressed: _product.stock <= 0 ? null : () => _showDialog(),
                         child: Text(
                           '$_duration mois',
                           style: TextStyle(color: Styles.colors.text),
