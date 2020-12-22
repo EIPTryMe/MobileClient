@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter/services.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:progress_state_button/iconed_button.dart';
@@ -12,8 +11,8 @@ import 'package:tryme/Request.dart';
 import 'package:tryme/Styles.dart';
 import 'package:tryme/tools/NumberFormatTool.dart';
 import 'package:tryme/widgets/GoBackTopBar.dart';
-
 import 'package:tryme/tools/AddressTool.dart';
+import 'package:tryme/tools/Validator.dart';
 
 class PaymentView extends StatefulWidget {
   @override
@@ -40,6 +39,9 @@ class _PaymentViewState extends State<PaymentView> {
   String _country = "";
 
   ButtonState _buttonState = ButtonState.idle;
+
+  TextEditingController _firstNameController;
+  TextEditingController _nameController;
 
   @override
   void initState() {
@@ -164,6 +166,58 @@ class _PaymentViewState extends State<PaymentView> {
       ),
       _divider(),
     ]);
+  }
+
+  Widget _name() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
+      child: Column(
+        children: [
+          TextFormField(
+            autovalidateMode: AutovalidateMode.always,
+            style: TextStyle(
+              color: Styles.colors.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            cursorColor: Styles.colors.textPlaceholder,
+            decoration: InputDecoration(
+              hintText: 'Prénom',
+              hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
+              border: InputBorder.none,
+            ),
+            keyboardType: TextInputType.name,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
+              LengthLimitingTextInputFormatter(20),
+            ],
+            controller: _firstNameController,
+            validator: (value) => Validator.nameValidator(value),
+          ),
+          TextFormField(
+            autovalidateMode: AutovalidateMode.always,
+            style: TextStyle(
+              color: Styles.colors.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            cursorColor: Styles.colors.textPlaceholder,
+            decoration: InputDecoration(
+              hintText: 'Nom',
+              hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
+              border: InputBorder.none,
+            ),
+            keyboardType: TextInputType.name,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
+              LengthLimitingTextInputFormatter(20),
+            ],
+            controller: _nameController,
+            validator: (value) => Validator.nameValidator(value),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _shippingAddress() {
@@ -455,6 +509,8 @@ class _PaymentViewState extends State<PaymentView> {
               child: ListView(
                 children: [
                   _orderNumber(),
+                  SizedBox(height: 15),
+                  _name(),
                   SizedBox(height: 15),
                   _shippingAddress(),
                   SizedBox(height: 10),
