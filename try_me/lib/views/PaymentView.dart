@@ -43,8 +43,12 @@ class _PaymentViewState extends State<PaymentView> {
   TextEditingController _firstNameController;
   TextEditingController _nameController;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
+    _firstNameController = TextEditingController(text: user.firstName);
+    _nameController = TextEditingController(text: user.lastName);
     _street = user.address.street != null ? user.address.street : "";
     _postCode = user.address.postCode != null ? user.address.postCode : "";
     _city = user.address.city != null ? user.address.city : "";
@@ -65,7 +69,7 @@ class _PaymentViewState extends State<PaymentView> {
         _cardNumber = "0000 0000 0000 ${paymentMethod.card.last4}";
         _expiryDate =
             "${paymentMethod.card.expMonth}/${paymentMethod.card.expYear}";
-        _cardHolderName = "${user.firstName} ${user.lastName}";
+        _cardHolderName = "${_firstNameController.text} ${_nameController.text}";
         _cvvCode = "";
       });
     }).catchError(setError);
@@ -169,53 +173,70 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   Widget _name() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Styles.mainHorizontalPadding),
-      child: Column(
-        children: [
-          TextFormField(
-            autovalidateMode: AutovalidateMode.always,
-            style: TextStyle(
-              color: Styles.colors.text,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-            cursorColor: Styles.colors.textPlaceholder,
-            decoration: InputDecoration(
-              hintText: 'Prénom',
-              hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
-              border: InputBorder.none,
-            ),
-            keyboardType: TextInputType.name,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
-              LengthLimitingTextInputFormatter(20),
+    return Form(
+      key: _formKey,
+      child: Container(
+        color: Styles.colors.lightBackground,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: Styles.mainHorizontalPadding),
+          child: Column(
+            children: [
+              TextFormField(
+                autovalidateMode: AutovalidateMode.always,
+                style: TextStyle(
+                  color: Styles.colors.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                cursorColor: Styles.colors.textPlaceholder,
+                decoration: InputDecoration(
+                  hintText: 'Prénom',
+                  hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
+                  border: InputBorder.none,
+                ),
+                keyboardType: TextInputType.name,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
+                  LengthLimitingTextInputFormatter(20),
+                ],
+                controller: _firstNameController,
+                onChanged: (value) {
+                  setState(() {
+                    _cardHolderName = "$value ${_nameController.text}";
+                  });
+                },
+                validator: (value) => Validator.nameValidator(value),
+              ),
+              TextFormField(
+                autovalidateMode: AutovalidateMode.always,
+                style: TextStyle(
+                  color: Styles.colors.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                cursorColor: Styles.colors.textPlaceholder,
+                decoration: InputDecoration(
+                  hintText: 'Nom',
+                  hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
+                  border: InputBorder.none,
+                ),
+                keyboardType: TextInputType.name,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
+                  LengthLimitingTextInputFormatter(20),
+                ],
+                controller: _nameController,
+                onChanged: (value) {
+                  setState(() {
+                    _cardHolderName = "${_firstNameController.text} $value";
+                  });
+                },
+                validator: (value) => Validator.nameValidator(value),
+              ),
             ],
-            controller: _firstNameController,
-            validator: (value) => Validator.nameValidator(value),
           ),
-          TextFormField(
-            autovalidateMode: AutovalidateMode.always,
-            style: TextStyle(
-              color: Styles.colors.text,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-            cursorColor: Styles.colors.textPlaceholder,
-            decoration: InputDecoration(
-              hintText: 'Nom',
-              hintStyle: TextStyle(color: Styles.colors.textPlaceholder),
-              border: InputBorder.none,
-            ),
-            keyboardType: TextInputType.name,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]')),
-              LengthLimitingTextInputFormatter(20),
-            ],
-            controller: _nameController,
-            validator: (value) => Validator.nameValidator(value),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -471,7 +492,9 @@ class _PaymentViewState extends State<PaymentView> {
             ),
             color: Colors.green.shade400)
       },
-      onPressed: _checkAddress && _paymentMethod != null
+      onPressed: _checkAddress &&
+              _paymentMethod != null &&
+              _formKey.currentState.validate()
           ? () {
               setState(() {
                 _buttonState = ButtonState.loading;

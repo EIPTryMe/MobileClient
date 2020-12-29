@@ -1,5 +1,7 @@
 class Validator {
   static String nameValidator(String name) {
+    if (name.isEmpty)
+      return ('Champ obligatoire');
     return (null);
   }
 
