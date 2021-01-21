@@ -64,6 +64,10 @@ class _SignUpPasswordViewState extends State<SignUpPasswordView> {
   }
 
   void connection() {
+    Navigator.pushNamedAndRemoveUntil(
+        context, 'app/1', ModalRoute.withName('/'));
+    Navigator.pushNamed(context, 'checkEmail');
+    return;
     Request.getUser().whenComplete(() {
       isLoggedIn = true;
       Navigator.pushNamedAndRemoveUntil(

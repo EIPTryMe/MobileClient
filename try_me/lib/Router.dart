@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 
 import 'package:tryme/App.dart';
+import 'package:tryme/views/CheckEmailView.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/OrderFinishedView.dart';
@@ -22,6 +23,9 @@ class MyRouter {
   static Handler _appHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           App());
+  static Handler _checkEmailHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          CheckEmailView());
   static Handler _landingHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           LandingView());
@@ -64,6 +68,11 @@ class MyRouter {
     router.define(
       'app',
       handler: _appHandler,
+      transitionType: TransitionType.cupertino,
+    );
+    router.define(
+      'checkEmail',
+      handler: _checkEmailHandler,
       transitionType: TransitionType.cupertino,
     );
     router.define(

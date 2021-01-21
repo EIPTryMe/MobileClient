@@ -82,10 +82,10 @@ class _PaymentViewState extends State<PaymentView> {
   Future<bool> checkout() async {
     await Request.order(
             'eur',
-            user.address.city,
-            user.address.country,
-            user.address.street,
-            int.tryParse(user.address.postCode),
+            _city,
+            _country,
+            _street,
+            int.tryParse(_postCode),
             _city,
             _country,
             _street,

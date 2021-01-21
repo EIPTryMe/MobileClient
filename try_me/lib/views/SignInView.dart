@@ -25,6 +25,14 @@ class _SignInViewState extends State<SignInView> {
   bool _loading = false;
 
   void connection() {
+    if (!auth0User.isEmailVerified)
+      {
+        setState(() {
+          _error = "Veuillez activer votre compte";
+          _loading = false;
+        });
+        return;
+      }
     setState(() {
       _loading = true;
     });

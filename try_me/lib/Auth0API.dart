@@ -104,7 +104,6 @@ class Auth0API {
   }
 
   static Future<bool> userInfo(String bearer) async {
-    await saveUser(bearer);
     try {
       var authClient = Auth0Auth(auth0.auth.clientId, auth0.auth.client.baseUrl,
           bearer: bearer);
@@ -117,6 +116,8 @@ class Auth0API {
         global.auth0User.isEmailVerified = info['email_verified'];
 
       global.client = getGraphQLClient(uid: global.auth0User.uid);
+
+      if (global.auth0User.isEmailVerified) await saveUser(bearer);
 
       print(info);
       return (await initData());
@@ -131,7 +132,7 @@ class Auth0API {
       if (hasException) return (false);
     });
     await Request.getShoppingCard().then((shoppingCard) {});
-    global.isLoggedIn = true;
+    if (global.auth0User.isEmailVerified) global.isLoggedIn = true;
     return (true);
   }
 
